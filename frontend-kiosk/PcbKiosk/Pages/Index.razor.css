@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: calc(100vh - 24px);
 }
 
 .page-header {
@@ -40,8 +41,9 @@
 
 .main-grid {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(360px, 1fr);
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr);
   gap: 16px;
+  align-items: stretch;
 }
 
 .camera-panel,
@@ -62,8 +64,8 @@
 
 .camera-panel img {
   width: 100%;
-  min-height: 460px;
-  max-height: 58vh;
+  min-height: 320px;
+  height: clamp(300px, 48vh, 520px);
   object-fit: contain;
   background: #020617;
   border-radius: 12px;
@@ -144,12 +146,107 @@
   color: #9ca3af;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1100px) and (min-width: 901px) {
+  .kiosk-page {
+    gap: 12px;
+    min-height: calc(100vh - 18px);
+  }
+
+  .page-header {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+  }
+
+  .page-header p {
+    font-size: 15px;
+    margin-top: 4px;
+  }
+
+  .ghost-btn {
+    min-height: 48px;
+    min-width: 110px;
+    font-size: 18px;
+  }
+
+  .main-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr);
+    gap: 12px;
+  }
+
+  .camera-panel,
+  .control-panel,
+  .latest-panel {
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .panel-title {
+    font-size: 19px;
+    margin-bottom: 8px;
+  }
+
+  .camera-panel img {
+    min-height: 250px;
+    height: clamp(250px, 35vh, 340px);
+    border-radius: 10px;
+  }
+
+  .control-panel {
+    gap: 10px;
+  }
+
+  .control-panel button,
+  .latest-panel button {
+    min-height: 54px;
+    font-size: 19px;
+    border-radius: 10px;
+  }
+
+  .status-message {
+    font-size: 16px;
+    padding: 9px;
+  }
+
+  .latest-panel .result {
+    font-size: 40px;
+    margin: 2px 0 10px;
+  }
+
+  .meta-grid {
+    gap: 8px;
+  }
+
+  .meta-grid > div {
+    padding: 9px;
+    border-radius: 10px;
+  }
+
+  .meta-label {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .meta-grid strong {
+    font-size: 17px;
+  }
+
+  .detail-btn {
+    margin-top: 10px;
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 900px) {
   .main-grid {
     grid-template-columns: 1fr;
   }
 
   .camera-panel img {
+    height: auto;
     max-height: 44vh;
   }
 
