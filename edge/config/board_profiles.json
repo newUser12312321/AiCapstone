@@ -12,5 +12,26 @@
       "smd_array_block": 2,
       "edge_connector_zone": 2
     }
+  },
+  "GN_948X": {
+    "identifier_classes": [
+      "gn-948x"
+    ],
+    "model_path": "weights/gn948x_best.pt",
+    "expected_counts": {}
+  },
+  "EGW_04": {
+    "identifier_classes": [
+      "egw-04"
+    ],
+    "model_path": "weights/egw04_best.pt",
+    "expected_counts": {}
+  },
+  "GL_9272": {
+    "identifier_classes": [
+      "gl-9272"
+    ],
+    "model_path": "weights/gl9272_best.pt",
+    "expected_counts": {}
   }
 }

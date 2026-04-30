@@ -1,5 +1,33 @@
 # Desktop Edge Vision Inspection Station
 
+## New Target Architecture (.NET + C#)
+
+이 저장소는 현장형 Edge + Cloud 구조를 기준으로 C# 중심 재구성을 시작했다.
+
+```
+[Raspberry Pi 5]
+  Python(FastAPI + YOLO) 추론/터치 UI
+  ├─ HTTP POST /api/inspections
+  └─ MQTT publish (선택)
+          │
+          ▼
+[Cloud Backend: ASP.NET Core + EF Core]
+  - REST API (검사 상세 조회)
+  - MQTT Ingest Worker
+  - OPC UA Telemetry Worker(확장 포인트)
+          │
+          ▼
+[Cloud Frontend: Blazor WebAssembly]
+  - 검사 결과 상세 내역 조회
+```
+
+신규 코드 위치:
+
+- `backend-dotnet/src/AiFactory.Api`: .NET 8 Web API + MQTT/OPC UA Worker
+- `frontend-csharp/PcbDashboard`: Blazor WebAssembly 대시보드
+
+> 기존 `backend(Spring)` / `frontend(React)`는 레거시 참조용으로 보존되어 있다.
+
 라즈베리파이 5 기반 탁상형 엣지 비전 검사 스테이션 (Monorepo)
 
 ## 아키텍처
@@ -38,6 +66,47 @@ AiCapstoneV2/
 | [10. 시연 가이드](docs/10_시연_가이드.md) | 발표·시연 순서, 더미/실제 검사 시나리오, Q&A 대비 | **발표·시연할 때** |
 
 ## 빠른 시작
+
+### 0. .NET 기반 신규 스택 실행
+
+사전 설치:
+
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download)
+
+백엔드 실행:
+
+```powershell
+cd backend-dotnet/src/AiFactory.Api
+dotnet restore
+dotnet run
+```
+
+- 기본 URL: `http://localhost:5000`
+- Swagger: `http://localhost:5000/swagger`
+
+프론트 실행:
+
+```powershell
+cd frontend-csharp/PcbDashboard
+dotnet restore
+dotnet run
+```
+
+- 기본 URL: `http://localhost:5002` (환경에 따라 자동 할당)
+
+Edge 전송 대상 변경:
+
+- `edge/.env` 또는 환경변수 `SERVER_BASE_URL`을 `http://localhost:5000`으로 설정
+
+MQTT 사용 시(`backend-dotnet/src/AiFactory.Api/appsettings.json`):
+
+- `Mqtt:Enabled=true`
+- `Mqtt:Host`, `Mqtt:Topic` 현장 브로커 기준으로 설정
+
+OPC UA 사용 시:
+
+- `OpcUa:Enabled=true`
+- `OpcUa:EndpointUrl`, `OpcUa:NodeIds`를 PLC/장비 서버 기준으로 설정
 
 ### 1. 코드 다운로드
 ```bash
