@@ -3,39 +3,60 @@
 @inject InspectionApiClient CloudApi
 @inject NavigationManager Nav
 
-<h1>메인</h1>
+<section class="kiosk-page">
+    <header class="page-header">
+        <div>
+            <h1>PCB 검사 키오스크</h1>
+            <p>터치로 검사 실행 후 최신 결과를 바로 확인합니다.</p>
+        </div>
+        <button class="ghost-btn" @onclick="RefreshLatestAsync">새로고침</button>
+    </header>
 
-<div class="main-grid">
-    <section class="camera-panel">
-        <img src="@EdgeApi.StreamUrl" alt="실시간 카메라 스트림" />
-    </section>
+    <div class="main-grid">
+        <section class="camera-panel">
+            <div class="panel-title">실시간 카메라</div>
+            <img src="@EdgeApi.StreamUrl" alt="실시간 카메라 스트림" />
+        </section>
 
-    <section class="action-panel">
-        <button @onclick="TriggerAsync">검사 시작(1회)</button>
-        <button @onclick="StartAutoAsync">자동 검사 시작</button>
-        <button @onclick="StopAutoAsync">자동 검사 중지</button>
-        @if (!string.IsNullOrWhiteSpace(_actionMessage))
-        {
-            <p>@_actionMessage</p>
-        }
-    </section>
+        <section class="control-panel">
+            <div class="panel-title">검사 제어</div>
+            <button class="primary-btn" @onclick="TriggerAsync">검사 시작 (1회)</button>
+            <button class="secondary-btn" @onclick="StartAutoAsync">자동 검사 시작</button>
+            <button class="danger-btn" @onclick="StopAutoAsync">자동 검사 중지</button>
+            @if (!string.IsNullOrWhiteSpace(_actionMessage))
+            {
+                <p class="status-message">@_actionMessage</p>
+            }
+        </section>
+    </div>
 
     <section class="latest-panel">
-        <h2>최신 결과</h2>
+        <div class="panel-title">최신 검사 결과</div>
         @if (_latest is null)
         {
-            <p>데이터 없음</p>
+            <p class="empty">데이터 없음</p>
         }
         else
         {
             <div class="result @(IsPass ? "pass" : "fail")">@_latest.Result</div>
-            <p>Device: @_latest.DeviceId</p>
-            <p>시간: @_latest.InspectedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
-            <p>결함 수: @_latest.DefectCount</p>
-            <button @onclick="GoDetail">결과 상세 보기</button>
+            <div class="meta-grid">
+                <div>
+                    <span class="meta-label">Device</span>
+                    <strong>@_latest.DeviceId</strong>
+                </div>
+                <div>
+                    <span class="meta-label">검사 시간</span>
+                    <strong>@_latest.InspectedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</strong>
+                </div>
+                <div>
+                    <span class="meta-label">결함 수</span>
+                    <strong>@_latest.DefectCount</strong>
+                </div>
+            </div>
+            <button class="detail-btn" @onclick="GoDetail">결과 상세 보기</button>
         }
     </section>
-</div>
+</section>
 
 @code {
     private InspectionSummary? _latest;
