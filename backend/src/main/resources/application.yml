@@ -29,3 +29,6 @@ logging:
   level:
     com.inspection: DEBUG
     org.springframework.web: INFO
+
+app:
+  inspection-image-dir: inspection-images

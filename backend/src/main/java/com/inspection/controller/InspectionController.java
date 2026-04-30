@@ -7,10 +7,19 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +42,16 @@ import java.util.Map;
  *               운영 배포 시에는 특정 도메인으로 제한할 것.
  */
 @RestController
-@RequestMapping("/api/inspections")
+@RequestMapping({"/api/inspections", "/api/v1/inspections"})
 @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 @Slf4j
 @RequiredArgsConstructor
 public class InspectionController {
 
     private final InspectionService inspectionService;
+
+    @Value("${app.inspection-image-dir:inspection-images}")
+    private String inspectionImageDir;
 
     // ========================================================================
     // 1. 검사 결과 수신 (라즈베리파이 → 서버)
@@ -164,5 +176,31 @@ public class InspectionController {
         log.warn("[DELETE /api/inspections] 전체 이력 삭제 요청");
         inspectionService.deleteAllInspections();
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/images/{filename:.+}")
+    public ResponseEntity<Resource> getInspectionImage(@PathVariable String filename) {
+        try {
+            Path root = Paths.get(inspectionImageDir).toAbsolutePath().normalize();
+            Path target = root.resolve(filename).normalize();
+            if (!target.startsWith(root) || !Files.exists(target)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Resource resource = new UrlResource(target.toUri());
+            String mimeType = Files.probeContentType(target);
+            MediaType mediaType = (mimeType == null)
+                    ? MediaType.APPLICATION_OCTET_STREAM
+                    : MediaType.parseMediaType(mimeType);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400")
+                    .contentType(mediaType)
+                    .body(resource);
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     # ── 중앙 서버 연결 정보 ──────────────────────────────────────────────────
     # Spring Boot 서버 주소 (같은 LAN 내 IP 또는 hostname)
     SERVER_BASE_URL: str = Field(default="http://192.168.0.10:8080")
+    # 검사 결과 업로드 API 경로 (v1 고정)
+    SERVER_INSPECTION_API_PATH: str = Field(default="/api/v1/inspections")
+    # 전송 실패 시 로컬 SQLite 큐 파일 경로 (edge 기준 상대경로 허용)
+    EDGE_RETRY_QUEUE_DB_PATH: str = Field(default="data/inspection_retry_queue.db")
+    # True면 이미지 파일을 Base64로 함께 전송해 클라우드에서 원본 확인 가능
+    SEND_IMAGE_BASE64_TO_CLOUD: bool = Field(default=True)
 
     # ── 카메라 설정 ──────────────────────────────────────────────────────────
     # /dev/video0 → 0, C922가 video1·video2만 있으면 1 또는 2

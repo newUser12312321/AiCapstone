@@ -11,12 +11,15 @@ Spring Boot REST API(POST /api/inspections)로 전송한다.
 
 import logging
 import time
+import base64
+from pathlib import Path
 from typing import Optional
 
 import requests
 from requests.exceptions import ConnectionError, Timeout, RequestException
 
 from config.settings import settings
+from api.retry_queue import LocalRetryQueue
 from models.schemas import InspectionPacket
 
 logger = logging.getLogger(__name__)
@@ -36,8 +39,15 @@ class ServerSender:
     """
 
     def __init__(self, base_url: str = settings.SERVER_BASE_URL) -> None:
-        # POST 엔드포인트 URL 조립
-        self.endpoint = f"{base_url.rstrip('/')}/api/inspections"
+        # POST 엔드포인트 URL 조립 (v1 고정)
+        api_path = settings.SERVER_INSPECTION_API_PATH.strip()
+        if not api_path.startswith("/"):
+            api_path = f"/{api_path}"
+        self.endpoint = f"{base_url.rstrip('/')}{api_path}"
+        queue_db = Path(settings.EDGE_RETRY_QUEUE_DB_PATH)
+        if not queue_db.is_absolute():
+            queue_db = Path(__file__).resolve().parent.parent / queue_db
+        self._retry_queue = LocalRetryQueue(queue_db)
         # Session 재사용: TCP 연결 유지 (Connection Keep-Alive)
         self._session = requests.Session()
         self._session.headers.update({
@@ -47,33 +57,39 @@ class ServerSender:
             "X-Device-Type": "RaspberryPi5-EdgeNode",
         })
         logger.info("[전송] 서버 엔드포인트: %s", self.endpoint)
+        logger.info("[전송] 로컬 재전송 큐 DB: %s", queue_db)
 
     # ── 전송 메서드 ───────────────────────────────────────────────────────────
 
-    def send(self, packet: InspectionPacket) -> Optional[dict]:
-        """
-        InspectionPacket을 서버로 POST 전송한다.
+    def _attach_image_payload(self, payload: dict) -> dict:
+        if not settings.SEND_IMAGE_BASE64_TO_CLOUD:
+            return payload
+        if payload.get("imageBase64"):
+            return payload
+        image_path = payload.get("imagePath")
+        if not image_path:
+            return payload
+        try:
+            p = Path(str(image_path))
+            if not p.exists() or not p.is_file():
+                return payload
+            suffix = p.suffix.lower()
+            mime = "image/jpeg"
+            if suffix == ".png":
+                mime = "image/png"
+            elif suffix == ".webp":
+                mime = "image/webp"
+            elif suffix == ".bmp":
+                mime = "image/bmp"
+            encoded = base64.b64encode(p.read_bytes()).decode("ascii")
+            payload["imageBase64"] = encoded
+            payload["imageMimeType"] = mime
+        except Exception as e:
+            logger.warning("[전송] 이미지 Base64 인코딩 생략: %s", e)
+        return payload
 
-        재시도 로직:
-          - ConnectionError / Timeout 발생 시 지수 백오프 후 재시도
-          - 서버 응답 4xx: 요청 오류이므로 재시도하지 않음
-          - 서버 응답 5xx: 서버 오류이므로 재시도
-
-        Args:
-            packet: 전송할 검사 결과 패킷
-
-        Returns:
-            전송 성공 시 서버 응답 JSON 딕셔너리,
-            실패 시 None
-        """
-        # InspectionPacket → camelCase JSON 딕셔너리 변환
-        payload = packet.to_server_json()
-        logger.info("[전송] 전송 시작 — 디바이스: %s, 결과: %s",
-                    packet.device_id, packet.result.value)
-        logger.debug("[전송] 페이로드: %s", payload)
-
+    def _post_payload(self, payload: dict) -> Optional[dict]:
         last_exception: Optional[Exception] = None
-
         for attempt in range(1, MAX_RETRY + 1):
             try:
                 response = self._session.post(
@@ -98,7 +114,6 @@ class ServerSender:
                     )
                     raise RequestException(f"서버 오류: {response.status_code}")
 
-                # 201 Created 성공
                 logger.info(
                     "[전송] 성공 (시도 %d/%d) — 응답 코드: %d, 저장 ID: %s",
                     attempt, MAX_RETRY, response.status_code,
@@ -117,7 +132,6 @@ class ServerSender:
                 last_exception = e
                 logger.warning("[전송] 요청 오류 (시도 %d/%d): %s", attempt, MAX_RETRY, e)
 
-            # 마지막 시도가 아니면 지수 백오프 대기
             if attempt < MAX_RETRY:
                 delay = RETRY_BASE_DELAY * (2 ** (attempt - 1))  # 1s, 2s, 4s
                 logger.info("[전송] %.1f초 후 재시도...", delay)
@@ -127,6 +141,49 @@ class ServerSender:
             "[전송] 최종 실패 — %d회 시도 후 서버에 전달하지 못했습니다. 마지막 오류: %s",
             MAX_RETRY, last_exception
         )
+        return None
+
+    def flush_retry_queue(self, batch_limit: int = 20) -> None:
+        batch = self._retry_queue.get_batch(limit=batch_limit)
+        if not batch:
+            return
+        logger.info("[전송] 로컬 큐 재전송 시작: %d건", len(batch))
+        for item in batch:
+            response = self._post_payload(item["payload"])
+            if response is None:
+                logger.warning("[전송] 로컬 큐 재전송 중단 (네트워크/서버 미복구)")
+                break
+            self._retry_queue.mark_sent(int(item["id"]))
+        logger.info("[전송] 로컬 큐 잔여 건수: %d", self._retry_queue.count())
+
+    def send(self, packet: InspectionPacket) -> Optional[dict]:
+        """
+        InspectionPacket을 서버로 POST 전송한다.
+
+        재시도 로직:
+          - ConnectionError / Timeout 발생 시 지수 백오프 후 재시도
+          - 서버 응답 4xx: 요청 오류이므로 재시도하지 않음
+          - 서버 응답 5xx: 서버 오류이므로 재시도
+
+        Args:
+            packet: 전송할 검사 결과 패킷
+
+        Returns:
+            전송 성공 시 서버 응답 JSON 딕셔너리,
+            실패 시 None
+        """
+        # InspectionPacket → camelCase JSON 딕셔너리 변환
+        payload = self._attach_image_payload(packet.to_server_json())
+        logger.info("[전송] 전송 시작 — 디바이스: %s, 결과: %s",
+                    packet.device_id, packet.result.value)
+        logger.debug("[전송] 페이로드: %s", payload)
+        # 새 전송 전 로컬 큐 선전송 시도
+        self.flush_retry_queue()
+        response = self._post_payload(payload)
+        if response is not None:
+            return response
+        queue_id = self._retry_queue.enqueue(payload, last_error="network_or_server_error")
+        logger.warning("[전송] 전송 실패 payload를 로컬 큐에 적재: id=%d", queue_id)
         return None
 
     def close(self) -> None:

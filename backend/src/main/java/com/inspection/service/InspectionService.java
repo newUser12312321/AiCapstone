@@ -10,10 +10,17 @@ import com.inspection.repository.DefectDetailRepository;
 import com.inspection.repository.InspectionLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,6 +43,9 @@ public class InspectionService {
     private final InspectionLogRepository inspectionLogRepository;
     private final DefectDetailRepository defectDetailRepository;
 
+    @Value("${app.inspection-image-dir:inspection-images}")
+    private String inspectionImageDir;
+
     // ── 검사 결과 저장 ────────────────────────────────────────────────────────
 
     /**
@@ -55,6 +65,8 @@ public class InspectionService {
         log.info("[검사 수신] 디바이스: {}, 결과: {}, 시각: {}",
                 dto.getDeviceId(), dto.getResult(), dto.getInspectedAt());
 
+        String imagePath = resolveImagePath(dto);
+
         // 1. 요청 DTO → InspectionLog 엔티티 구성
         InspectionLog log = InspectionLog.builder()
                 .deviceId(dto.getDeviceId())
@@ -68,7 +80,7 @@ public class InspectionService {
                 .angleErrorDeg(dto.getAngleErrorDeg())
                 .inferenceTimeMs(dto.getInferenceTimeMs())
                 .totalTimeMs(dto.getTotalTimeMs())
-                .imagePath(dto.getImagePath())
+                .imagePath(imagePath)
                 .inspectedAt(dto.getInspectedAt())
                 .build();
 
@@ -94,6 +106,43 @@ public class InspectionService {
 
         // 4. 저장된 엔티티 → 응답 DTO 변환 후 반환
         return InspectionResponseDto.from(saved);
+    }
+
+    private String resolveImagePath(InspectionRequestDto dto) {
+        String encoded = dto.getImageBase64();
+        if (encoded == null || encoded.isBlank()) {
+            return dto.getImagePath();
+        }
+        try {
+            String deviceId = (dto.getDeviceId() == null || dto.getDeviceId().isBlank())
+                    ? "unknown-device"
+                    : dto.getDeviceId().replaceAll("[^A-Za-z0-9._-]", "_");
+            LocalDateTime inspectedAt = dto.getInspectedAt() == null ? LocalDateTime.now() : dto.getInspectedAt();
+            String ts = inspectedAt.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"));
+            String ext = extensionFromMimeType(dto.getImageMimeType());
+
+            Path root = Paths.get(inspectionImageDir).toAbsolutePath().normalize();
+            Files.createDirectories(root);
+            String fileName = "%s_%s%s".formatted(deviceId, ts, ext);
+            Path target = root.resolve(fileName).normalize();
+            byte[] bytes = Base64.getDecoder().decode(encoded);
+            Files.write(target, bytes);
+            return "/api/v1/inspections/images/" + fileName;
+        } catch (IllegalArgumentException | IOException e) {
+            throw new IllegalArgumentException("이미지 payload 저장 실패: " + e.getMessage(), e);
+        }
+    }
+
+    private String extensionFromMimeType(String mimeType) {
+        if (mimeType == null) {
+            return ".jpg";
+        }
+        return switch (mimeType.toLowerCase()) {
+            case "image/png" -> ".png";
+            case "image/webp" -> ".webp";
+            case "image/bmp" -> ".bmp";
+            default -> ".jpg";
+        };
     }
 
     // ── 조회 ─────────────────────────────────────────────────────────────────

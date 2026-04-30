@@ -69,6 +69,12 @@ public class InspectionRequestDto {
     /** 캡처 이미지 저장 경로 */
     private String imagePath;
 
+    /** 캡처 이미지 Base64 본문 (클라우드 저장용, 선택) */
+    private String imageBase64;
+
+    /** imageBase64의 MIME 타입 (예: image/jpeg, image/png) */
+    private String imageMimeType;
+
     /**
      * 검사 수행 시각 (라즈베리파이 로컬 시각)
      * ISO 8601 형식: "2026-03-31T14:30:00"
