@@ -7,6 +7,7 @@
  */
 export type Stage2SourceMode = 'aligned' | 'raw'
 export type CameraFocusState = { auto: boolean; value: number }
+export type RetryQueueStatus = { pendingCount: number }
 
 export async function triggerEdgeInspection(
   stage2Source: Stage2SourceMode
@@ -92,4 +93,13 @@ export async function updateCameraFocus(
     throw new Error(detail || `${res.status} ${res.statusText}`)
   }
   return res.json() as Promise<{ message: string; camera_focus: CameraFocusState }>
+}
+
+export async function fetchRetryQueueStatus(): Promise<RetryQueueStatus> {
+  const res = await fetch('/edge/queue/status')
+  if (!res.ok) {
+    const detail = await res.text()
+    throw new Error(detail || `${res.status}`)
+  }
+  return res.json() as Promise<RetryQueueStatus>
 }

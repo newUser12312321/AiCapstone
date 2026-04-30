@@ -24,6 +24,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from api.sender import create_dummy_packet, ServerSender
+from api.retry_queue import LocalRetryQueue
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,13 @@ router = APIRouter(prefix="/edge", tags=["Edge Device"])
 
 _preview_lock = threading.Lock()
 _last_preview_jpeg: Optional[bytes] = None
+
+
+def _retry_queue_count() -> int:
+    queue_db = Path(settings.EDGE_RETRY_QUEUE_DB_PATH)
+    if not queue_db.is_absolute():
+        queue_db = Path(__file__).resolve().parent.parent / queue_db
+    return LocalRetryQueue(queue_db).count()
 
 
 def _normalize_stage2_mode(stage2_source: Optional[str]) -> str:
@@ -98,11 +106,19 @@ async def get_status() -> dict[str, Any]:
         "yolo": yolo_block,
         "server": {
             "base_url": settings.SERVER_BASE_URL,
+            "inspection_api_path": settings.SERVER_INSPECTION_API_PATH,
+            "retry_queue_count": _retry_queue_count(),
         },
         "pipeline": {
             "stage2_source_mode": settings.STAGE2_SOURCE_MODE,
         },
     }
+
+
+@router.get("/queue/status", summary="전송 재시도 큐 상태")
+async def get_retry_queue_status() -> dict[str, Any]:
+    """네트워크 단절 시 적재되는 로컬 SQLite 재전송 큐 상태를 반환한다."""
+    return {"pendingCount": _retry_queue_count()}
 
 
 @router.get("/camera/preview.jpg", summary="카메라 프리뷰 단일 프레임(JPEG)")

@@ -12,12 +12,13 @@
  * └─────────────────────────────────────────────────────────────────────────┘
  */
 
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Header from '@/components/common/Header'
 import Sidebar from '@/components/common/Sidebar'
 import DashboardPage from '@/pages/DashboardPage'
 import HistoryPage from '@/pages/HistoryPage'
 import BoardReferencePage from '@/pages/BoardReferencePage'
+import KioskPage from '@/pages/KioskPage'
 
 /** 아직 구현되지 않은 경로를 위한 플레이스홀더 페이지 */
 function PlaceholderPage({ title }: { title: string }) {
@@ -29,6 +30,17 @@ function PlaceholderPage({ title }: { title: string }) {
 }
 
 export default function App() {
+  const location = useLocation()
+  const isKioskRoute = location.pathname === '/'
+
+  if (isKioskRoute) {
+    return (
+      <Routes>
+        <Route path="/" element={<KioskPage />} />
+      </Routes>
+    )
+  }
+
   return (
     /* 전체 화면을 채우는 flex 컨테이너 */
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100 overflow-hidden">
@@ -45,8 +57,8 @@ export default function App() {
         {/* 우측 페이지 콘텐츠 (스크롤 가능) */}
         <main className="flex-1 overflow-hidden bg-gray-950">
           <Routes>
-            {/* 기본 경로: 대시보드 */}
-            <Route path="/"         element={<DashboardPage />} />
+            {/* 운영자용 대시보드 */}
+            <Route path="/dashboard" element={<DashboardPage />} />
 
             {/* 검사 이력 */}
             <Route path="/history"  element={<HistoryPage />} />
