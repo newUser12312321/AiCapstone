@@ -1,0 +1,14 @@
+@inherits LayoutComponentBase
+
+<div class="cloud-shell">
+    <header class="cloud-header">
+        <span class="title">Cloud Inspection Dashboard</span>
+        <nav>
+            <NavLink href="/" Match="NavLinkMatch.All">대시보드</NavLink>
+            <NavLink href="/history">이력</NavLink>
+        </nav>
+    </header>
+    <main class="cloud-content">
+        @Body
+    </main>
+</div>

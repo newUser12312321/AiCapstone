@@ -1,0 +1,9 @@
+.main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+.camera-panel, .action-panel, .latest-panel { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 12px; }
+.camera-panel img { width: 100%; min-height: 320px; object-fit: contain; background: #000; border-radius: 10px; }
+.action-panel { display: flex; flex-direction: column; gap: 10px; }
+.action-panel button, .latest-panel button { min-height: 56px; border: none; border-radius: 10px; font-size: 20px; font-weight: 600; }
+.action-panel button { background: #2563eb; color: #fff; }
+.latest-panel .result { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.latest-panel .result.pass { color: #22c55e; }
+.latest-panel .result.fail { color: #ef4444; }

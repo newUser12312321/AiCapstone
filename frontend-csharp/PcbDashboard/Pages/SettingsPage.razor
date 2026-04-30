@@ -1,0 +1,84 @@
+@page "/settings"
+@inject EdgeApiClient EdgeApi
+@inject IConfiguration Config
+
+<h1>설정</h1>
+
+<div class="settings-grid">
+    <label>모델 버전
+        <input @bind="_modelVersion" />
+    </label>
+
+    <label>임계값 (0~1)
+        <input type="number" step="0.01" min="0" max="1" @bind="_threshold" />
+    </label>
+
+    <label>서버 URL
+        <input @bind="_serverUrl" />
+    </label>
+
+    <label>밝기 (0~100)
+        <input type="range" min="0" max="100" @bind="_brightness" />
+    </label>
+
+    <label>초점 Auto
+        <input type="checkbox" @bind="_focusAuto" />
+    </label>
+
+    <label>초점 값 (0~255)
+        <input type="range" min="0" max="255" @bind="_focusValue" />
+    </label>
+
+    <button @onclick="LoadFocusAsync">현재 초점 불러오기</button>
+    <button @onclick="SaveAsync">설정 저장</button>
+    @if (!string.IsNullOrWhiteSpace(_message))
+    {
+        <p>@_message</p>
+    }
+</div>
+
+@code {
+    private string _modelVersion = "yolov8n";
+    private double _threshold = 0.5;
+    private string _serverUrl = string.Empty;
+    private int _brightness = 50;
+    private bool _focusAuto = true;
+    private int _focusValue = 30;
+    private string? _message;
+
+    protected override void OnInitialized()
+    {
+        _serverUrl = Config["ApiBaseUrl"] ?? string.Empty;
+    }
+
+    private async Task LoadFocusAsync()
+    {
+        try
+        {
+            var focus = await EdgeApi.GetFocusStatusAsync();
+            if (focus is not null)
+            {
+                _focusAuto = focus.Auto;
+                _focusValue = focus.Value;
+                _message = "초점 상태를 불러왔습니다.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _message = $"초점 조회 실패: {ex.Message}";
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        try
+        {
+            await EdgeApi.SetFocusAsync(_focusAuto, _focusValue);
+            _message = "설정을 저장했습니다. (초점은 엣지 반영됨)";
+        }
+        catch (Exception ex)
+        {
+            _message = $"저장 실패: {ex.Message}";
+        }
+    }
+}

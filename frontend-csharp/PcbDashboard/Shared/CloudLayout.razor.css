@@ -1,0 +1,12 @@
+.cloud-shell { min-height: 100vh; background: #0b1220; color: #e5e7eb; }
+.cloud-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-bottom: 1px solid #1f2937; background: #111827;
+}
+.cloud-header .title { font-size: 18px; font-weight: 700; }
+.cloud-header nav { display: flex; gap: 8px; }
+.cloud-header a {
+  color: #d1d5db; text-decoration: none; padding: 8px 12px; border-radius: 8px;
+}
+.cloud-header a.active { background: #2563eb; color: #fff; }
+.cloud-content { padding: 16px; }

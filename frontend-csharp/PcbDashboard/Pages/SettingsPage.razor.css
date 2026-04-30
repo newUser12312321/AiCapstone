@@ -1,0 +1,28 @@
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-width: 700px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 18px;
+}
+
+input, button {
+  min-height: 48px;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  font-size: 18px;
+  padding: 6px 10px;
+}
+
+button {
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+}

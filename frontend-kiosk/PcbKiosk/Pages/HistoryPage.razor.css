@@ -1,0 +1,4 @@
+.list { display: flex; flex-direction: column; gap: 10px; }
+.item { text-align: left; background: #111827; border: 1px solid #1f2937; color: #e5e7eb; border-radius: 10px; padding: 10px; min-height: 72px; font-size: 18px; }
+.pass { color: #22c55e; }
+.fail { color: #ef4444; }

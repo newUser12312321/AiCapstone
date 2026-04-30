@@ -1,0 +1,69 @@
+@page "/"
+@inject InspectionApiClient CloudApi
+@inject NavigationManager Nav
+
+<h1>클라우드 확인용 대시보드</h1>
+
+@if (_loading)
+{
+    <p>로딩 중...</p>
+}
+else if (!string.IsNullOrWhiteSpace(_error))
+{
+    <p>@_error</p>
+}
+else
+{
+    <div class="cards">
+        <div class="card"><div>조회 건수</div><strong>@_items.Count</strong></div>
+        <div class="card"><div>PASS</div><strong class="pass">@PassCount</strong></div>
+        <div class="card"><div>FAIL</div><strong class="fail">@FailCount</strong></div>
+        <div class="card"><div>불량률</div><strong>@FailRate.ToString("0.0")%</strong></div>
+    </div>
+
+    <table>
+        <thead>
+        <tr><th>ID</th><th>Device</th><th>Result</th><th>InspectedAt</th><th>Defects</th><th></th></tr>
+        </thead>
+        <tbody>
+        @foreach (var item in _items.Take(20))
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.DeviceId</td>
+                <td class="@(item.Result == "PASS" ? "pass" : "fail")">@item.Result</td>
+                <td>@item.InspectedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@item.DefectCount</td>
+                <td><button @onclick="() => OpenDetail(item.Id)">상세</button></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private bool _loading = true;
+    private string? _error;
+    private List<InspectionSummary> _items = [];
+    private int PassCount => _items.Count(x => x.Result == "PASS");
+    private int FailCount => _items.Count(x => x.Result == "FAIL");
+    private double FailRate => _items.Count == 0 ? 0 : (double)FailCount / _items.Count * 100;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _items = (await CloudApi.GetLatestAsync(100)).ToList();
+        }
+        catch (Exception ex)
+        {
+            _error = $"데이터 조회 실패: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void OpenDetail(long id) => Nav.NavigateTo($"/result-detail/{id}");
+}

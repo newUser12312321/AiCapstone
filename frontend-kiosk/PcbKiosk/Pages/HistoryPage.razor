@@ -1,0 +1,36 @@
+@page "/history"
+@inject InspectionApiClient CloudApi
+@inject NavigationManager Nav
+
+<h1>이력</h1>
+
+<div class="list">
+    @if (_loading)
+    {
+        <p>로딩 중...</p>
+    }
+    else
+    {
+        @foreach (var item in _items)
+        {
+            <button class="item" @onclick="() => OpenDetail(item.Id)">
+                <div><strong>#@item.Id</strong> · @item.DeviceId</div>
+                <div>@item.InspectedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                <div class="@(item.Result == "PASS" ? "pass" : "fail")">@item.Result · defects @item.DefectCount</div>
+            </button>
+        }
+    }
+</div>
+
+@code {
+    private bool _loading = true;
+    private List<InspectionSummary> _items = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = (await CloudApi.GetLatestAsync(30)).ToList();
+        _loading = false;
+    }
+
+    private void OpenDetail(long id) => Nav.NavigateTo($"/result-detail/{id}");
+}

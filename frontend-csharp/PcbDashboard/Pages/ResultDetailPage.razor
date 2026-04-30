@@ -1,0 +1,162 @@
+@page "/result-detail"
+@page "/result-detail/{InspectionId:long}"
+@inject InspectionApiClient CloudApi
+@inject IConfiguration Config
+@inject IJSRuntime JS
+
+<h1>결과 상세</h1>
+
+@if (_loading)
+{
+    <p>로딩 중...</p>
+}
+else if (!string.IsNullOrWhiteSpace(_error))
+{
+    <p>@_error</p>
+}
+else if (_detail is null)
+{
+    <p>상세 데이터 없음</p>
+}
+else
+{
+    <p>#@_detail.Id · @_detail.Result · @_detail.InspectedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
+    @if (string.IsNullOrWhiteSpace(ImageUrl))
+    {
+        <p>이미지 경로가 없습니다.</p>
+    }
+    else if (_imageLoadFailed)
+    {
+        <p>이미지 로드 실패: 엣지 미실행 또는 경로 오류</p>
+        <p>@ImageUrl</p>
+    }
+    else
+    {
+        <div class="viewer" @onclick="() => _zoom = true">
+            <img @ref="_imageRef" src="@ImageUrl" @onload="OnLoadAsync" @onerror="() => _imageLoadFailed = true" alt="검사 이미지" />
+            <svg viewBox="0 0 @_naturalWidth @_naturalHeight" preserveAspectRatio="none">
+                @foreach (var d in _detail.Defects)
+                {
+                    <rect x="@d.BboxX" y="@d.BboxY" width="@d.BboxWidth" height="@d.BboxHeight"
+                          fill="none" stroke="@Color(d.DefectType)" stroke-width="3" />
+                }
+            </svg>
+        </div>
+    }
+
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th><th>Conf</th><th>X</th><th>Y</th><th>W</th><th>H</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in _detail.Defects)
+            {
+                <tr>
+                    <td>@d.DefectType</td>
+                    <td>@(d.Confidence * 100).ToString("0.0")%</td>
+                    <td>@d.BboxX</td>
+                    <td>@d.BboxY</td>
+                    <td>@d.BboxWidth</td>
+                    <td>@d.BboxHeight</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (_zoom && !string.IsNullOrWhiteSpace(ImageUrl) && !_imageLoadFailed)
+{
+    <div class="overlay" @onclick="() => _zoom = false">
+        <div class="modal" @onclick:stopPropagation="true">
+            <button @onclick="() => _zoom = false">닫기</button>
+            <div class="viewer large">
+                <img src="@ImageUrl" alt="확대 이미지" />
+                <svg viewBox="0 0 @_naturalWidth @_naturalHeight" preserveAspectRatio="none">
+                    @foreach (var d in _detail?.Defects ?? [])
+                    {
+                        <rect x="@d.BboxX" y="@d.BboxY" width="@d.BboxWidth" height="@d.BboxHeight" fill="none" stroke="@Color(d.DefectType)" stroke-width="3" />
+                    }
+                </svg>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public long? InspectionId { get; set; }
+
+    private InspectionSummary? _detail;
+    private bool _loading = true;
+    private string? _error;
+    private ElementReference _imageRef;
+    private int _naturalWidth = 1920;
+    private int _naturalHeight = 1080;
+    private bool _imageLoadFailed;
+    private bool _zoom;
+
+    private string? ImageUrl => ResolveImageUrl(_detail?.ImagePath);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        _error = null;
+        try
+        {
+            if (InspectionId.HasValue)
+            {
+                _detail = await CloudApi.GetByIdAsync(InspectionId.Value);
+            }
+            else
+            {
+                _detail = (await CloudApi.GetLatestAsync(1)).FirstOrDefault();
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = $"조회 실패: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task OnLoadAsync()
+    {
+        _imageLoadFailed = false;
+        var size = await JS.InvokeAsync<ImageSize>("getImageNaturalSize", _imageRef);
+        _naturalWidth = size.Width > 0 ? size.Width : 1920;
+        _naturalHeight = size.Height > 0 ? size.Height : 1080;
+    }
+
+    private string ResolveImageUrl(string? imagePath)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath)) return string.Empty;
+        var p = imagePath.Replace("\\", "/");
+        if (p.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || p.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            return p;
+        if (!p.StartsWith("/")) p = "/" + p;
+        if (!p.StartsWith("/captures/"))
+        {
+            var idx = p.IndexOf("/captures/", StringComparison.OrdinalIgnoreCase);
+            if (idx >= 0) p = p[idx..];
+        }
+        var edge = Config["EdgeBaseUrl"] ?? "http://localhost:8000";
+        return $"{edge.TrimEnd('/')}{p}";
+    }
+
+    private static string Color(string defectType) => defectType switch
+    {
+        "TRACE_OPEN" => "#ef4444",
+        "METAL_DAMAGE" => "#f59e0b",
+        _ => "#22d3ee"
+    };
+
+    private sealed class ImageSize
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+}

@@ -1,0 +1,17 @@
+[Unit]
+Description=PCB Kiosk Blazor Web App
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/inspection/frontend-kiosk/PcbKiosk
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5010
+ExecStart=/usr/bin/dotnet /home/pi/inspection/frontend-kiosk/PcbKiosk/bin/Release/net8.0/PcbKiosk.dll
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

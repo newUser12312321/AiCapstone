@@ -1,0 +1,76 @@
+@page "/"
+@inject EdgeApiClient EdgeApi
+@inject InspectionApiClient CloudApi
+@inject NavigationManager Nav
+
+<h1>메인</h1>
+
+<div class="main-grid">
+    <section class="camera-panel">
+        <img src="@EdgeApi.StreamUrl" alt="실시간 카메라 스트림" />
+    </section>
+
+    <section class="action-panel">
+        <button @onclick="TriggerAsync">검사 시작(1회)</button>
+        <button @onclick="StartAutoAsync">자동 검사 시작</button>
+        <button @onclick="StopAutoAsync">자동 검사 중지</button>
+        @if (!string.IsNullOrWhiteSpace(_actionMessage))
+        {
+            <p>@_actionMessage</p>
+        }
+    </section>
+
+    <section class="latest-panel">
+        <h2>최신 결과</h2>
+        @if (_latest is null)
+        {
+            <p>데이터 없음</p>
+        }
+        else
+        {
+            <div class="result @(IsPass ? "pass" : "fail")">@_latest.Result</div>
+            <p>Device: @_latest.DeviceId</p>
+            <p>시간: @_latest.InspectedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
+            <p>결함 수: @_latest.DefectCount</p>
+            <button @onclick="GoDetail">결과 상세 보기</button>
+        }
+    </section>
+</div>
+
+@code {
+    private InspectionSummary? _latest;
+    private string? _actionMessage;
+    private bool IsPass => string.Equals(_latest?.Result, "PASS", StringComparison.OrdinalIgnoreCase);
+
+    protected override async Task OnInitializedAsync() => await RefreshLatestAsync();
+
+    private async Task TriggerAsync() => await ExecuteEdgeActionAsync(() => EdgeApi.TriggerInspectionAsync(), "검사 트리거 완료");
+    private async Task StartAutoAsync() => await ExecuteEdgeActionAsync(() => EdgeApi.StartAutoInspectionAsync(), "자동 검사 시작");
+    private async Task StopAutoAsync() => await ExecuteEdgeActionAsync(() => EdgeApi.StopAutoInspectionAsync(), "자동 검사 중지");
+
+    private async Task ExecuteEdgeActionAsync(Func<Task> action, string successMessage)
+    {
+        try
+        {
+            _actionMessage = null;
+            await action();
+            _actionMessage = successMessage;
+            await Task.Delay(1500);
+            await RefreshLatestAsync();
+        }
+        catch (Exception ex)
+        {
+            _actionMessage = $"요청 실패: {ex.Message}";
+        }
+    }
+
+    private async Task RefreshLatestAsync()
+    {
+        _latest = (await CloudApi.GetLatestAsync(1)).FirstOrDefault();
+    }
+
+    private void GoDetail()
+    {
+        if (_latest is not null) Nav.NavigateTo($"/result-detail/{_latest.Id}");
+    }
+}

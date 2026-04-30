@@ -1,0 +1,92 @@
+@page "/history"
+@inject InspectionApiClient CloudApi
+@inject NavigationManager Nav
+
+<h1>이력</h1>
+
+<div class="toolbar">
+    <input @bind="_search" @bind:event="oninput" placeholder="Device/결함 검색" />
+    <input type="date" @bind="_dateFrom" />
+    <input type="date" @bind="_dateTo" />
+    <select @bind="_resultFilter">
+        <option value="ALL">전체</option>
+        <option value="PASS">PASS</option>
+        <option value="FAIL">FAIL</option>
+    </select>
+    <button @onclick="ReloadAsync">새로고침</button>
+</div>
+
+@if (_loading)
+{
+    <p>로딩 중...</p>
+}
+else if (!string.IsNullOrWhiteSpace(_error))
+{
+    <p>@_error</p>
+}
+else
+{
+    <div class="list">
+        @foreach (var item in FilteredItems)
+        {
+            <button class="item" @onclick="() => OpenDetail(item.Id)">
+                <div>
+                    <strong>#@item.Id</strong> · @item.DeviceId
+                </div>
+                <div>@item.InspectedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                <div class="@(item.Result == "PASS" ? "pass" : "fail")">@item.Result · defects @item.DefectCount</div>
+            </button>
+        }
+    </div>
+}
+
+@code {
+    private bool _loading = true;
+    private string? _error;
+    private List<InspectionSummary> _items = [];
+    private string _search = string.Empty;
+    private string _resultFilter = "ALL";
+    private DateTime? _dateFrom;
+    private DateTime? _dateTo = DateTime.Today;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+        _error = null;
+        try
+        {
+            _items = (await CloudApi.GetLatestAsync(50)).ToList();
+        }
+        catch (Exception ex)
+        {
+            _error = $"조회 실패: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private IReadOnlyList<InspectionSummary> FilteredItems =>
+        _items.Where(FilterByResult).Where(FilterByDate).Where(FilterBySearch).OrderByDescending(x => x.InspectedAt).ToList();
+
+    private bool FilterByResult(InspectionSummary x) => _resultFilter == "ALL" || x.Result == _resultFilter;
+    private bool FilterByDate(InspectionSummary x)
+    {
+        var d = x.InspectedAt.LocalDateTime.Date;
+        if (_dateFrom.HasValue && d < _dateFrom.Value.Date) return false;
+        if (_dateTo.HasValue && d > _dateTo.Value.Date) return false;
+        return true;
+    }
+    private bool FilterBySearch(InspectionSummary x)
+    {
+        if (string.IsNullOrWhiteSpace(_search)) return true;
+        var q = _search.Trim();
+        return x.DeviceId.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+               x.Defects.Any(d => d.DefectType.Contains(q, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void OpenDetail(long id) => Nav.NavigateTo($"/result-detail/{id}");
+}
