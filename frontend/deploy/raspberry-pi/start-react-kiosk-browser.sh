@@ -5,7 +5,7 @@ export DISPLAY="${DISPLAY:-:0}"
 export XAUTHORITY="${XAUTHORITY:-/home/pi/.Xauthority}"
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/1000}"
 
-KIOSK_URL="${KIOSK_URL:-http://127.0.0.1:4173/}"
+KIOSK_URL="${KIOSK_URL:-http://127.0.0.1:4173/kiosk}"
 
 # Wait for local React kiosk web app
 for i in {1..60}; do

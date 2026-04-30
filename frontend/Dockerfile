@@ -18,7 +18,7 @@ COPY --from=builder /app/vite.config.ts ./
 
 ENV NODE_ENV=production
 
-EXPOSE 5173
+EXPOSE 8080
 
 # 해시된 JS/CSS로 캐시 무력화 + preview 프록시로 /api·/captures 동작
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["sh", "-c", "npm run preview -- --host 0.0.0.0 --port ${PORT:-8080}"]

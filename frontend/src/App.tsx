@@ -31,12 +31,11 @@ function PlaceholderPage({ title }: { title: string }) {
 
 export default function App() {
   const location = useLocation()
-  const isKioskRoute = location.pathname === '/'
 
-  if (isKioskRoute) {
+  if (location.pathname === '/kiosk') {
     return (
       <Routes>
-        <Route path="/" element={<KioskPage />} />
+        <Route path="/kiosk" element={<KioskPage />} />
       </Routes>
     )
   }
@@ -57,8 +56,8 @@ export default function App() {
         {/* 우측 페이지 콘텐츠 (스크롤 가능) */}
         <main className="flex-1 overflow-hidden bg-gray-950">
           <Routes>
-            {/* 운영자용 대시보드 */}
-            <Route path="/dashboard" element={<DashboardPage />} />
+            {/* 기본 경로: 대시보드 */}
+            <Route path="/"         element={<DashboardPage />} />
 
             {/* 검사 이력 */}
             <Route path="/history"  element={<HistoryPage />} />

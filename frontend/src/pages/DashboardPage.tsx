@@ -12,53 +12,26 @@
  * └──────────────────────────────────────────────────┘
  */
 
-import { useEffect, useRef, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Camera, Loader2, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Loader2, Trash2 } from 'lucide-react'
 import StatCardGroup from '@/components/dashboard/StatCard'
 import PassFailChart from '@/components/dashboard/PassFailChart'
 import TrendChart from '@/components/dashboard/TrendChart'
 import InspectionTable from '@/components/inspection/InspectionTable'
 import { deleteAllInspections } from '@/api/inspectionApi'
-import {
-  fetchCameraFocus,
-  triggerEdgeInspection,
-  updateCameraFocus,
-} from '@/api/edgeApi'
 import { useRecentInspections } from '@/hooks/useInspectionData'
 
 export default function DashboardPage() {
   const queryClient = useQueryClient()
   const [actionMsg, setActionMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
-  const [focusAuto, setFocusAuto] = useState(false)
-  const [focusValue, setFocusValue] = useState(30)
-  const focusDebounceRef = useRef<number | null>(null)
 
   /* 최근 15건 — 대시보드 하단 실시간 피드 테이블 */
   const { data: recentLogs = [], isLoading } = useRecentInspections(15)
-  const livePreviewSrc = '/edge/camera/stream.mjpg'
-
-  const cameraFocusQuery = useQuery({
-    queryKey: ['camera-focus'],
-    queryFn: fetchCameraFocus,
-    refetchOnWindowFocus: false,
-  })
 
   const invalidateInspections = () => {
     queryClient.invalidateQueries({ queryKey: ['inspections'] })
   }
-
-  const triggerMutation = useMutation({
-    mutationFn: () => triggerEdgeInspection('aligned'),
-    onSuccess: (data) => {
-      setActionMsg({ type: 'ok', text: data.message })
-      setTimeout(() => invalidateInspections(), 2500)
-      setTimeout(() => invalidateInspections(), 6000)
-    },
-    onError: (e: Error) => {
-      setActionMsg({ type: 'err', text: e.message || '검사 트리거 실패' })
-    },
-  })
 
   const deleteMutation = useMutation({
     mutationFn: deleteAllInspections,
@@ -70,40 +43,6 @@ export default function DashboardPage() {
       setActionMsg({ type: 'err', text: e.message || '삭제 실패' })
     },
   })
-
-  const focusMutation = useMutation({
-    mutationFn: ({ auto, value }: { auto: boolean; value: number }) => updateCameraFocus({ auto, value }),
-    onSuccess: (data) => {
-      setFocusAuto(data.camera_focus.auto)
-      setFocusValue(data.camera_focus.value)
-    },
-    onError: (e: Error) => {
-      setActionMsg({ type: 'err', text: e.message || '카메라 초점 설정 실패' })
-    },
-  })
-
-  useEffect(() => {
-    if (!cameraFocusQuery.data) return
-    setFocusAuto(cameraFocusQuery.data.auto)
-    setFocusValue(cameraFocusQuery.data.value)
-  }, [cameraFocusQuery.data])
-
-  useEffect(() => {
-    return () => {
-      if (focusDebounceRef.current !== null) {
-        window.clearTimeout(focusDebounceRef.current)
-      }
-    }
-  }, [])
-
-  const scheduleManualFocusUpdate = (value: number) => {
-    if (focusDebounceRef.current !== null) {
-      window.clearTimeout(focusDebounceRef.current)
-    }
-    focusDebounceRef.current = window.setTimeout(() => {
-      focusMutation.mutate({ auto: false, value })
-    }, 180)
-  }
 
   const handleDeleteHistory = () => {
     if (
@@ -124,27 +63,11 @@ export default function DashboardPage() {
         <div>
           <h2 className="text-lg font-bold text-white">실시간 대시보드</h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            5초마다 자동 갱신 · 라즈베리파이 엣지 노드 연결 중
+            5초마다 자동 갱신 · 클라우드 통합 모니터링
           </p>
         </div>
         <div className="flex flex-col items-stretch sm:items-end gap-2 shrink-0 min-w-[min(100%,280px)]">
           <div className="flex flex-wrap items-center gap-2 justify-end">
-          <button
-            type="button"
-            onClick={() => {
-              setActionMsg(null)
-              triggerMutation.mutate()
-            }}
-            disabled={triggerMutation.isPending}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white transition-colors"
-          >
-            {triggerMutation.isPending ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Camera size={16} />
-            )}
-            지금 검사
-          </button>
           <button
             type="button"
             onClick={handleDeleteHistory}
@@ -173,69 +96,6 @@ export default function DashboardPage() {
           {actionMsg.text}
         </p>
       )}
-
-      {/* 실시간 카메라 프리뷰 */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-3">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-gray-300">실시간 웹캠 프리뷰</h3>
-          <span className="text-[11px] text-gray-500">MJPEG 실시간 스트림</span>
-        </div>
-        <div className="mb-3 rounded-lg border border-gray-800 bg-gray-950/50 p-3">
-          <div className="flex flex-wrap items-center gap-3 justify-between">
-            <label className="inline-flex items-center gap-2 text-xs text-gray-300">
-              <input
-                type="checkbox"
-                checked={focusAuto}
-                onChange={(e) => {
-                  const next = e.target.checked
-                  setFocusAuto(next)
-                  focusMutation.mutate({ auto: next, value: focusValue })
-                }}
-                className="accent-indigo-500"
-                disabled={focusMutation.isPending && !focusAuto}
-              />
-              오토포커스
-            </label>
-            <span className="text-[11px] text-gray-500">
-              {focusAuto ? '자동 초점 사용 중' : `수동 초점값: ${focusValue}`}
-            </span>
-          </div>
-          <div className="mt-3">
-            <input
-              type="range"
-              min={0}
-              max={255}
-              step={1}
-              value={focusValue}
-              disabled={focusAuto}
-              onChange={(e) => {
-                const next = Number(e.target.value)
-                setFocusValue(next)
-                scheduleManualFocusUpdate(next)
-              }}
-              className="w-full accent-indigo-500 disabled:opacity-40"
-            />
-            <div className="mt-1 flex items-center justify-between text-[10px] text-gray-500">
-              <span>0</span>
-              <span>127</span>
-              <span>255</span>
-            </div>
-          </div>
-          {(cameraFocusQuery.isLoading || focusMutation.isPending) && (
-            <p className="mt-2 text-[11px] text-gray-500">초점 설정 동기화 중...</p>
-          )}
-        </div>
-        <div className="w-full aspect-video rounded-lg overflow-hidden bg-black/70 border border-gray-800">
-          <img
-            src={livePreviewSrc}
-            alt="라즈베리파이 카메라 실시간 프리뷰"
-            className="w-full h-full object-contain"
-            onError={() => {
-              // 네트워크 끊김/엣지 미가동 시 다음 tick 에 자동 재시도
-            }}
-          />
-        </div>
-      </div>
 
       {/* 1행: 통계 카드 4개 */}
       <StatCardGroup />

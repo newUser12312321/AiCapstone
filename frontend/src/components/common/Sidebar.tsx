@@ -12,7 +12,7 @@ import clsx from 'clsx'
 /** 네비게이션 메뉴 항목 정의 */
 const NAV_ITEMS = [
   {
-    to:    '/dashboard',
+    to:    '/',
     icon:  BarChart2,
     label: '대시보드',
     end:   true,  // 루트 경로 정확히 매칭 (하위 경로에서 active 방지)
