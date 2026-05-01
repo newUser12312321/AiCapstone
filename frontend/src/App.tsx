@@ -19,6 +19,7 @@ import DashboardPage from '@/pages/DashboardPage'
 import HistoryPage from '@/pages/HistoryPage'
 import BoardReferencePage from '@/pages/BoardReferencePage'
 import KioskPage from '@/pages/KioskPage'
+import KioskInspectionCompletePage from '@/pages/KioskInspectionCompletePage'
 
 /** 아직 구현되지 않은 경로를 위한 플레이스홀더 페이지 */
 function PlaceholderPage({ title }: { title: string }) {
@@ -32,10 +33,11 @@ function PlaceholderPage({ title }: { title: string }) {
 export default function App() {
   const location = useLocation()
 
-  if (location.pathname === '/kiosk') {
+  if (location.pathname.startsWith('/kiosk')) {
     return (
       <Routes>
         <Route path="/kiosk" element={<KioskPage />} />
+        <Route path="/kiosk/complete/:inspectionId" element={<KioskInspectionCompletePage />} />
       </Routes>
     )
   }

@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Camera, Loader2, RefreshCcw } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { triggerEdgeInspection, fetchRetryQueueStatus } from '@/api/edgeApi'
+import { fetchRecentInspections } from '@/api/inspectionApi'
 import { useRecentInspections } from '@/hooks/useInspectionData'
 
 export default function KioskPage() {
+  const navigate = useNavigate()
   const [actionMsg, setActionMsg] = useState<string | null>(null)
   const { data: recentLogs = [] } = useRecentInspections(1)
   const latest = recentLogs[0]
@@ -18,7 +21,16 @@ export default function KioskPage() {
 
   const triggerMutation = useMutation({
     mutationFn: () => triggerEdgeInspection('aligned'),
-    onSuccess: (data) => setActionMsg(data.message),
+    onSuccess: async () => {
+      const prevLatestId = latest?.id ?? 0
+      setActionMsg('검사 진행 중... 결과를 확인하고 있습니다.')
+      const detectedId = await waitForNewInspectionId(prevLatestId)
+      if (detectedId != null) {
+        navigate(`/kiosk/complete/${detectedId}`)
+        return
+      }
+      setActionMsg('검사 완료 기록을 아직 찾지 못했습니다. 잠시 후 다시 시도해 주세요.')
+    },
     onError: (e: Error) => setActionMsg(e.message || '검사 요청 실패'),
   })
 
@@ -96,4 +108,23 @@ export default function KioskPage() {
       </div>
     </div>
   )
+}
+
+async function waitForNewInspectionId(previousId: number): Promise<number | null> {
+  const maxAttempts = 10
+  for (let i = 0; i < maxAttempts; i += 1) {
+    await delay(1000)
+    const logs = await fetchRecentInspections(1)
+    const latest = logs[0]
+    if (latest && latest.id > previousId) {
+      return latest.id
+    }
+  }
+  return null
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms)
+  })
 }
