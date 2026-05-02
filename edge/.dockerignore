@@ -1,0 +1,15 @@
+__pycache__
+*.py[cod]
+*$py.class
+.Python
+.venv
+venv
+.env
+*.egg-info
+.pytest_cache
+.mypy_cache
+
+# 로컬 전용(이미지 빌드 불필요 · 호스트 마운트 사용)
+captures
+demo_samples
+data

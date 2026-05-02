@@ -1,3 +1,5 @@
+# GEMINI 실크 게이트 사용 시 프로젝트 루트에 .env 를 두고 GEMINI_API_KEY=... 설정하거나,
+# 실행 시 GEMINI_API_KEY=... docker compose up
 services:
   mysql:
     image: mysql:8.4
@@ -28,6 +30,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inspection_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: your_password
+      # application-docker.yml 의 ${DB_PASSWORD} 와 동일하게 맞춤
+      DB_PASSWORD: your_password
       TZ: Asia/Seoul
     ports:
       - "8080:8080"
@@ -40,20 +44,34 @@ services:
       - backend
     environment:
       SERVER_BASE_URL: http://backend:8080
-      ENVIRONMENT: development
+      SERVER_INSPECTION_API_PATH: /api/v1/inspections
+      ENVIRONMENT: production
       CAMERA_DEVICE_INDEX: 0
       TZ: Asia/Seoul
-      # PCB 다클래스: deskew 전체 프레임 추론 + 부품 박스만 표시 시 합격 유지
+      # PCB 다클래스: deskew 후 전체 프레임 추론
       DEFECT_INFER_ON_FULL_DESKEW: "true"
       FAIL_ON_ANY_YOLO_DETECTION: "false"
+      STAGE2_SOURCE_MODE: aligned
+      # 학습 imgsz 에 맞게 조정 (640 학습 모델이면 "640")
       YOLO_PREDICT_IMGSZ: "1024"
       YOLO_DEFECT_CONFIDENCE_THRESHOLD: "0.15"
+      # Gemini 실크 게이트 (+ 실크 OCR → 검사패킷 silk* 필드)
+      GEMINI_GATE_ENABLED: "true"
+      GEMINI_MODEL: gemini-2.5-flash
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      BOARD_SILK_GATE_CONFIG_PATH: config/vision_board_gate.json
+      BOARD_SILK_GATE_REQUIRE_MULTIBOARD: "false"
+      BOARD_OCR_ROUTING_ENABLED: "true"
+      BOARD_IDENTIFIER_YOLO_ENABLED: "false"
+      MULTI_BOARD_ENABLED: "false"
+      EDGE_RETRY_QUEUE_DB_PATH: data/inspection_retry_queue.db
     ports:
       - "8000:8000"
     volumes:
       - ./edge/captures:/app/captures
       - ./edge/demo_samples:/app/demo_samples
-      # Colab 등에서 받은 best.pt 를 edge/weights/best.pt 로 두면 컨테이너에 반영됨
+      - ./edge/data:/app/data
+      # Colab 등에서 받은 가중치를 edge/weights/ 에 두면 컨테이너에 반영
       - ./edge/weights:/app/weights
 
   frontend:
@@ -66,8 +84,10 @@ services:
     environment:
       VITE_API_PROXY_TARGET: http://backend:8080
       VITE_EDGE_CAPTURE_URL: http://edge:8000
+      # Dockerfile: vite preview 기본 포트 8080
+      PORT: "8080"
     ports:
-      - "5173:5173"
+      - "5173:8080"
 
 volumes:
   mysql_data:
