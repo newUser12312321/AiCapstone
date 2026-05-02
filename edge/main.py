@@ -642,6 +642,7 @@ def _run_production_vision_pipeline(
 
         # expected_counts 기반 누락 판정:
         # - 보드 프로파일에 선언된 필수 클래스 기대 개수보다 실제 검출 개수가 적으면 FAIL 처리
+        # - 피듀셜은 detect_defects()에서 결과 목록에서 제거되므로, 카운트는 정렬 결과(마크 1·2)로 센다.
         # - 누락 정보를 synthetic defect로 추가해 대시보드에서 원인을 바로 확인할 수 있게 한다.
         missing_payloads: list[DefectPayload] = []
         if selected_expected_counts:
@@ -654,7 +655,12 @@ def _run_production_vision_pipeline(
                 if expected <= 0:
                     continue
                 cls_key = str(cls_name).strip().lower()
-                detected = int(detected_counts.get(cls_key, 0))
+                if cls_key == "fiducial":
+                    detected = sum(
+                        1 for _f in (alignment.fiducial1, alignment.fiducial2) if _f is not None
+                    )
+                else:
+                    detected = int(detected_counts.get(cls_key, 0))
                 if detected < expected:
                     missing = expected - detected
                     missing_payloads.append(
