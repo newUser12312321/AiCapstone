@@ -104,6 +104,18 @@ class Settings(BaseSettings):
     # fallback_default 정책에서 사용할 기본 보드 타입 키
     DEFAULT_BOARD_TYPE: Optional[str] = Field(default=None)
 
+    # ── Google Cloud Vision — 촬영 직후 실크 OCR 게이트 (멀티보드 전 선택적) ─
+    GOOGLE_CLOUD_VISION_GATE_ENABLED: bool = Field(default=False)
+    # 게이트 규칙 JSON (required_substrings, required_regexes). edge/ 기준 상대 경로 허용.
+    GOOGLE_CLOUD_VISION_GATE_CONFIG_PATH: str = Field(
+        default="config/vision_board_gate.json"
+    )
+    # True면 MULTI_BOARD_ENABLED 일 때만 Vision 게이트 실행 (단일모드에서는 생략)
+    GOOGLE_CLOUD_VISION_GATE_REQUIRE_MULTIBOARD: bool = Field(default=True)
+    # 비우면 이미 설정된 GOOGLE_APPLICATION_CREDENTIALS 사용. 설정 시 해당 JSON 경로로 덮어씀(edge 기준 상대 경로 허용).
+    GOOGLE_CLOUD_CREDENTIALS_PATH: Optional[str] = Field(default=None)
+    GOOGLE_CLOUD_VISION_JPEG_QUALITY: int = Field(default=90, ge=50, le=100)
+
     # ── FastAPI 서버 포트 ────────────────────────────────────────────────────
     EDGE_API_PORT: int = Field(default=8000)
 

@@ -309,6 +309,45 @@ def _run_production_vision_pipeline(
             cv2.imshow("Captured Frame", cv2.resize(frame, (640, 360)))
             cv2.waitKey(1)
 
+        gate_should_run = settings.GOOGLE_CLOUD_VISION_GATE_ENABLED and (
+            not settings.GOOGLE_CLOUD_VISION_GATE_REQUIRE_MULTIBOARD
+            or settings.MULTI_BOARD_ENABLED
+        )
+        if gate_should_run:
+            from inference.gcp_vision_gate import run_vision_gate
+
+            vg = run_vision_gate(frame)
+            if not vg.ok:
+                if vg.detail:
+                    logger.warning("[Vision게이트] FAIL %s: %s", vg.defect_type, vg.detail)
+                dtype = vg.defect_type or "VISION_OCR_GATE_FAIL"
+                packet = _build_packet(
+                    result=InspectionResult.FAIL,
+                    f1x=None,
+                    f1y=None,
+                    f2x=None,
+                    f2y=None,
+                    f1_conf=None,
+                    f2_conf=None,
+                    angle_error=0.0,
+                    inference_ms=vg.latency_ms,
+                    defects=[
+                        DefectPayload(
+                            defect_type=dtype,
+                            confidence=1.0,
+                            bbox_x=0,
+                            bbox_y=0,
+                            bbox_width=1,
+                            bbox_height=1,
+                        )
+                    ],
+                    image_path=image_path,
+                    pipeline_start=pipeline_start,
+                    device_id=None,
+                )
+                _finalize(packet)
+                return packet
+
         stage1_detector = detector
         stage2_detector = detector
         selected_board_type: Optional[str] = None

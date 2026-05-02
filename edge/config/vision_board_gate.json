@@ -1,0 +1,11 @@
+{
+  "required_substrings": [
+    "G-SERIES",
+    "GT-125A",
+    "CREVIS"
+  ],
+  "required_regexes": [
+    "\\d{4}\\.\\d{2}\\.\\d{2}"
+  ],
+  "normalize_before_substrings": true
+}

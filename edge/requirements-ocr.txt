@@ -1,0 +1,10 @@
+# 선택 설치 — PCB 기판명 OCR 실험용 (메인 edge/requirements.txt 와 분리)
+# 사용: pip install -r requirements-ocr.txt
+#
+# PaddleOCR: 실사·작은 실크 문자열에서 Tesseract/EasyOCR 대비 재현율이 나은 경우가 많음
+paddlepaddle==2.6.2
+paddleocr==2.7.3
+
+# 비교·백업용 (이미 시도했다면 스크립트에서 --backend 로만 선택)
+# easyocr
+# pytesseract  # 별도 Tesseract 바이너리 설치 필요
