@@ -111,6 +111,22 @@ export default function KioskInspectionCompletePage() {
 
           <aside className="rounded-2xl border border-sky-900/50 bg-slate-900/70 p-4 flex flex-col gap-3">
             <h2 className="text-2xl font-bold text-cyan-100">검사 정보</h2>
+            <InfoRow
+              label="시리즈명 (실크 OCR)"
+              value={log?.silkSeriesName?.trim() || '—'}
+            />
+            <InfoRow
+              label="기판명 (실크 OCR)"
+              value={log?.silkBoardName?.trim() || '—'}
+            />
+            <InfoRow
+              label="제조회사 (실크 OCR)"
+              value={log?.silkManufacturer?.trim() || '—'}
+            />
+            <InfoRow
+              label="제조일자 (실크 OCR)"
+              value={log?.silkManufactureDate?.trim() || '—'}
+            />
             <InfoRow label="검사 ID" value={log ? `#${log.id}` : '-'} />
             <InfoRow label="디바이스" value={log?.deviceId ?? '-'} />
             <InfoRow label="검출 수" value={log ? `${overlayDefects.length}건` : '-'} />

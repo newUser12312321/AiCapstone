@@ -121,6 +121,12 @@ class InspectionPacket(BaseModel):
     # 탐지된 결함 목록
     defects: list[DefectPayload] = Field(default_factory=list)
 
+    # Gemini 실크 OCR에서 추출한 표시용 필드 (없으면 null)
+    silk_series_name: Optional[str] = Field(default=None, serialization_alias="silkSeriesName")
+    silk_board_name: Optional[str] = Field(default=None, serialization_alias="silkBoardName")
+    silk_manufacturer: Optional[str] = Field(default=None, serialization_alias="silkManufacturer")
+    silk_manufacture_date: Optional[str] = Field(default=None, serialization_alias="silkManufactureDate")
+
     model_config = {"populate_by_name": True}
 
     def to_server_json(self) -> dict:

@@ -111,6 +111,19 @@ public class InspectionLog {
     @Column(name = "image_path", length = 512)
     private String imagePath;
 
+    /** Gemini 실크 OCR 표시 필드 — null 허용 */
+    @Column(name = "silk_series_name", length = 128)
+    private String silkSeriesName;
+
+    @Column(name = "silk_board_name", length = 256)
+    private String silkBoardName;
+
+    @Column(name = "silk_manufacturer", length = 128)
+    private String silkManufacturer;
+
+    @Column(name = "silk_manufacture_date", length = 64)
+    private String silkManufactureDate;
+
     // ── 타임스탬프 ──────────────────────────────────────────────────────────
 
     /**

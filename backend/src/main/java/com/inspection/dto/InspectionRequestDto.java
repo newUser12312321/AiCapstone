@@ -31,6 +31,7 @@ import java.util.List;
  * }
  */
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -88,4 +89,14 @@ public class InspectionRequestDto {
      */
     @Valid
     private List<DefectDetailDto> defects;
+
+    // ── Gemini 실크 OCR 표시 필드 (엣지 선택 전송, null 허용) ───────────────────
+    /** 시리즈명 (예: G-SERIES) */
+    private String silkSeriesName;
+    /** 기판명 (예: GT-125A/126A) */
+    private String silkBoardName;
+    /** 제조회사 (예: CREVIS) */
+    private String silkManufacturer;
+    /** 제조일자 문자열 (예: 2024.04.18) */
+    private String silkManufactureDate;
 }

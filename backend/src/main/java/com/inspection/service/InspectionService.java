@@ -89,6 +89,10 @@ public class InspectionService {
                 .totalTimeMs(dto.getTotalTimeMs())
                 .imagePath(imagePath)
                 .inspectedAt(dto.getInspectedAt())
+                .silkSeriesName(emptyToNull(dto.getSilkSeriesName()))
+                .silkBoardName(emptyToNull(dto.getSilkBoardName()))
+                .silkManufacturer(emptyToNull(dto.getSilkManufacturer()))
+                .silkManufactureDate(emptyToNull(dto.getSilkManufactureDate()))
                 .build();
 
         // 2. 결함 목록 변환 및 양방향 연관 설정
@@ -113,6 +117,10 @@ public class InspectionService {
 
         // 4. 저장된 엔티티 → 응답 DTO 변환 후 반환
         return InspectionResponseDto.from(saved);
+    }
+
+    private static String emptyToNull(String s) {
+        return (s == null || s.isBlank()) ? null : s.trim();
     }
 
     private String resolveImagePath(InspectionRequestDto dto) {

@@ -526,6 +526,19 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
               <MetaRow label="디바이스"    value={log.deviceId}              />
               <MetaRow label="검사 시각"   value={new Date(log.inspectedAt).toLocaleString('ko-KR')} />
               <MetaRow
+                label="시리즈명 (실크)"
+                value={log.silkSeriesName?.trim() || '—'}
+              />
+              <MetaRow label="기판명 (실크)" value={log.silkBoardName?.trim() || '—'} />
+              <MetaRow
+                label="제조회사 (실크)"
+                value={log.silkManufacturer?.trim() || '—'}
+              />
+              <MetaRow
+                label="제조일자 (실크)"
+                value={log.silkManufactureDate?.trim() || '—'}
+              />
+              <MetaRow
                 label="촬영 시 기울기"
                 value={
                   log.angleErrorDeg == null

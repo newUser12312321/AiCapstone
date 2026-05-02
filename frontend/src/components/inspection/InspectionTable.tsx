@@ -89,12 +89,40 @@ function formatDateTime(iso: string): { date: string; time: string } {
 
 // ── 스켈레톤 ─────────────────────────────────────────────────────────────────
 
+/** 실크 OCR 요약 한 컬럼 */
+function SilkOcrCell({
+  silkSeriesName,
+  silkBoardName,
+  silkManufacturer,
+  silkManufactureDate,
+}: Pick<
+  InspectionLog,
+  'silkSeriesName' | 'silkBoardName' | 'silkManufacturer' | 'silkManufactureDate'
+>) {
+  const lines = [
+    silkSeriesName ? `시리즈: ${silkSeriesName}` : null,
+    silkBoardName ? `기판: ${silkBoardName}` : null,
+    silkManufacturer ? `제조사: ${silkManufacturer}` : null,
+    silkManufactureDate ? `제조일: ${silkManufactureDate}` : null,
+  ].filter(Boolean)
+  if (lines.length === 0) {
+    return <span className="text-xs text-gray-600">—</span>
+  }
+  return (
+    <div className="text-xs text-gray-300 space-y-0.5 leading-snug">
+      {lines.map((line, idx) => (
+        <div key={idx}>{line}</div>
+      ))}
+    </div>
+  )
+}
+
 function TableSkeleton() {
   return (
     <>
       {Array.from({ length: 8 }).map((_, i) => (
         <tr key={i} className="border-b border-gray-800 animate-pulse">
-          {Array.from({ length: 8 }).map((_, j) => (
+          {Array.from({ length: 9 }).map((_, j) => (
             <td key={j} className="px-4 py-3">
               <div className="h-3.5 bg-gray-800 rounded w-3/4" />
             </td>
@@ -136,7 +164,7 @@ export default function InspectionTable({
           {/* 헤더 */}
           <thead>
             <tr className="bg-gray-900 text-left">
-              {['ID', '시각', '검사 PCB명', '결과', '검출 클래스', '오차 (°)', '추론 (ms)', ''].map((h) => (
+              {['ID', '시각', '실크 OCR', '디바이스', '결과', '검출 클래스', '오차 (°)', '추론 (ms)', ''].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
@@ -154,7 +182,7 @@ export default function InspectionTable({
             ) : filtered.length === 0 ? (
               /* 데이터 없음 */
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-gray-500 text-sm">
+                <td colSpan={9} className="px-4 py-12 text-center text-gray-500 text-sm">
                   검사 이력이 없습니다.
                 </td>
               </tr>
@@ -180,6 +208,16 @@ export default function InspectionTable({
                     <td className="px-4 py-3">
                       <p className="text-gray-300 text-xs">{date}</p>
                       <p className="text-gray-500 text-xs font-mono">{time}</p>
+                    </td>
+
+                    {/* 실크 OCR */}
+                    <td className="px-4 py-3 align-top">
+                      <SilkOcrCell
+                        silkSeriesName={log.silkSeriesName}
+                        silkBoardName={log.silkBoardName}
+                        silkManufacturer={log.silkManufacturer}
+                        silkManufactureDate={log.silkManufactureDate}
+                      />
                     </td>
 
                     {/* 디바이스 */}

@@ -52,6 +52,7 @@ from inference.alignment import (
     compute_alignment,
     crop_inspection_roi_with_offset,
 )
+from inference.silk_field_extract import extract_silk_display_fields
 from inference.yolo_detector import YoloDetector
 from models.schemas import (
     AlignmentResult,
@@ -317,6 +318,7 @@ def _run_production_vision_pipeline(
             cv2.waitKey(1)
 
         silk_gate_full_text = ""
+        gemini_full_text = ""
 
         use_gemini_gate = getattr(settings, "GEMINI_GATE_ENABLED", False)
         gate_should_run = use_gemini_gate and (
@@ -326,17 +328,19 @@ def _run_production_vision_pipeline(
             from inference.gemini_silk_gate import run_gemini_silk_gate as run_gemini_gate
 
             gg = run_gemini_gate(frame)
+            gemini_full_text = getattr(gg, "full_text", "") or ""
             silk_ms = getattr(gg, "latency_ms", 0)
             silk_passed = gg.ok
             fail_defect = gg.defect_type or "SILKSCREEN_OCR_GATE_FAIL"
             fail_detail = gg.detail
             if gg.ok:
-                silk_gate_full_text = getattr(gg, "full_text", "") or ""
+                silk_gate_full_text = gemini_full_text
                 logger.info("[실크게이트] Gemini 통과 (%d ms)", gg.latency_ms)
             elif gg.detail:
                 logger.warning("[Gemini게이트] FAIL %s: %s", gg.defect_type, gg.detail)
 
             if not silk_passed:
+                _sk = extract_silk_display_fields(gemini_full_text)
                 packet = _build_packet(
                     result=InspectionResult.FAIL,
                     f1x=None,
@@ -360,9 +364,21 @@ def _run_production_vision_pipeline(
                     image_path=image_path,
                     pipeline_start=pipeline_start,
                     device_id=None,
+                    silk_series_name=_sk.series_name,
+                    silk_board_name=_sk.board_name,
+                    silk_manufacturer=_sk.manufacturer,
+                    silk_manufacture_date=_sk.manufacture_date,
                 )
                 _finalize(packet)
                 return packet
+
+        _silk_kw = extract_silk_display_fields(gemini_full_text)
+        silk_packet_kw = dict(
+            silk_series_name=_silk_kw.series_name,
+            silk_board_name=_silk_kw.board_name,
+            silk_manufacturer=_silk_kw.manufacturer,
+            silk_manufacture_date=_silk_kw.manufacture_date,
+        )
 
         stage1_detector = detector
         stage2_detector = detector
@@ -449,6 +465,7 @@ def _run_production_vision_pipeline(
                         image_path=image_path,
                         pipeline_start=pipeline_start,
                         device_id=selected_board_type,
+                        **silk_packet_kw,
                     )
                     _finalize(packet)
                     return packet
@@ -485,6 +502,7 @@ def _run_production_vision_pipeline(
                 image_path=image_path,
                 pipeline_start=pipeline_start,
                 device_id=selected_board_type,
+                **silk_packet_kw,
             )
             _finalize(packet)
             return packet
@@ -619,6 +637,7 @@ def _run_production_vision_pipeline(
             image_path=image_path if stage2_mode == "raw" else aligned_path,
             pipeline_start=pipeline_start,
             device_id=selected_board_type,
+            **silk_packet_kw,
         )
 
         if selected_board_type:
@@ -681,6 +700,11 @@ def _build_packet(
     f1_conf: Optional[float] = None,
     f2_conf: Optional[float] = None,
     device_id: Optional[str] = None,
+    *,
+    silk_series_name: Optional[str] = None,
+    silk_board_name: Optional[str] = None,
+    silk_manufacturer: Optional[str] = None,
+    silk_manufacture_date: Optional[str] = None,
 ) -> InspectionPacket:
     """InspectionPacket 조립 헬퍼."""
     total_ms = int((time.perf_counter() - pipeline_start) * 1000)
@@ -697,6 +721,10 @@ def _build_packet(
         image_path=image_path,
         inspected_at=datetime.now(),
         defects=defects,
+        silk_series_name=silk_series_name,
+        silk_board_name=silk_board_name,
+        silk_manufacturer=silk_manufacturer,
+        silk_manufacture_date=silk_manufacture_date,
     )
 
 

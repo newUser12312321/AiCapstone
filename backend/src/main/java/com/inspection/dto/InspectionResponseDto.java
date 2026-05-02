@@ -61,6 +61,15 @@ public class InspectionResponseDto {
     /** 탐지된 결함 목록 */
     private List<DefectDetailDto> defects;
 
+    /** 실크 OCR — 시리즈명 */
+    private String silkSeriesName;
+    /** 실크 OCR — 기판명 */
+    private String silkBoardName;
+    /** 실크 OCR — 제조회사 */
+    private String silkManufacturer;
+    /** 실크 OCR — 제조일자 문자열 */
+    private String silkManufactureDate;
+
     // ── 정적 팩토리 메서드 ────────────────────────────────────────────────────
 
     /**
@@ -95,6 +104,10 @@ public class InspectionResponseDto {
                 .inspectedAt(log.getInspectedAt())
                 .createdAt(log.getCreatedAt())
                 .defects(defectDtos)
+                .silkSeriesName(log.getSilkSeriesName())
+                .silkBoardName(log.getSilkBoardName())
+                .silkManufacturer(log.getSilkManufacturer())
+                .silkManufactureDate(log.getSilkManufactureDate())
                 .build();
     }
 

@@ -56,6 +56,12 @@ export interface InspectionLog {
   /** 서버 레코드 생성 시각 */
   createdAt: string
 
+  /** Gemini 실크 OCR에서 추출 (없으면 null·undefined) */
+  silkSeriesName?: string | null
+  silkBoardName?: string | null
+  silkManufacturer?: string | null
+  silkManufactureDate?: string | null
+
   /** 탐지된 결함 목록 */
   defects: DefectDetail[]
 }
