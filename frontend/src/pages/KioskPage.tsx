@@ -4,7 +4,6 @@ import { Aperture, Camera, Loader2, RefreshCcw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import {
   fetchCameraFocus,
-  fetchRetryQueueStatus,
   triggerEdgeInspection,
   updateCameraFocus,
   type CameraFocusState,
@@ -20,13 +19,6 @@ export default function KioskPage() {
   const [focusDraft, setFocusDraft] = useState<number | null>(null)
   const { data: recentLogs = [] } = useRecentInspections(1)
   const latest = recentLogs[0]
-
-  const queueQuery = useQuery({
-    queryKey: ['edge', 'retry-queue'],
-    queryFn: fetchRetryQueueStatus,
-    refetchInterval: 3000,
-    staleTime: 2000,
-  })
 
   const focusQuery = useQuery({
     queryKey: ['edge', 'camera-focus'],
@@ -94,10 +86,6 @@ export default function KioskPage() {
       ? 'bg-red-600'
       : 'bg-gray-700'
 
-  const transmissionText = queueQuery.isError
-    ? '전송상태 확인 불가'
-    : `대기 ${queueQuery.data?.pendingCount ?? 0}건`
-
   const focusAuto = focusFromServer?.auto === true
   const focusControlsDisabled =
     focusQuery.isLoading || focusMutation.isPending || focusFromServer == null
@@ -114,7 +102,7 @@ export default function KioskPage() {
       <div className="mx-auto h-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-5">
         <section className="lg:col-span-2 rounded-2xl border border-gray-800 bg-gray-900/70 p-4">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-2xl md:text-3xl font-bold">검사 키오스크</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">검사 화면</h1>
             <span className="text-sm text-gray-400">실시간 프리뷰</span>
           </div>
           <div className="w-full h-[52vh] md:h-[70vh] rounded-xl overflow-hidden bg-black border border-gray-800">
@@ -261,30 +249,20 @@ export default function KioskPage() {
           </div>
 
           <div className="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
-            <p className="text-sm text-gray-400 mb-2">전송 상태</p>
-            <p className="text-2xl font-bold">{transmissionText}</p>
+            <p className="text-sm text-gray-400 mb-3 text-center">검사</p>
             <button
               type="button"
-              onClick={() => queueQuery.refetch()}
-              className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm"
+              onClick={() => {
+                setActionMsg(null)
+                triggerMutation.mutate()
+              }}
+              disabled={triggerMutation.isPending}
+              className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 px-5 py-6 text-2xl font-bold inline-flex items-center justify-center gap-3"
             >
-              <RefreshCcw size={16} />
-              상태 새로고침
+              {triggerMutation.isPending ? <Loader2 className="animate-spin" size={28} /> : <Camera size={28} />}
+              검사 시작
             </button>
           </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              setActionMsg(null)
-              triggerMutation.mutate()
-            }}
-            disabled={triggerMutation.isPending}
-            className="mt-auto w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 px-5 py-6 text-2xl font-bold inline-flex items-center justify-center gap-3"
-          >
-            {triggerMutation.isPending ? <Loader2 className="animate-spin" size={28} /> : <Camera size={28} />}
-            검사 시작
-          </button>
 
           {actionMsg && <p className="text-sm text-gray-300">{actionMsg}</p>}
         </section>
