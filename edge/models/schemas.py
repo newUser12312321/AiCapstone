@@ -139,12 +139,18 @@ class InspectionPacket(BaseModel):
 
 class DefectPayload(BaseModel):
     """InspectionPacket.defects 배열의 각 요소 — 결함 단위 페이로드."""
+
     defect_type: str = Field(serialization_alias="defectType")
     confidence: float = Field(serialization_alias="confidence")
     bbox_x: int = Field(serialization_alias="bboxX")
     bbox_y: int = Field(serialization_alias="bboxY")
     bbox_width: int = Field(serialization_alias="bboxWidth")
     bbox_height: int = Field(serialization_alias="bboxHeight")
+    detail: Optional[str] = Field(
+        default=None,
+        serialization_alias="detail",
+        description="실크 검증 등 사람이 읽기 쉬운 부가 설명(한글)",
+    )
 
     model_config = {"populate_by_name": True}
 

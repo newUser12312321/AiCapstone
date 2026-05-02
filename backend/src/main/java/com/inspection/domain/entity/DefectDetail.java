@@ -61,4 +61,8 @@ public class DefectDetail {
     /** 바운딩 박스 높이 (픽셀) */
     @Column(name = "bbox_height", nullable = false)
     private Integer bboxHeight;
+
+    /** 실크 게이트·OCR 등 부가 설명 (엣지 optional, 예: 「제조일자」 미검출) */
+    @Column(name = "detail", length = 768)
+    private String detail;
 }

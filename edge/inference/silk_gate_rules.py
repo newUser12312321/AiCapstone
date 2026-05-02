@@ -40,11 +40,23 @@ def load_gate_config(path: Path) -> dict[str, Any]:
     regs = raw.get("required_regexes") or []
     if not isinstance(subs, list) or not isinstance(regs, list):
         raise ValueError("required_substrings / required_regexes must be arrays")
-    return {
+    out: dict[str, Any] = {
         "required_substrings": [str(x) for x in subs if str(x).strip()],
         "required_regexes": [str(x) for x in regs if str(x).strip()],
         "normalize_before_substrings": bool(raw.get("normalize_before_substrings", True)),
     }
+
+    sn = raw.get("substring_display_names")
+    if isinstance(sn, dict):
+        out["substring_display_names"] = {
+            str(k).strip(): str(v).strip() for k, v in sn.items() if str(k).strip() and str(v).strip()
+        }
+
+    rn = raw.get("regex_display_names")
+    if isinstance(rn, list):
+        out["regex_display_names"] = [str(x).strip() for x in rn if str(x).strip()]
+
+    return out
 
 
 def evaluate_gate(full_text: str, cfg: dict[str, Any]) -> tuple[bool, Optional[str]]:
@@ -53,16 +65,33 @@ def evaluate_gate(full_text: str, cfg: dict[str, Any]) -> tuple[bool, Optional[s
     use_norm = cfg["normalize_before_substrings"]
     hay = _normalize(full_text) if use_norm else full_text
 
+    sub_labels = cfg.get("substring_display_names")
+    if not isinstance(sub_labels, dict):
+        sub_labels = {}
+
     for sub in subs:
         needle = _normalize(sub) if use_norm else sub
         if needle not in hay:
-            return False, f"missing substring: {sub!r}"
+            label = sub_labels.get(sub)
+            if not label or not str(label).strip():
+                label = f"「{sub}」"
+            return False, f"{label} 실크 미검출"
 
-    for pattern in regs:
+    reg_labels = cfg.get("regex_display_names")
+    if not isinstance(reg_labels, list):
+        reg_labels = []
+
+    for i, pattern in enumerate(regs):
         try:
             if not re.search(pattern, full_text, flags=re.MULTILINE | re.DOTALL):
-                return False, f"regex not matched: {pattern!r}"
+                lbl = (
+                    str(reg_labels[i]).strip()
+                    if i < len(reg_labels)
+                    else None
+                )
+                tag = lbl if lbl else f"패턴({pattern})"
+                return False, f"{tag} 실크 미검출"
         except re.error as e:
-            return False, f"invalid regex {pattern!r}: {e}"
+            return False, f"설정 오류: 정규식 무효 ({pattern}) — {e}"
 
     return True, None

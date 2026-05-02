@@ -35,6 +35,10 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        VITE_API_PROXY_TARGET: http://backend:8080
+        # PC 전용 스택에 엣지 컨테이너가 없으면 호스트·LAN IP 로 맞춤
+        VITE_EDGE_CAPTURE_URL: http://host.docker.internal:8000
     container_name: aicapstone-frontend
     depends_on:
       - backend

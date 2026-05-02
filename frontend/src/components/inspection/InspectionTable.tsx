@@ -44,26 +44,28 @@ function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
 
   const grouped = new Map<
     string,
-    { count: number; color: string }
+    { count: number; color: string; label: string }
   >()
   defects.forEach((d) => {
-    const label = defectDisplayName(d.defectType)
-    const prev = grouped.get(label)
+    const key = `${d.defectType}\0${d.detail?.trim() ?? ''}`
+    const label = defectDisplayName(d.defectType, d.detail)
+    const prev = grouped.get(key)
     if (prev) {
       prev.count += 1
       return
     }
-    grouped.set(label, {
+    grouped.set(key, {
       count: 1,
       color: DEFECT_COLOR[d.defectType] ?? '#9ca3af',
+      label,
     })
   })
 
   return (
     <div className="flex flex-wrap gap-1">
-      {Array.from(grouped.entries()).map(([label, meta]) => (
+      {Array.from(grouped.entries()).map(([tagKey, meta]) => (
         <span
-          key={label}
+          key={tagKey}
           className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium"
           style={{
             backgroundColor: `${meta.color}22`,
@@ -71,7 +73,7 @@ function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
           }}
         >
           <AlertCircle size={10} />
-          {`${label} X${meta.count}`}
+          {`${meta.label} X${meta.count}`}
         </span>
       ))}
     </div>

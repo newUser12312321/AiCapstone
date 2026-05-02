@@ -258,7 +258,7 @@ def create_dummy_packet(
         inspected_at=datetime.now(),
         defects=defects,
         silk_series_name="G-SERIES",
-        silk_board_name="GT-125A/126A",
+        silk_board_name="GT-125A",
         silk_manufacturer="CREVIS",
         silk_manufacture_date="2024.04.18",
     )

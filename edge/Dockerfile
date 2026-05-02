@@ -18,4 +18,8 @@ COPY . .
 
 EXPOSE 8000
 
+# compose에서 ./edge/config 를 :ro 로 마운트하면 vision_board_gate 등을 재빌드 없이 조정 가능
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/edge/health', timeout=4).read()"
+
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

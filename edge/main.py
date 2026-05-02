@@ -55,6 +55,7 @@ from inference.alignment import (
 from inference.silk_field_extract import (
     extract_silk_display_fields,
     silk_display_fields_complete,
+    silk_missing_field_summary_ko,
 )
 from inference.yolo_detector import YoloDetector
 from models.schemas import (
@@ -364,6 +365,7 @@ def _run_production_vision_pipeline(
                             bbox_y=0,
                             bbox_width=1,
                             bbox_height=1,
+                            detail=(fail_detail.strip() if fail_detail else None) or None,
                         )
                     ],
                     image_path=image_path,
@@ -409,6 +411,7 @@ def _run_production_vision_pipeline(
                             bbox_y=0,
                             bbox_width=1,
                             bbox_height=1,
+                            detail=silk_missing_field_summary_ko(_silk_kw) or None,
                         )
                     ],
                     image_path=image_path,

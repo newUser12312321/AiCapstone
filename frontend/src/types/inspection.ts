@@ -15,6 +15,8 @@ export interface DefectDetail {
   bboxY: number           // 좌상단 Y (픽셀)
   bboxWidth: number       // 너비 (픽셀)
   bboxHeight: number      // 높이 (픽셀)
+  /** 실크 게이트·OCR 세부 원인 등 (예: 「제조일자」실크 미검출) */
+  detail?: string | null
 }
 
 // ── 검사 이력 ─────────────────────────────────────────────────────────────────
@@ -99,6 +101,10 @@ export const DEFECT_LABEL: Record<string, string> = {
   METAL_DAMAGE:     '까짐',
   FIDUCIAL_MISSING: '마크 누락',
   SILK_SCREEN_PRINT_DEFECT: '실크인쇄불량',
+  GEMINI_OCR_GATE_FAIL: '실크 검증 미통과',
+  GEMINI_OCR_GATE_SERVICE_ERROR: '실크 OCR 연동 오류',
+  GEMINI_GATE_NO_API_KEY: 'Gemini API 미설정',
+  GEMINI_GATE_CONFIG_ERROR: '실크 게이트 설정 오류',
   // Ultralytics data.yaml / Colab 병합 클래스 (소문자 snake_case)
   trace_open:     '단선',
   metal_damage:   '까짐',
@@ -120,6 +126,10 @@ export const DEFECT_COLOR: Record<string, string> = {
   METAL_DAMAGE:     '#ef4444',  // red-500
   FIDUCIAL_MISSING: '#a855f7',  // purple-500
   SILK_SCREEN_PRINT_DEFECT: '#fb923c',
+  GEMINI_OCR_GATE_FAIL: '#f59e0b',
+  GEMINI_OCR_GATE_SERVICE_ERROR: '#eab308',
+  GEMINI_GATE_NO_API_KEY: '#94a3b8',
+  GEMINI_GATE_CONFIG_ERROR: '#94a3b8',
   trace_open:       '#f97316',
   metal_damage:     '#ef4444',
   pinhole:          '#eab308',  // yellow-500
@@ -134,7 +144,7 @@ export const DEFECT_COLOR: Record<string, string> = {
 }
 
 /** 표시용 라벨 (한글 매핑 없으면 원문 그대로) */
-export function defectDisplayName(defectType: string): string {
+export function defectDisplayName(defectType: string, detail?: string | null): string {
   // Edge synthetic missing-count marker:
   // MISSING:ic_chip:expected=2,detected=1,missing=1
   if (defectType.startsWith('MISSING:')) {
@@ -152,9 +162,19 @@ export function defectDisplayName(defectType: string): string {
     return defectType.replace('MISSING:', '누락: ')
   }
 
-  return (
+  const trimmed = typeof detail === 'string' ? detail.trim() : ''
+  const base =
     DEFECT_LABEL[defectType] ??
     DEFECT_LABEL[defectType.toUpperCase()] ??
     defectType
-  )
+
+  if (
+    trimmed &&
+    (defectType === 'GEMINI_OCR_GATE_FAIL' ||
+      defectType === 'SILK_SCREEN_PRINT_DEFECT')
+  ) {
+    return trimmed
+  }
+
+  return trimmed ? `${base} (${trimmed})` : base
 }

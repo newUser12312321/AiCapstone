@@ -73,10 +73,15 @@ services:
       - ./edge/data:/app/data
       # Colab 등에서 받은 가중치를 edge/weights/ 에 두면 컨테이너에 반영
       - ./edge/weights:/app/weights
+      # 실크 게이트 JSON 등 — 호스트 수정 시 이미지 재빌드 없이 반영 (:ro 권장)
+      - ./edge/config:/app/config:ro
 
   frontend:
     build:
       context: ./frontend
+      args:
+        VITE_API_PROXY_TARGET: http://backend:8080
+        VITE_EDGE_CAPTURE_URL: http://edge:8000
     container_name: aicapstone-frontend
     depends_on:
       - backend

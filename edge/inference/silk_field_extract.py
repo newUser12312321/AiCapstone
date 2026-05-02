@@ -19,7 +19,7 @@ from inference.silk_gate_rules import resolve_silk_gate_config_path
 logger = logging.getLogger(__name__)
 
 _DEFAULT_SERIES_SUBS = ["G-SERIES"]
-_DEFAULT_BOARD_RE = r"(GT-\d+[A-Z]+(?:/\d+[A-Z]+)?(?:\([^)]+\))?)"
+_DEFAULT_BOARD_RE = r"(GT-\d+[A-Z]+)"
 _DEFAULT_MFG_SUBS = ["CREVIS"]
 _DEFAULT_DATE_RE = r"\d{4}\.\d{2}\.\d{2}"
 
@@ -61,7 +61,7 @@ def _load_extract_cfg(path: Path) -> dict[str, Any]:
 def extract_silk_display_fields(full_text: str) -> SilkDisplayFields:
     """
     full_text 예:
-      "A G-SERIES GT-125A/126A(DI32), rev... CREVIS 2024.04.18 ..."
+      "A G-SERIES GT-125A/126A(DI32), rev... CREVIS 2024.04.18 ..." → 기판명은 GT-125A만 추출
     """
     text = (full_text or "").strip()
     if not text:
@@ -135,3 +135,20 @@ def silk_display_fields_complete(sf: SilkDisplayFields) -> bool:
         and _nonblank(sf.manufacturer)
         and _nonblank(sf.manufacture_date)
     )
+
+
+def silk_missing_field_summary_ko(sf: SilkDisplayFields) -> str:
+    """실크 OCR 4필드 중 비어 있는 항목만 한글로 나열한다."""
+    parts: list[str] = []
+    if not _nonblank(sf.series_name):
+        parts.append("시리즈명")
+    if not _nonblank(sf.board_name):
+        parts.append("기판명")
+    if not _nonblank(sf.manufacturer):
+        parts.append("제조사명")
+    if not _nonblank(sf.manufacture_date):
+        parts.append("제조일자")
+    if not parts:
+        return ""
+    joined = ", ".join(parts)
+    return f"{joined} 실크 미검출"

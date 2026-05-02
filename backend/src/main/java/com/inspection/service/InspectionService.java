@@ -106,6 +106,7 @@ public class InspectionService {
                         .bboxY(defectDto.getBboxY())
                         .bboxWidth(defectDto.getBboxWidth())
                         .bboxHeight(defectDto.getBboxHeight())
+                        .detail(emptyToNull(defectDto.getDetail()))
                         .build();
                 log.addDefect(defect);           // 부모 엔티티 리스트에 추가
             });

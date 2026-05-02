@@ -120,6 +120,7 @@ public class InspectionResponseDto {
                 .bboxY(d.getBboxY())
                 .bboxWidth(d.getBboxWidth())
                 .bboxHeight(d.getBboxHeight())
+                .detail(d.getDetail())
                 .build();
     }
 }

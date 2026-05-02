@@ -16,6 +16,7 @@ import lombok.*;
  * }
  */
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -45,4 +46,7 @@ public class DefectDetailDto {
     /** 바운딩 박스 높이 (픽셀) */
     @NotNull @Min(1)
     private Integer bboxHeight;
+
+    /** 실크 검증 등 한글 부가 메시지 (선택, 엣지 → 서버 저장) */
+    private String detail;
 }

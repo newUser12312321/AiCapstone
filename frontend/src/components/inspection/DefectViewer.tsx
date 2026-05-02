@@ -419,7 +419,7 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                             y={d.bboxY}
                             w={d.bboxWidth}
                             h={d.bboxHeight}
-                            label={defectDisplayName(d.defectType)}
+                            label={defectDisplayName(d.defectType, d.detail)}
                             confidence={d.confidence}
                             color={DEFECT_COLOR[d.defectType] ?? '#f87171'}
                             scaleX={scaleX}
@@ -484,7 +484,7 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                       y={d.bboxY}
                       w={d.bboxWidth}
                       h={d.bboxHeight}
-                      label={defectDisplayName(d.defectType)}
+                      label={defectDisplayName(d.defectType, d.detail)}
                       confidence={d.confidence}
                       color={DEFECT_COLOR[d.defectType] ?? '#f87171'}
                       scaleX={scaleX}
@@ -589,7 +589,7 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                 <ul className="space-y-1">
                   {missingReasons.map((d, i) => (
                     <li key={`${d.defectType}-${i}`} className="text-[11px] text-red-200">
-                      - {defectDisplayName(d.defectType)}
+                      - {defectDisplayName(d.defectType, d.detail)}
                     </li>
                   ))}
                 </ul>
@@ -613,7 +613,7 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <span className="text-[11px] font-semibold truncate" style={{ color }}>
-                            {i + 1}. {defectDisplayName(d.defectType)}
+                            {i + 1}. {defectDisplayName(d.defectType, d.detail)}
                           </span>
                           <span className="text-[11px] font-mono text-gray-400">
                             {(d.confidence * 100).toFixed(1)}%
