@@ -84,10 +84,8 @@ services:
     environment:
       VITE_API_PROXY_TARGET: http://backend:8080
       VITE_EDGE_CAPTURE_URL: http://edge:8000
-      # Dockerfile: vite preview 기본 포트 8080
-      PORT: "8080"
     ports:
-      - "5173:8080"
+      - "5173:5173"
 
 volumes:
   mysql_data:

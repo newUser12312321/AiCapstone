@@ -18,7 +18,7 @@ COPY --from=builder /app/vite.config.ts ./
 
 ENV NODE_ENV=production
 
-EXPOSE 8080
+# vite.config.ts 의 preview.port(5173) 와 동일 기본값. Cloud Run 등은 PORT=8080 로 덮어쓰면 됨.
+EXPOSE 5173
 
-# 해시된 JS/CSS로 캐시 무력화 + preview 프록시로 /api·/captures 동작
-CMD ["sh", "-c", "npm run preview -- --host 0.0.0.0 --port ${PORT:-8080}"]
+CMD ["sh", "-c", "npm run preview -- --host 0.0.0.0 --port ${PORT:-5173}"]
