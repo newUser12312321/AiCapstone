@@ -33,3 +33,7 @@ logging:
 app:
   inspection-image-dir: inspection-images
   gcs-image-bucket: ${GCS_IMAGE_BUCKET:}
+  # 브라우저 CORS(GCP VM 등 공인 IP로 프론트 접속 시 DELETE 프리플라이트 허용)
+  # 필요 시 특정 도메인만 예: https://dash.example.com,http://localhost:*
+  cors:
+    allowed-origin-patterns: "*"
