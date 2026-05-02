@@ -1,3 +1,11 @@
+# PC/서버 스택: MySQL + Spring Boot + 프론트(대시보드)만 컨테이너로 기동.
+# 엣지 검사 API·캡처는 Pi 등 별도 호스트 :8000 에서 띄운 뒤, 아래 주소를 맞춘다.
+#
+#   프로젝트 루트에 .env 를 두고 예: VITE_EDGE_CAPTURE_URL=http://192.168.0.13:8000
+#   (미설정 시 기본 host.docker.internal:8000 — Linux 는 extra_hosts 로 host-gateway 매핑)
+#
+# 실행: docker compose -f docker-compose.pc.yml up --build
+
 services:
   mysql:
     image: mysql:8.4
@@ -37,15 +45,18 @@ services:
       context: ./frontend
       args:
         VITE_API_PROXY_TARGET: http://backend:8080
-        # PC 전용 스택에 엣지 컨테이너가 없으면 호스트·LAN IP 로 맞춤
-        VITE_EDGE_CAPTURE_URL: http://host.docker.internal:8000
+        VITE_EDGE_CAPTURE_URL: ${VITE_EDGE_CAPTURE_URL:-http://host.docker.internal:8000}
     container_name: aicapstone-frontend
     depends_on:
       - backend
+    # Linux 서버: host.docker.internal → 호스트 루프백 (Docker 20.10+ host-gateway)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./frontend/.env
     environment:
       VITE_API_PROXY_TARGET: http://backend:8080
+      VITE_EDGE_CAPTURE_URL: ${VITE_EDGE_CAPTURE_URL:-http://host.docker.internal:8000}
     ports:
       - "5173:5173"
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import ssl
 import time
 import urllib.error
 import urllib.parse
@@ -40,7 +41,37 @@ def _gemini_api_key() -> str:
     return str(k).strip()
 
 
-def _generate_content_text(jpeg_bytes: bytes, api_key: str, model: str) -> tuple[str, int]:
+def _is_transient_gemini_transport_error(e: BaseException) -> bool:
+    """소켓 타임아웃·연결 끊김·일부 5xx 등 — 짧은 대기 후 재시도할 만한 오류."""
+    if isinstance(e, TimeoutError):
+        return True
+    if isinstance(e, (BrokenPipeError, ConnectionResetError, ConnectionAbortedError)):
+        return True
+    if isinstance(e, ssl.SSLError):
+        return True
+    if isinstance(e, urllib.error.HTTPError):
+        return e.code in (408, 429, 500, 502, 503, 504)
+    if isinstance(e, urllib.error.URLError):
+        return True
+    lowered = str(e).lower()
+    if "timed out" in lowered or "timeout" in lowered:
+        return True
+    # _generate_content_text 가 HTTP 오류를 RuntimeError 로 감싼 경우
+    if isinstance(e, RuntimeError):
+        s = str(e)
+        return bool(
+            any(x in s for x in ("HTTP 408", "HTTP 429", "HTTP 500", "HTTP 502", "HTTP 503", "HTTP 504"))
+        )
+    return False
+
+
+def _generate_content_text(
+    jpeg_bytes: bytes,
+    api_key: str,
+    model: str,
+    *,
+    timeout_sec: float,
+) -> tuple[str, int]:
     """REST v1beta generateContent → 본문 텍스트, 지연 ms."""
     img_b64 = base64.standard_b64encode(jpeg_bytes).decode("ascii")
     body = {
@@ -75,7 +106,7 @@ def _generate_content_text(jpeg_bytes: bytes, api_key: str, model: str) -> tuple
     )
     t0 = time.perf_counter()
     try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
+        with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
             raw = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         err_txt = e.read().decode("utf-8", errors="replace") if e.fp else ""
@@ -131,7 +162,41 @@ def run_gemini_silk_gate(bgr_frame: np.ndarray) -> GeminiGateOutcome:
             raise RuntimeError("JPEG 인코딩 실패")
         jpeg = bytes(buf)
         model = str(getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash")).strip()
-        full_text, ms = _generate_content_text(jpeg, api_key, model)
+        timeout_sec = float(getattr(settings, "GEMINI_GATE_HTTP_TIMEOUT_SEC", 300.0))
+        extra_retries = max(0, int(getattr(settings, "GEMINI_GATE_HTTP_RETRIES", 2)))
+        full_text = ""
+        ms = 0
+        for attempt in range(extra_retries + 1):
+            try:
+                full_text, ms = _generate_content_text(jpeg, api_key, model, timeout_sec=timeout_sec)
+                break
+            except RuntimeError as e:
+                if attempt < extra_retries and _is_transient_gemini_transport_error(e):
+                    delay = min(30.0, 2.0**attempt)
+                    logger.warning(
+                        "[Gemini게이트] API 일시 오류 (%s) — %.0fs 후 재시도 [%d/%d]",
+                        e,
+                        delay,
+                        attempt + 2,
+                        extra_retries + 1,
+                    )
+                    time.sleep(delay)
+                    continue
+                raise
+            except Exception as e:
+                if attempt < extra_retries and _is_transient_gemini_transport_error(e):
+                    delay = min(30.0, 2.0**attempt)
+                    logger.warning(
+                        "[Gemini게이트] 전송 예외 (%s) — %.0fs 후 재시도 [%d/%d]",
+                        e,
+                        delay,
+                        attempt + 2,
+                        extra_retries + 1,
+                    )
+                    time.sleep(delay)
+                    continue
+                raise
+
     except RuntimeError as e:
         logger.warning("[Gemini게이트] API 오류: %s", e)
         return GeminiGateOutcome(
