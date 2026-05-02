@@ -26,6 +26,9 @@ from inference.silk_gate_rules import evaluate_gate, load_gate_config, resolve_s
 
 logger = logging.getLogger(__name__)
 
+# urllib generateContent 전체 응답 대기(초) — 설정으로 바꾸지 않고 고정
+_GEMINI_HTTP_TIMEOUT_SEC = 120
+
 
 @dataclass
 class GeminiGateOutcome:
@@ -65,14 +68,8 @@ def _is_transient_gemini_transport_error(e: BaseException) -> bool:
     return False
 
 
-def _generate_content_text(
-    jpeg_bytes: bytes,
-    api_key: str,
-    model: str,
-    *,
-    timeout_sec: float,
-) -> tuple[str, int]:
-    """REST v1beta generateContent → 본문 텍스트, 지연 ms."""
+def _generate_content_text(jpeg_bytes: bytes, api_key: str, model: str) -> tuple[str, int]:
+    """REST v1beta generateContent → 본문 텍스트, 지연 ms. (HTTP 읽기 타임아웃 120초 고정)"""
     img_b64 = base64.standard_b64encode(jpeg_bytes).decode("ascii")
     body = {
         "contents": [
@@ -106,7 +103,7 @@ def _generate_content_text(
     )
     t0 = time.perf_counter()
     try:
-        with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
+        with urllib.request.urlopen(req, timeout=_GEMINI_HTTP_TIMEOUT_SEC) as resp:
             raw = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         err_txt = e.read().decode("utf-8", errors="replace") if e.fp else ""
@@ -162,13 +159,12 @@ def run_gemini_silk_gate(bgr_frame: np.ndarray) -> GeminiGateOutcome:
             raise RuntimeError("JPEG 인코딩 실패")
         jpeg = bytes(buf)
         model = str(getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash")).strip()
-        timeout_sec = float(getattr(settings, "GEMINI_GATE_HTTP_TIMEOUT_SEC", 300.0))
         extra_retries = max(0, int(getattr(settings, "GEMINI_GATE_HTTP_RETRIES", 2)))
         full_text = ""
         ms = 0
         for attempt in range(extra_retries + 1):
             try:
-                full_text, ms = _generate_content_text(jpeg, api_key, model, timeout_sec=timeout_sec)
+                full_text, ms = _generate_content_text(jpeg, api_key, model)
                 break
             except RuntimeError as e:
                 if attempt < extra_retries and _is_transient_gemini_transport_error(e):

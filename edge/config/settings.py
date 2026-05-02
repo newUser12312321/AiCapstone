@@ -119,9 +119,8 @@ class Settings(BaseSettings):
     )
     GEMINI_MODEL: str = Field(default="gemini-2.5-flash")
     GEMINI_GATE_JPEG_QUALITY: int = Field(default=92, ge=50, le=100)
-    # Pi·느린 회선에서 응답 대기 전체 타임아웃(초). generateContent 응답 지연이 길면 늘림.
-    GEMINI_GATE_HTTP_TIMEOUT_SEC: float = Field(default=300.0, ge=30.0, le=900.0)
     # 소켓 타임아웃·일시적 5xx 등에 대해 추가 시도 횟수(0이면 1회만).
+    # generateContent HTTP 타임아웃은 gemini_silk_gate 에서 120초 고정.
     GEMINI_GATE_HTTP_RETRIES: int = Field(default=2, ge=0, le=6)
 
     # 멀티보드 시 BOARD_SILK_GATE JSON 의 board_route_substrings 로 OCR→보드 키 (YOLO보다 우선)
