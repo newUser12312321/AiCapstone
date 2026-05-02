@@ -8,6 +8,10 @@ import com.inspection.dto.InspectionRequestDto;
 import com.inspection.dto.InspectionResponseDto;
 import com.inspection.repository.DefectDetailRepository;
 import com.inspection.repository.InspectionLogRepository;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +49,9 @@ public class InspectionService {
 
     @Value("${app.inspection-image-dir:inspection-images}")
     private String inspectionImageDir;
+
+    @Value("${app.gcs-image-bucket:}")
+    private String gcsImageBucket;
 
     // ── 검사 결과 저장 ────────────────────────────────────────────────────────
 
@@ -120,17 +127,32 @@ public class InspectionService {
             LocalDateTime inspectedAt = dto.getInspectedAt() == null ? LocalDateTime.now() : dto.getInspectedAt();
             String ts = inspectedAt.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"));
             String ext = extensionFromMimeType(dto.getImageMimeType());
+            String fileName = "%s_%s%s".formatted(deviceId, ts, ext);
+            byte[] bytes = Base64.getDecoder().decode(encoded);
 
+            // 우선순위 1: GCS 업로드 (Cloud Run 영구 저장)
+            if (gcsImageBucket != null && !gcsImageBucket.isBlank()) {
+                uploadToGcs(fileName, bytes, dto.getImageMimeType());
+                return "https://storage.googleapis.com/" + gcsImageBucket + "/" + fileName;
+            }
+
+            // 우선순위 2: 로컬 디스크 저장 (개발/폴백)
             Path root = Paths.get(inspectionImageDir).toAbsolutePath().normalize();
             Files.createDirectories(root);
-            String fileName = "%s_%s%s".formatted(deviceId, ts, ext);
             Path target = root.resolve(fileName).normalize();
-            byte[] bytes = Base64.getDecoder().decode(encoded);
             Files.write(target, bytes);
             return "/api/v1/inspections/images/" + fileName;
         } catch (IllegalArgumentException | IOException e) {
             throw new IllegalArgumentException("이미지 payload 저장 실패: " + e.getMessage(), e);
         }
+    }
+
+    private void uploadToGcs(String fileName, byte[] bytes, String mimeType) {
+        Storage storage = StorageOptions.getDefaultInstance().getService();
+        String contentType = (mimeType == null || mimeType.isBlank()) ? "image/jpeg" : mimeType;
+        BlobId blobId = BlobId.of(gcsImageBucket, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(contentType).build();
+        storage.create(blobInfo, bytes);
     }
 
     private String extensionFromMimeType(String mimeType) {

@@ -24,6 +24,19 @@ bash deploy/gcp/cloud-run/deploy-backend.sh
 
 - `BACKEND_SERVICE_NAME` (기본: `inspection-backend`)
 - `APP_INSPECTION_IMAGE_DIR` (기본: `/tmp/inspection-images`)
+- `GCS_IMAGE_BUCKET` (선택, 설정 시 검사 이미지를 GCS 버킷에 영구 저장)
+
+예:
+
+```bash
+PROJECT_ID=<your-project-id> \
+REGION=asia-northeast3 \
+DB_URL='jdbc:mysql:///inspection_db?cloudSqlInstance=<project>:asia-northeast3:inspection-mysql&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8' \
+DB_USER=<db-user> \
+DB_PASSWORD=<db-password> \
+GCS_IMAGE_BUCKET=<bucket-name> \
+bash deploy/gcp/cloud-run/deploy-backend.sh
+```
 
 ## 3) 프론트 단독 배포
 

@@ -52,6 +52,20 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- ===== Cloud SQL Java Connector (MySQL, Cloud Run) ===== -->
+        <dependency>
+            <groupId>com.google.cloud.sql</groupId>
+            <artifactId>mysql-socket-factory-connector-j-8</artifactId>
+            <version>1.19.1</version>
+        </dependency>
+
+        <!-- ===== Google Cloud Storage 클라이언트 ===== -->
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-storage</artifactId>
+            <version>2.64.0</version>
+        </dependency>
+
         <!-- ===== Lombok: 보일러플레이트 코드 자동 생성
                     (@Getter, @Builder, @NoArgsConstructor 등) ===== -->
         <dependency>

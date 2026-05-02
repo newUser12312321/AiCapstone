@@ -32,3 +32,4 @@ logging:
 
 app:
   inspection-image-dir: inspection-images
+  gcs-image-bucket: ${GCS_IMAGE_BUCKET:}

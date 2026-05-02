@@ -13,6 +13,7 @@ DB_URL="${DB_URL:?DB_URL is required}"
 DB_USER="${DB_USER:?DB_USER is required}"
 DB_PASSWORD="${DB_PASSWORD:?DB_PASSWORD is required}"
 IMAGE_DIR="${APP_INSPECTION_IMAGE_DIR:-/tmp/inspection-images}"
+GCS_IMAGE_BUCKET="${GCS_IMAGE_BUCKET:-}"
 
 echo "[backend] project=${PROJECT_ID} region=${REGION} service=${SERVICE_NAME}"
 
@@ -25,6 +26,6 @@ gcloud run deploy "${SERVICE_NAME}" \
   --region "${REGION}" \
   --allow-unauthenticated \
   --port 8080 \
-  --set-env-vars "SPRING_DATASOURCE_URL=${DB_URL},SPRING_DATASOURCE_USERNAME=${DB_USER},SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD},APP_INSPECTION_IMAGE_DIR=${IMAGE_DIR}"
+  --set-env-vars "SPRING_DATASOURCE_URL=${DB_URL},SPRING_DATASOURCE_USERNAME=${DB_USER},SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD},APP_INSPECTION_IMAGE_DIR=${IMAGE_DIR},GCS_IMAGE_BUCKET=${GCS_IMAGE_BUCKET}"
 
 echo "[backend] deployed successfully"

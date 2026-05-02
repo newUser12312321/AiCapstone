@@ -20,7 +20,7 @@
 
         <section class="control-panel">
             <div class="panel-title">검사 제어</div>
-            <button class="primary-btn" @onclick="TriggerAsync">검사 시작 (1회)</button>
+            <button class="primary-btn" @onclick="RunInspectionAndGoResultAsync">검사 시작 (1회)</button>
             <button class="secondary-btn" @onclick="StartAutoAsync">자동 검사 시작</button>
             <button class="danger-btn" @onclick="StopAutoAsync">자동 검사 중지</button>
             @if (!string.IsNullOrWhiteSpace(_actionMessage))
@@ -65,7 +65,29 @@
 
     protected override async Task OnInitializedAsync() => await RefreshLatestAsync();
 
-    private async Task TriggerAsync() => await ExecuteEdgeActionAsync(() => EdgeApi.TriggerInspectionAsync(), "검사 트리거 완료");
+    private async Task RunInspectionAndGoResultAsync()
+    {
+        try
+        {
+            _actionMessage = null;
+            await EdgeApi.TriggerInspectionAsync();
+            _actionMessage = "검사 완료 화면으로 이동합니다...";
+            await Task.Delay(1800);
+            await RefreshLatestAsync();
+
+            if (_latest is not null)
+            {
+                Nav.NavigateTo($"/inspection-complete/{_latest.Id}");
+                return;
+            }
+
+            _actionMessage = "검사 결과를 찾을 수 없습니다. 다시 시도해 주세요.";
+        }
+        catch (Exception ex)
+        {
+            _actionMessage = $"요청 실패: {ex.Message}";
+        }
+    }
     private async Task StartAutoAsync() => await ExecuteEdgeActionAsync(() => EdgeApi.StartAutoInspectionAsync(), "자동 검사 시작");
     private async Task StopAutoAsync() => await ExecuteEdgeActionAsync(() => EdgeApi.StopAutoInspectionAsync(), "자동 검사 중지");
 
