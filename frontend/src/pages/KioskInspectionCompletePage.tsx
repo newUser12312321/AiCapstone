@@ -1,8 +1,9 @@
-import { useMemo } from 'react'
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Home, Loader2 } from 'lucide-react'
 import { fetchInspectionById } from '@/api/inspectionApi'
+import type { DefectDetail } from '@/types/inspection'
 import { DEFECT_COLOR, defectDisplayName } from '@/types/inspection'
 
 function resolveImageSrc(imagePath: string | null): string | null {
@@ -14,6 +15,139 @@ function resolveImageSrc(imagePath: string | null): string | null {
   const capturesIndex = p.indexOf('/captures/')
   if (capturesIndex >= 0) return p.slice(capturesIndex)
   return p.startsWith('/') ? p : `/${p}`
+}
+
+/** object-contain 으로 그려진 영역 안에 검출 좌표(이미지 픽셀)와 같은 SVG 오버레이 */
+interface ContainImageLayout {
+  natW: number
+  natH: number
+  insetLeft: number
+  insetTop: number
+  dispW: number
+  dispH: number
+}
+
+function computeContainLayout(
+  cw: number,
+  ch: number,
+  natW: number,
+  natH: number,
+): ContainImageLayout | null {
+  if (cw <= 0 || ch <= 0 || natW <= 0 || natH <= 0) return null
+  const scale = Math.min(cw / natW, ch / natH)
+  const dispW = natW * scale
+  const dispH = natH * scale
+  return {
+    natW,
+    natH,
+    insetLeft: (cw - dispW) / 2,
+    insetTop: (ch - dispH) / 2,
+    dispW,
+    dispH,
+  }
+}
+
+function KioskInspectionImageWithOverlays({
+  imageSrc,
+  defects,
+}: {
+  imageSrc: string
+  defects: DefectDetail[]
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [layout, setLayout] = useState<ContainImageLayout | null>(null)
+
+  useLayoutEffect(() => {
+    setLayout(null)
+  }, [imageSrc])
+
+  const updateLayout = useCallback(() => {
+    const wrap = wrapRef.current
+    const img = imgRef.current
+    if (!wrap || !img || !img.complete || img.naturalWidth <= 0) return
+    const next = computeContainLayout(
+      wrap.clientWidth,
+      wrap.clientHeight,
+      img.naturalWidth,
+      img.naturalHeight,
+    )
+    setLayout(next)
+  }, [])
+
+  useLayoutEffect(() => {
+    updateLayout()
+  }, [imageSrc, updateLayout])
+
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const ro = new ResizeObserver(() => {
+      requestAnimationFrame(updateLayout)
+    })
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [updateLayout])
+
+  return (
+    <div ref={wrapRef} className="relative h-full w-full rounded-xl overflow-hidden">
+      <img
+        ref={imgRef}
+        src={imageSrc}
+        alt="검사 결과"
+        className="block h-full w-full object-contain rounded-xl bg-black/40"
+        onLoad={updateLayout}
+      />
+      {layout && defects.length > 0 && (
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: layout.insetLeft,
+            top: layout.insetTop,
+            width: layout.dispW,
+            height: layout.dispH,
+          }}
+        >
+          <svg
+            className="h-full w-full"
+            viewBox={`0 0 ${layout.natW} ${layout.natH}`}
+            preserveAspectRatio="none"
+          >
+            {defects.map((d, i) => (
+              <g key={`${d.defectType}-${d.bboxX}-${d.bboxY}-${i}`}>
+                <rect
+                  x={d.bboxX}
+                  y={d.bboxY}
+                  width={d.bboxWidth}
+                  height={d.bboxHeight}
+                  fill="none"
+                  stroke={DEFECT_COLOR[d.defectType] ?? '#38bdf8'}
+                  strokeWidth={3}
+                />
+                <rect
+                  x={d.bboxX}
+                  y={Math.max(0, d.bboxY - 24)}
+                  width={190}
+                  height={22}
+                  rx={4}
+                  fill="rgba(2, 6, 23, 0.92)"
+                />
+                <text
+                  x={d.bboxX + 8}
+                  y={Math.max(14, d.bboxY - 9)}
+                  fill={DEFECT_COLOR[d.defectType] ?? '#7dd3fc'}
+                  fontSize={14}
+                  fontWeight={700}
+                >
+                  {defectDisplayName(d.defectType)} {(d.confidence * 100).toFixed(0)}%
+                </text>
+              </g>
+            ))}
+          </svg>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function fiducialDistancePx(log: {
@@ -92,35 +226,7 @@ export default function KioskInspectionCompletePage() {
             ) : !imageSrc ? (
               <div className="h-full w-full grid place-items-center text-slate-300">검사 이미지가 없습니다.</div>
             ) : (
-              <div className="relative h-full w-full">
-                <img src={imageSrc} alt="검사 결과" className="h-full w-full object-contain rounded-xl" />
-                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1920 1080" preserveAspectRatio="none">
-                  {overlayDefects.map((d, i) => (
-                    <g key={`${d.defectType}-${d.bboxX}-${d.bboxY}-${i}`}>
-                      <rect
-                        x={d.bboxX}
-                        y={d.bboxY}
-                        width={d.bboxWidth}
-                        height={d.bboxHeight}
-                        fill="none"
-                        stroke={DEFECT_COLOR[d.defectType] ?? '#38bdf8'}
-                        strokeWidth={3}
-                      />
-                      <rect
-                        x={d.bboxX}
-                        y={Math.max(0, d.bboxY - 24)}
-                        width={190}
-                        height={22}
-                        rx={4}
-                        fill="rgba(2, 6, 23, 0.92)"
-                      />
-                      <text x={d.bboxX + 8} y={Math.max(0, d.bboxY - 9)} fill={DEFECT_COLOR[d.defectType] ?? '#7dd3fc'} fontSize={14} fontWeight={700}>
-                        {defectDisplayName(d.defectType)} {(d.confidence * 100).toFixed(0)}%
-                      </text>
-                    </g>
-                  ))}
-                </svg>
-              </div>
+              <KioskInspectionImageWithOverlays imageSrc={imageSrc} defects={overlayDefects} />
             )}
           </section>
 
