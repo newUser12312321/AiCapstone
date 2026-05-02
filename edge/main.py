@@ -124,6 +124,8 @@ def _load_board_profiles() -> dict[str, dict[str, Any]]:
 
 
 def _select_board_type(frame: np.ndarray) -> tuple[Optional[str], float, str]:
+    if not getattr(settings, "BOARD_IDENTIFIER_YOLO_ENABLED", False):
+        return None, 0.0, ""
     if board_id_detector is None or not board_profiles:
         return None, 0.0, ""
     detections, _ = board_id_detector.detect(frame, target_class=None, conf=settings.BOARD_ID_MIN_CONFIDENCE)
@@ -192,11 +194,16 @@ async def lifespan(app: FastAPI):
     if settings.MULTI_BOARD_ENABLED:
         board_profiles = _load_board_profiles()
         if board_profiles:
-            board_id_detector = YoloDetector(
-                weights_path=settings.BOARD_ID_WEIGHTS_PATH,
-                confidence_threshold=settings.BOARD_ID_MIN_CONFIDENCE,
-            )
-            board_id_detector.load()
+            if getattr(settings, "BOARD_IDENTIFIER_YOLO_ENABLED", False):
+                board_id_detector = YoloDetector(
+                    weights_path=settings.BOARD_ID_WEIGHTS_PATH,
+                    confidence_threshold=settings.BOARD_ID_MIN_CONFIDENCE,
+                )
+                board_id_detector.load()
+            else:
+                logger.info(
+                    "[멀티보드] BOARD_IDENTIFIER_YOLO_ENABLED=false → 보드 전용 YOLO 미로드 (OCR 라우팅·fallback만 사용)"
+                )
         else:
             logger.warning("[멀티보드] 유효한 profiles가 없어 단일보드 모드로 동작합니다.")
 
@@ -309,52 +316,25 @@ def _run_production_vision_pipeline(
             cv2.imshow("Captured Frame", cv2.resize(frame, (640, 360)))
             cv2.waitKey(1)
 
-        use_vision_gate = getattr(settings, "GOOGLE_CLOUD_VISION_GATE_ENABLED", False)
+        silk_gate_full_text = ""
+
         use_gemini_gate = getattr(settings, "GEMINI_GATE_ENABLED", False)
-        gate_should_run = (use_vision_gate or use_gemini_gate) and (
-            not settings.GOOGLE_CLOUD_VISION_GATE_REQUIRE_MULTIBOARD
-            or settings.MULTI_BOARD_ENABLED
+        gate_should_run = use_gemini_gate and (
+            not settings.BOARD_SILK_GATE_REQUIRE_MULTIBOARD or settings.MULTI_BOARD_ENABLED
         )
         if gate_should_run:
-            from inference.gcp_vision_gate import run_vision_gate
             from inference.gemini_silk_gate import run_gemini_silk_gate as run_gemini_gate
 
-            silk_passed = False
-            silk_ms = 0
-            fail_defect = "SILKSCREEN_OCR_GATE_FAIL"
-            fail_detail: Optional[str] = None
-
-            if use_vision_gate:
-                vg = run_vision_gate(frame)
-                silk_ms += getattr(vg, "latency_ms", 0)
-                if vg.ok:
-                    silk_passed = True
-                    logger.info("[실크게이트] Vision 통과 (%d ms)", vg.latency_ms)
-                else:
-                    fail_defect = vg.defect_type or fail_defect
-                    fail_detail = vg.detail
-                    if vg.detail:
-                        logger.warning(
-                            "[Vision게이트] FAIL %s: %s", vg.defect_type, vg.detail,
-                        )
-
-            if use_gemini_gate and not silk_passed:
-                gg = run_gemini_gate(frame)
-                silk_ms += getattr(gg, "latency_ms", 0)
-                if gg.ok:
-                    silk_passed = True
-                    logger.info(
-                        "[실크게이트] Gemini 통과 (%d ms)%s",
-                        gg.latency_ms,
-                        (" (Vision 폴백)" if use_vision_gate else ""),
-                    )
-                else:
-                    fail_defect = gg.defect_type or fail_defect
-                    fail_detail = gg.detail
-                    if gg.detail:
-                        logger.warning(
-                            "[Gemini게이트] FAIL %s: %s", gg.defect_type, gg.detail,
-                        )
+            gg = run_gemini_gate(frame)
+            silk_ms = getattr(gg, "latency_ms", 0)
+            silk_passed = gg.ok
+            fail_defect = gg.defect_type or "SILKSCREEN_OCR_GATE_FAIL"
+            fail_detail = gg.detail
+            if gg.ok:
+                silk_gate_full_text = getattr(gg, "full_text", "") or ""
+                logger.info("[실크게이트] Gemini 통과 (%d ms)", gg.latency_ms)
+            elif gg.detail:
+                logger.warning("[Gemini게이트] FAIL %s: %s", gg.defect_type, gg.detail)
 
             if not silk_passed:
                 packet = _build_packet(
@@ -389,14 +369,36 @@ def _run_production_vision_pipeline(
         selected_board_type: Optional[str] = None
         selected_expected_counts: dict[str, int] = {}
         if settings.MULTI_BOARD_ENABLED and board_profiles:
-            board_type, board_conf, board_cls = _select_board_type(frame)
+            from inference.board_ocr_router import resolve_board_type_from_ocr_text
+
+            board_type: Optional[str] = None
+            board_conf = 0.0
+            board_cls = ""
+
+            if getattr(settings, "BOARD_OCR_ROUTING_ENABLED", False) and silk_gate_full_text:
+                bk, dbg = resolve_board_type_from_ocr_text(silk_gate_full_text)
+                if bk:
+                    if bk in board_profiles:
+                        board_type = bk
+                        board_conf = 1.0
+                        board_cls = "ocr_route_substrings"
+                        logger.info("[멀티보드] OCR→보드 %s (%s)", bk, dbg)
+                    else:
+                        logger.warning(
+                            "[멀티보드] OCR 라우트 키 %s 가 board_profiles에 없음 → 보드 YOLO 폴백%s",
+                            bk,
+                            "" if getattr(settings, "BOARD_IDENTIFIER_YOLO_ENABLED", False) else " (비활성)",
+                        )
+
+            if not board_type:
+                board_type, board_conf, board_cls = _select_board_type(frame)
+
             if board_type:
                 profile = board_profiles[board_type]
                 selected_board_type = board_type
                 selected_expected_counts = profile.get("expected_counts") or {}
                 routed = _get_board_detector(profile["model_path"])
                 if routed is not None:
-                    # 통일 모드: Stage1/Stage2 모두 보드별 모델로 라우팅.
                     stage1_detector = routed
                     stage2_detector = routed
                     logger.info(
@@ -407,7 +409,12 @@ def _run_production_vision_pipeline(
                         profile["model_path"],
                     )
             else:
-                logger.warning("[멀티보드] 보드 식별 실패 (min_conf=%.2f)", settings.BOARD_ID_MIN_CONFIDENCE)
+                logger.warning(
+                    "[멀티보드] 보드 타입 미확정 — OCR 라우팅 또는 보드 YOLO에서 매칭 없음 "
+                    "(BOARD_IDENTIFIER_YOLO_ENABLED=%s, min_conf=%.2f)",
+                    getattr(settings, "BOARD_IDENTIFIER_YOLO_ENABLED", False),
+                    settings.BOARD_ID_MIN_CONFIDENCE,
+                )
                 if settings.BOARD_UNKNOWN_POLICY == "fallback_default" and settings.DEFAULT_BOARD_TYPE:
                     fallback = board_profiles.get(settings.DEFAULT_BOARD_TYPE)
                     if fallback:

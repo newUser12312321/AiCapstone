@@ -1,6 +1,6 @@
 """
 Gemini generateContent(멀티모달)로 실크 텍스트를 받은 뒤
-gcp_vision_gate 와 동일한 JSON 규칙으로 검증한다.
+silk_gate_rules(JSON)와 동일한 규칙으로 검증한다.
 
 API 키: 환경변수 GEMINI_API_KEY 또는 settings.GEMINI_API_KEY
 """
@@ -15,12 +15,13 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Optional
 
 import cv2
+import numpy as np
 
 from config.settings import settings
-from inference.gcp_vision_gate import _resolve_edge_path, evaluate_gate, load_gate_config
+from inference.silk_gate_rules import evaluate_gate, load_gate_config, resolve_silk_gate_config_path
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +94,7 @@ def _generate_content_text(jpeg_bytes: bytes, api_key: str, model: str) -> tuple
 
 
 def run_gemini_silk_gate(bgr_frame: np.ndarray) -> GeminiGateOutcome:
-    """Gemini 호출 후 vision_board_gate.json 규칙 적용."""
+    """Gemini 호출 후 실크 검증 JSON 규칙 적용."""
 
     if not getattr(settings, "GEMINI_GATE_ENABLED", False):
         return GeminiGateOutcome(ok=True, full_text="", latency_ms=0)
@@ -109,15 +110,7 @@ def run_gemini_silk_gate(bgr_frame: np.ndarray) -> GeminiGateOutcome:
             detail="Set GEMINI_API_KEY in edge/.env or environment",
         )
 
-    cfg_path = _resolve_edge_path(
-        str(
-            getattr(
-                settings,
-                "GOOGLE_CLOUD_VISION_GATE_CONFIG_PATH",
-                "config/vision_board_gate.json",
-            )
-        )
-    )
+    cfg_path = resolve_silk_gate_config_path()
     try:
         cfg = load_gate_config(cfg_path)
     except (OSError, ValueError, json.JSONDecodeError) as e:

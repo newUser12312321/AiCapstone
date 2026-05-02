@@ -99,32 +99,29 @@ class Settings(BaseSettings):
     # 보드 프로파일(JSON) 파일 경로. edge/ 기준 상대 경로 허용.
     BOARD_PROFILES_PATH: str = Field(default="config/board_profiles.json")
     BOARD_ID_MIN_CONFIDENCE: float = Field(default=0.4, ge=0.0, le=1.0)
+    # False(기본): 멀티보드 시 board_id 전용 가중치로 식별하지 않음 → OCR 라우팅·fallback 만 사용.
+    BOARD_IDENTIFIER_YOLO_ENABLED: bool = Field(default=False)
     # unknown 처리 정책: abort | fallback_default
     BOARD_UNKNOWN_POLICY: str = Field(default="abort")
     # fallback_default 정책에서 사용할 기본 보드 타입 키
     DEFAULT_BOARD_TYPE: Optional[str] = Field(default=None)
 
-    # ── Google Cloud Vision — 촬영 직후 실크 OCR 게이트 (멀티보드 전 선택적) ─
-    GOOGLE_CLOUD_VISION_GATE_ENABLED: bool = Field(default=False)
-    # 게이트 규칙 JSON (required_substrings, required_regexes). edge/ 기준 상대 경로 허용.
-    GOOGLE_CLOUD_VISION_GATE_CONFIG_PATH: str = Field(
-        default="config/vision_board_gate.json"
-    )
-    # True면 MULTI_BOARD_ENABLED 일 때만 Vision 게이트 실행 (단일모드에서는 생략)
-    GOOGLE_CLOUD_VISION_GATE_REQUIRE_MULTIBOARD: bool = Field(default=True)
-    # 비우면 이미 설정된 GOOGLE_APPLICATION_CREDENTIALS 사용. 설정 시 해당 JSON 경로로 덮어씀(edge 기준 상대 경로 허용).
-    GOOGLE_CLOUD_CREDENTIALS_PATH: Optional[str] = Field(default=None)
-    GOOGLE_CLOUD_VISION_JPEG_QUALITY: int = Field(default=90, ge=50, le=100)
+    # ── 실크 검증 JSON (required_substrings, board_route 등). edge/ 기준 상대 경로 허용.
+    BOARD_SILK_GATE_CONFIG_PATH: str = Field(default="config/vision_board_gate.json")
+    # True면 MULTI_BOARD_ENABLED 일 때만 실크 Gemini 게이트 실행. False면 단일·멀티 모두 게이트 실행 가능.
+    BOARD_SILK_GATE_REQUIRE_MULTIBOARD: bool = Field(default=False)
 
-    # ── Gemini API — 동일 규칙 JSON으로 실크 게이트(Vision 대안·폴백) ─────────
-    # Vision 비활성 + 본 설정 true → Gemini 단독 게이트. 둘 다 true면 Vision 후 실패 시 Gemini.
-    GEMINI_GATE_ENABLED: bool = Field(default=False)
+    # ── Gemini API — 실크 OCR 게이트 ────────────────────────────────────────
+    GEMINI_GATE_ENABLED: bool = Field(default=True)
     GEMINI_API_KEY: Optional[str] = Field(
         default=None,
         description="AI Studio Gemini API 키 — .env GEMINI_API_KEY",
     )
     GEMINI_MODEL: str = Field(default="gemini-2.5-flash")
     GEMINI_GATE_JPEG_QUALITY: int = Field(default=92, ge=50, le=100)
+
+    # 멀티보드 시 BOARD_SILK_GATE JSON 의 board_route_substrings 로 OCR→보드 키 (YOLO보다 우선)
+    BOARD_OCR_ROUTING_ENABLED: bool = Field(default=True)
 
     # ── FastAPI 서버 포트 ────────────────────────────────────────────────────
     EDGE_API_PORT: int = Field(default=8000)

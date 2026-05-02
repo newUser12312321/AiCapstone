@@ -7,5 +7,24 @@
   "required_regexes": [
     "\\d{4}\\.\\d{2}\\.\\d{2}"
   ],
-  "normalize_before_substrings": true
+  "normalize_before_substrings": true,
+  "board_route_substrings": {
+    "G_SERIES": [
+      "GT-125A/126A",
+      "GT-125A",
+      "G-SERIES"
+    ],
+    "GN_948X": [
+      "GN-948X",
+      "gn-948x"
+    ],
+    "EGW_04": [
+      "EGW-04",
+      "egw-04"
+    ],
+    "GL_9272": [
+      "GL-9272",
+      "gl-9272"
+    ]
+  }
 }

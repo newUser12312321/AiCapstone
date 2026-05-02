@@ -1,7 +1,8 @@
 """
 PCB 기판명(silkscreen) OCR 실험 스크립트 - 검사 파이프라인과 분리.
 
-현재 운영 로직은 main._select_board_type() 의 YOLO 클래스 매칭이다.
+멀티보드 시 기본은 OCR 라우팅(gemini_silk_gate 전체 텍스트); BOARD_IDENTIFIER_YOLO_ENABLED=true 일 때만
+main._select_board_type() 의 YOLO 클래스 매칭을 폴백으로 사용한다.
 OCR로 교체하기 전에 동일 이미지로 후보 엔진·전처리 조합을 비교한다.
 
 설치 (한 번):
