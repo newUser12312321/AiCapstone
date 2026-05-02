@@ -106,7 +106,19 @@ def _load_board_profiles() -> dict[str, dict[str, Any]]:
         logger.warning("[멀티보드] board profile 파일이 없어 멀티보드를 비활성화합니다: %s", config_path)
         return {}
     try:
-        raw = json.loads(config_path.read_text(encoding="utf-8"))
+        text = config_path.read_text(encoding="utf-8-sig")
+        raw = json.loads(text)
+    except json.JSONDecodeError as e:
+        lines = text.splitlines()
+        lo = max(0, e.lineno - 3)
+        hi = min(len(lines), e.lineno + 2)
+        ctx = "\n".join(f"  {i + 1:4}| {lines[i]}" for i in range(lo, hi))
+        logger.error("[멀티보드] board profile JSON 문법 오류: %s", e)
+        logger.error("[멀티보드] 파일: %s — 오류 줄 %s 근처:\n%s", config_path, e.lineno, ctx)
+        return {}
+    except OSError as e:
+        logger.error("[멀티보드] board profile 읽기 실패: %s (%s)", config_path, e)
+        return {}
     except Exception as e:
         logger.error("[멀티보드] board profile 로드 실패: %s", e)
         return {}
