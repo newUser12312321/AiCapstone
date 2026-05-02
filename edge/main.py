@@ -309,18 +309,54 @@ def _run_production_vision_pipeline(
             cv2.imshow("Captured Frame", cv2.resize(frame, (640, 360)))
             cv2.waitKey(1)
 
-        gate_should_run = settings.GOOGLE_CLOUD_VISION_GATE_ENABLED and (
+        use_vision_gate = getattr(settings, "GOOGLE_CLOUD_VISION_GATE_ENABLED", False)
+        use_gemini_gate = getattr(settings, "GEMINI_GATE_ENABLED", False)
+        gate_should_run = (use_vision_gate or use_gemini_gate) and (
             not settings.GOOGLE_CLOUD_VISION_GATE_REQUIRE_MULTIBOARD
             or settings.MULTI_BOARD_ENABLED
         )
         if gate_should_run:
             from inference.gcp_vision_gate import run_vision_gate
+            from inference.gemini_silk_gate import run_gemini_silk_gate as run_gemini_gate
 
-            vg = run_vision_gate(frame)
-            if not vg.ok:
-                if vg.detail:
-                    logger.warning("[Vision게이트] FAIL %s: %s", vg.defect_type, vg.detail)
-                dtype = vg.defect_type or "VISION_OCR_GATE_FAIL"
+            silk_passed = False
+            silk_ms = 0
+            fail_defect = "SILKSCREEN_OCR_GATE_FAIL"
+            fail_detail: Optional[str] = None
+
+            if use_vision_gate:
+                vg = run_vision_gate(frame)
+                silk_ms += getattr(vg, "latency_ms", 0)
+                if vg.ok:
+                    silk_passed = True
+                    logger.info("[실크게이트] Vision 통과 (%d ms)", vg.latency_ms)
+                else:
+                    fail_defect = vg.defect_type or fail_defect
+                    fail_detail = vg.detail
+                    if vg.detail:
+                        logger.warning(
+                            "[Vision게이트] FAIL %s: %s", vg.defect_type, vg.detail,
+                        )
+
+            if use_gemini_gate and not silk_passed:
+                gg = run_gemini_gate(frame)
+                silk_ms += getattr(gg, "latency_ms", 0)
+                if gg.ok:
+                    silk_passed = True
+                    logger.info(
+                        "[실크게이트] Gemini 통과 (%d ms)%s",
+                        gg.latency_ms,
+                        (" (Vision 폴백)" if use_vision_gate else ""),
+                    )
+                else:
+                    fail_defect = gg.defect_type or fail_defect
+                    fail_detail = gg.detail
+                    if gg.detail:
+                        logger.warning(
+                            "[Gemini게이트] FAIL %s: %s", gg.defect_type, gg.detail,
+                        )
+
+            if not silk_passed:
                 packet = _build_packet(
                     result=InspectionResult.FAIL,
                     f1x=None,
@@ -330,10 +366,10 @@ def _run_production_vision_pipeline(
                     f1_conf=None,
                     f2_conf=None,
                     angle_error=0.0,
-                    inference_ms=vg.latency_ms,
+                    inference_ms=silk_ms,
                     defects=[
                         DefectPayload(
-                            defect_type=dtype,
+                            defect_type=fail_defect,
                             confidence=1.0,
                             bbox_x=0,
                             bbox_y=0,

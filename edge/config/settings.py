@@ -116,6 +116,16 @@ class Settings(BaseSettings):
     GOOGLE_CLOUD_CREDENTIALS_PATH: Optional[str] = Field(default=None)
     GOOGLE_CLOUD_VISION_JPEG_QUALITY: int = Field(default=90, ge=50, le=100)
 
+    # ── Gemini API — 동일 규칙 JSON으로 실크 게이트(Vision 대안·폴백) ─────────
+    # Vision 비활성 + 본 설정 true → Gemini 단독 게이트. 둘 다 true면 Vision 후 실패 시 Gemini.
+    GEMINI_GATE_ENABLED: bool = Field(default=False)
+    GEMINI_API_KEY: Optional[str] = Field(
+        default=None,
+        description="AI Studio Gemini API 키 — .env GEMINI_API_KEY",
+    )
+    GEMINI_MODEL: str = Field(default="gemini-2.5-flash")
+    GEMINI_GATE_JPEG_QUALITY: int = Field(default=92, ge=50, le=100)
+
     # ── FastAPI 서버 포트 ────────────────────────────────────────────────────
     EDGE_API_PORT: int = Field(default=8000)
 

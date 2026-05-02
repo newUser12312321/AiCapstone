@@ -1,0 +1,174 @@
+"""
+Gemini generateContent(멀티모달)로 실크 텍스트를 받은 뒤
+gcp_vision_gate 와 동일한 JSON 규칙으로 검증한다.
+
+API 키: 환경변수 GEMINI_API_KEY 또는 settings.GEMINI_API_KEY
+"""
+
+from __future__ import annotations
+
+import base64
+import json
+import logging
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from dataclasses import dataclass
+from typing import Any, Optional
+
+import cv2
+
+from config.settings import settings
+from inference.gcp_vision_gate import _resolve_edge_path, evaluate_gate, load_gate_config
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class GeminiGateOutcome:
+    ok: bool
+    full_text: str
+    latency_ms: int
+    defect_type: Optional[str] = None
+    detail: Optional[str] = None
+
+
+def _gemini_api_key() -> str:
+    k = getattr(settings, "GEMINI_API_KEY", None) or ""
+    return str(k).strip()
+
+
+def _generate_content_text(jpeg_bytes: bytes, api_key: str, model: str) -> tuple[str, int]:
+    """REST v1beta generateContent → 본문 텍스트, 지연 ms."""
+    img_b64 = base64.standard_b64encode(jpeg_bytes).decode("ascii")
+    body = {
+        "contents": [
+            {
+                "parts": [
+                    {
+                        "text": (
+                            "You are assisting an automated PCB silkscreen OCR gate. "
+                            "Transcribe every readable silkscreen / label text on this "
+                            "PCB photo. Output plain text only — one logical line per line, "
+                            "UTF-8, no markdown."
+                        )
+                    },
+                    {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}},
+                ]
+            }
+        ]
+    }
+
+    safe_model = (model or "gemini-2.5-flash").strip()
+    quoted_key = urllib.parse.quote(api_key, safe="")
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/models/"
+        f"{safe_model}:generateContent?key={quoted_key}"
+    )
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    t0 = time.perf_counter()
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            raw = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        err_txt = e.read().decode("utf-8", errors="replace") if e.fp else ""
+        raise RuntimeError(f"HTTP {e.code}: {err_txt}") from e
+    elapsed_ms = int((time.perf_counter() - t0) * 1000)
+
+    if "error" in raw:
+        raise RuntimeError(json.dumps(raw["error"], ensure_ascii=False))
+
+    try:
+        text = raw["candidates"][0]["content"]["parts"][0]["text"]
+    except (KeyError, IndexError, TypeError) as e:
+        raise RuntimeError(f"unexpected response: {raw!r}") from e
+
+    return str(text or ""), elapsed_ms
+
+
+def run_gemini_silk_gate(bgr_frame: np.ndarray) -> GeminiGateOutcome:
+    """Gemini 호출 후 vision_board_gate.json 규칙 적용."""
+
+    if not getattr(settings, "GEMINI_GATE_ENABLED", False):
+        return GeminiGateOutcome(ok=True, full_text="", latency_ms=0)
+
+    api_key = _gemini_api_key()
+    if not api_key:
+        logger.error("[Gemini게이트] GEMINI_API_KEY 미설정")
+        return GeminiGateOutcome(
+            ok=False,
+            full_text="",
+            latency_ms=0,
+            defect_type="GEMINI_GATE_NO_API_KEY",
+            detail="Set GEMINI_API_KEY in edge/.env or environment",
+        )
+
+    cfg_path = _resolve_edge_path(
+        str(
+            getattr(
+                settings,
+                "GOOGLE_CLOUD_VISION_GATE_CONFIG_PATH",
+                "config/vision_board_gate.json",
+            )
+        )
+    )
+    try:
+        cfg = load_gate_config(cfg_path)
+    except (OSError, ValueError, json.JSONDecodeError) as e:
+        logger.error("[Gemini게이트] 설정 로드 실패: %s", e)
+        return GeminiGateOutcome(
+            ok=False,
+            full_text="",
+            latency_ms=0,
+            defect_type="GEMINI_GATE_CONFIG_ERROR",
+            detail=str(e),
+        )
+
+    try:
+        q = int(getattr(settings, "GEMINI_GATE_JPEG_QUALITY", 92))
+        q = max(50, min(100, q))
+        ok_img, buf = cv2.imencode(".jpg", bgr_frame, [cv2.IMWRITE_JPEG_QUALITY, q])
+        if not ok_img:
+            raise RuntimeError("JPEG 인코딩 실패")
+        jpeg = bytes(buf)
+        model = str(getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash")).strip()
+        full_text, ms = _generate_content_text(jpeg, api_key, model)
+    except RuntimeError as e:
+        logger.warning("[Gemini게이트] API 오류: %s", e)
+        return GeminiGateOutcome(
+            ok=False,
+            full_text="",
+            latency_ms=0,
+            defect_type="GEMINI_OCR_GATE_SERVICE_ERROR",
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.warning("[Gemini게이트] 예외: %s", e, exc_info=True)
+        return GeminiGateOutcome(
+            ok=False,
+            full_text="",
+            latency_ms=0,
+            defect_type="GEMINI_OCR_GATE_SERVICE_ERROR",
+            detail=str(e),
+        )
+
+    ok_rule, hint = evaluate_gate(full_text, cfg)
+    snippet = full_text.replace("\n", " ")[:200]
+    logger.info("[Gemini게이트] %d ms, 규칙=%s (%s)", ms, ok_rule, snippet)
+
+    if not ok_rule:
+        return GeminiGateOutcome(
+            ok=False,
+            full_text=full_text,
+            latency_ms=ms,
+            defect_type="GEMINI_OCR_GATE_FAIL",
+            detail=hint,
+        )
+
+    return GeminiGateOutcome(ok=True, full_text=full_text, latency_ms=ms)
