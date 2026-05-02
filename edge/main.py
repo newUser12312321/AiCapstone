@@ -52,7 +52,10 @@ from inference.alignment import (
     compute_alignment,
     crop_inspection_roi_with_offset,
 )
-from inference.silk_field_extract import extract_silk_display_fields
+from inference.silk_field_extract import (
+    extract_silk_display_fields,
+    silk_display_fields_complete,
+)
 from inference.yolo_detector import YoloDetector
 from models.schemas import (
     AlignmentResult,
@@ -319,6 +322,7 @@ def _run_production_vision_pipeline(
 
         silk_gate_full_text = ""
         gemini_full_text = ""
+        silk_gate_latency_ms = 0
 
         use_gemini_gate = getattr(settings, "GEMINI_GATE_ENABLED", False)
         gate_should_run = use_gemini_gate and (
@@ -330,6 +334,7 @@ def _run_production_vision_pipeline(
             gg = run_gemini_gate(frame)
             gemini_full_text = getattr(gg, "full_text", "") or ""
             silk_ms = getattr(gg, "latency_ms", 0)
+            silk_gate_latency_ms = int(silk_ms or 0)
             silk_passed = gg.ok
             fail_defect = gg.defect_type or "SILKSCREEN_OCR_GATE_FAIL"
             fail_detail = gg.detail
@@ -379,6 +384,40 @@ def _run_production_vision_pipeline(
             silk_manufacturer=_silk_kw.manufacturer,
             silk_manufacture_date=_silk_kw.manufacture_date,
         )
+
+        # Gemini 게이트 통과 후 OCR 4필드 중 하나라도 비면 실크 인쇄 불량으로 종료
+        if gate_should_run and silk_gate_full_text.strip():
+            if not silk_display_fields_complete(_silk_kw):
+                logger.warning(
+                    "[실크] 시리즈/기판명/제조사/제조일 중 미검출 → SILK_SCREEN_PRINT_DEFECT"
+                )
+                packet = _build_packet(
+                    result=InspectionResult.FAIL,
+                    f1x=None,
+                    f1y=None,
+                    f2x=None,
+                    f2y=None,
+                    f1_conf=None,
+                    f2_conf=None,
+                    angle_error=0.0,
+                    inference_ms=silk_gate_latency_ms,
+                    defects=[
+                        DefectPayload(
+                            defect_type="SILK_SCREEN_PRINT_DEFECT",
+                            confidence=1.0,
+                            bbox_x=0,
+                            bbox_y=0,
+                            bbox_width=1,
+                            bbox_height=1,
+                        )
+                    ],
+                    image_path=image_path,
+                    pipeline_start=pipeline_start,
+                    device_id=None,
+                    **silk_packet_kw,
+                )
+                _finalize(packet)
+                return packet
 
         stage1_detector = detector
         stage2_detector = detector

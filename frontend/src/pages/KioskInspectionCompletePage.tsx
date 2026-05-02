@@ -40,11 +40,21 @@ export default function KioskInspectionCompletePage() {
   })
 
   const imageSrc = resolveImageSrc(log?.imagePath ?? null)
+  const silkPrintDefect = useMemo(
+    () => (log?.defects ?? []).some((d) => d.defectType === 'SILK_SCREEN_PRINT_DEFECT'),
+    [log?.defects],
+  )
   const overlayDefects = useMemo(
-    () => (log?.defects ?? []).filter((d) => !d.defectType.startsWith('MISSING:')),
-    [log?.defects]
+    () =>
+      (log?.defects ?? []).filter(
+        (d) =>
+          !d.defectType.startsWith('MISSING:') &&
+          d.defectType !== 'SILK_SCREEN_PRINT_DEFECT',
+      ),
+    [log?.defects],
   )
   const isPass = log?.result === 'PASS'
+  const kioskVerdictPrimary = silkPrintDefect ? '실크인쇄불량' : log?.result ?? 'PENDING'
   const distance = log ? fiducialDistancePx(log) : null
 
   return (
@@ -56,13 +66,18 @@ export default function KioskInspectionCompletePage() {
             <p className="text-cyan-200/70 mt-1">
               {log ? new Date(log.inspectedAt).toLocaleString('ko-KR') : '검사 결과 불러오는 중'}
             </p>
+            {silkPrintDefect && log && (
+              <p className="text-amber-300/95 text-sm md:text-base font-semibold mt-2">
+                실크 OCR 필드 미검출 — 시리즈·기판명·제조사·제조일을 모두 읽어야 합니다.
+              </p>
+            )}
           </div>
           <div
-            className={`rounded-xl px-5 py-2 text-2xl md:text-3xl font-black ${
+            className={`rounded-xl px-5 py-2 text-xl md:text-3xl font-black ${
               isPass ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
             }`}
           >
-            {log?.result ?? 'PENDING'}
+            {kioskVerdictPrimary}
           </div>
         </header>
 

@@ -227,7 +227,15 @@ export default function InspectionTable({
 
                     {/* 결과 뱃지 */}
                     <td className="px-4 py-3">
-                      <ResultBadge result={log.result} />
+                      <div className="flex flex-col gap-0.5">
+                        <ResultBadge result={log.result} />
+                        {log.result === 'FAIL' &&
+                          log.defects.some((d) => d.defectType === 'SILK_SCREEN_PRINT_DEFECT') && (
+                            <span className="text-[10px] font-semibold text-amber-400/95">
+                              실크인쇄불량
+                            </span>
+                          )}
+                      </div>
                     </td>
 
                     {/* 결함 태그 */}

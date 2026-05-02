@@ -121,3 +121,17 @@ def extract_silk_display_fields(full_text: str) -> SilkDisplayFields:
         manufacturer=manufacturer or None,
         manufacture_date=manufacture_date or None,
     )
+
+
+def _nonblank(x: Optional[str]) -> bool:
+    return bool(x and str(x).strip())
+
+
+def silk_display_fields_complete(sf: SilkDisplayFields) -> bool:
+    """시리즈·기판명·제조사·제조일 4항 모두 문자열 검출되어야 True."""
+    return (
+        _nonblank(sf.series_name)
+        and _nonblank(sf.board_name)
+        and _nonblank(sf.manufacturer)
+        and _nonblank(sf.manufacture_date)
+    )
