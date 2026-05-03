@@ -52,6 +52,20 @@ function formatFiducialRawOrPlaceholder(
   return null
 }
 
+/** YOLO 박스 중심만: 있으면 좌표, 정합 후가 있는데 YOLO 미전송이면 안내 */
+function formatFiducialYoloOrPlaceholder(
+  x: number | null | undefined,
+  y: number | null | undefined,
+  hasPostAlignPair: boolean,
+): string | null {
+  const pair = formatFiducialPair(x, y)
+  if (pair != null) return pair
+  if (hasPostAlignPair) {
+    return '— (YOLO 좌표 미저장: 구 이력 또는 엣지·서버 미배포)'
+  }
+  return null
+}
+
 /**
  * 엣지 `alignment.compute_alignment`: 피듀셜이 2개 미만이면 angle_error_deg = 999.
  * 이 경우 Stage2(결함) 검사는 실행되지 않으며, 결함 박스 데이터도 없다.
@@ -591,16 +605,36 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                     .join(' · ')}
                 />
               )}
-              {log.fiducial1X != null && log.fiducial1Y != null && (
+              {formatFiducialYoloOrPlaceholder(
+                log.fiducial1XYolo,
+                log.fiducial1YYolo,
+                log.fiducial1X != null && log.fiducial1Y != null,
+              ) != null && (
                 <MetaCoordRow
-                  label="F1 중심 — 정합 후 (기준 좌표계)"
-                  value={formatFiducialPair(log.fiducial1X, log.fiducial1Y) ?? '—'}
+                  label="F1 — YOLO 박스 중심 (촬영 프레임)"
+                  value={
+                    formatFiducialYoloOrPlaceholder(
+                      log.fiducial1XYolo,
+                      log.fiducial1YYolo,
+                      log.fiducial1X != null && log.fiducial1Y != null,
+                    )!
+                  }
                 />
               )}
-              {log.fiducial2X != null && log.fiducial2Y != null && (
+              {formatFiducialYoloOrPlaceholder(
+                log.fiducial2XYolo,
+                log.fiducial2YYolo,
+                log.fiducial2X != null && log.fiducial2Y != null,
+              ) != null && (
                 <MetaCoordRow
-                  label="F2 중심 — 정합 후 (기준 좌표계)"
-                  value={formatFiducialPair(log.fiducial2X, log.fiducial2Y) ?? '—'}
+                  label="F2 — YOLO 박스 중심 (촬영 프레임)"
+                  value={
+                    formatFiducialYoloOrPlaceholder(
+                      log.fiducial2XYolo,
+                      log.fiducial2YYolo,
+                      log.fiducial2X != null && log.fiducial2Y != null,
+                    )!
+                  }
                 />
               )}
               {formatFiducialRawOrPlaceholder(
@@ -609,7 +643,7 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                 log.fiducial1X != null && log.fiducial1Y != null,
               ) != null && (
                 <MetaCoordRow
-                  label="F1 검출 원본 · 정합 전 (촬영 프레임)"
+                  label="F1 — 서브픽셀 보정 후 · 정합 전 (촬영 프레임)"
                   value={
                     formatFiducialRawOrPlaceholder(
                       log.fiducial1XRaw,
@@ -625,7 +659,7 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                 log.fiducial2X != null && log.fiducial2Y != null,
               ) != null && (
                 <MetaCoordRow
-                  label="F2 검출 원본 · 정합 전 (촬영 프레임)"
+                  label="F2 — 서브픽셀 보정 후 · 정합 전 (촬영 프레임)"
                   value={
                     formatFiducialRawOrPlaceholder(
                       log.fiducial2XRaw,
@@ -633,6 +667,18 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                       log.fiducial2X != null && log.fiducial2Y != null,
                     )!
                   }
+                />
+              )}
+              {log.fiducial1X != null && log.fiducial1Y != null && (
+                <MetaCoordRow
+                  label="F1 — 정합 후 (기준 좌표계)"
+                  value={formatFiducialPair(log.fiducial1X, log.fiducial1Y) ?? '—'}
+                />
+              )}
+              {log.fiducial2X != null && log.fiducial2Y != null && (
+                <MetaCoordRow
+                  label="F2 — 정합 후 (기준 좌표계)"
+                  value={formatFiducialPair(log.fiducial2X, log.fiducial2Y) ?? '—'}
                 />
               )}
               {f12DistancePx != null && (

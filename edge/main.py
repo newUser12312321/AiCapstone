@@ -84,6 +84,20 @@ def _fiducial_confidences(alignment: AlignmentResult) -> tuple[Optional[float], 
     return f1, f2
 
 
+def _fiducial_yolo_centers(alignment: AlignmentResult) -> tuple[
+    Optional[float], Optional[float], Optional[float], Optional[float]
+]:
+    """YOLO 박스 중심만(타원 보정 전). 피듀셜 Stage1에서 채움."""
+    o1x = o1y = o2x = o2y = None
+    if alignment.fiducial1 is not None:
+        o1x = alignment.fiducial1.yolo_center_x
+        o1y = alignment.fiducial1.yolo_center_y
+    if alignment.fiducial2 is not None:
+        o2x = alignment.fiducial2.yolo_center_x
+        o2y = alignment.fiducial2.yolo_center_y
+    return o1x, o1y, o2x, o2y
+
+
 # ── 전역 싱글턴 객체 (앱 수명 주기 동안 유지) ─────────────────────────────────
 camera:           Optional[CameraCapture] = None
 detector:         Optional[YoloDetector]  = None  # 단일 모델 모드
@@ -547,6 +561,7 @@ def _run_production_vision_pipeline(
 
         # 정합 전 검출 원본 좌표 (정합 후 fiducial* 는 기준 좌표로 스냅되므로 별도 보존)
         raw_f1x, raw_f1y, raw_f2x, raw_f2y = f1x, f1y, f2x, f2y
+        yolo_f1x, yolo_f1y, yolo_f2x, yolo_f2y = _fiducial_yolo_centers(alignment)
 
         if not alignment.is_aligned:
             logger.warning("[파이프라인] 피듀셜/기울기 조건 불충족 → FAIL, Stage 2 건너뜀")
@@ -558,6 +573,10 @@ def _run_production_vision_pipeline(
                 raw_f1y=raw_f1y,
                 raw_f2x=raw_f2x,
                 raw_f2y=raw_f2y,
+                yolo_f1x=yolo_f1x,
+                yolo_f1y=yolo_f1y,
+                yolo_f2x=yolo_f2x,
+                yolo_f2y=yolo_f2y,
                 f1_conf=f1c, f2_conf=f2c,
                 angle_error=measured_skew_deg,
                 inference_ms=fiducial_ms,
@@ -705,6 +724,10 @@ def _run_production_vision_pipeline(
             raw_f1y=raw_f1y,
             raw_f2x=raw_f2x,
             raw_f2y=raw_f2y,
+            yolo_f1x=yolo_f1x,
+            yolo_f1y=yolo_f1y,
+            yolo_f2x=yolo_f2x,
+            yolo_f2y=yolo_f2y,
             f1_conf=f1c, f2_conf=f2c,
             angle_error=measured_skew_deg,
             inference_ms=fiducial_ms + defect_ms,
@@ -780,6 +803,10 @@ def _build_packet(
     raw_f1y: Optional[float] = None,
     raw_f2x: Optional[float] = None,
     raw_f2y: Optional[float] = None,
+    yolo_f1x: Optional[float] = None,
+    yolo_f1y: Optional[float] = None,
+    yolo_f2x: Optional[float] = None,
+    yolo_f2y: Optional[float] = None,
     silk_series_name: Optional[str] = None,
     silk_board_name: Optional[str] = None,
     silk_manufacturer: Optional[str] = None,
@@ -796,6 +823,10 @@ def _build_packet(
         fiducial1_y_raw=raw_f1y,
         fiducial2_x_raw=raw_f2x,
         fiducial2_y_raw=raw_f2y,
+        fiducial1_x_yolo=yolo_f1x,
+        fiducial1_y_yolo=yolo_f1y,
+        fiducial2_x_yolo=yolo_f2x,
+        fiducial2_y_yolo=yolo_f2y,
         fiducial1_confidence=f1_conf,
         fiducial2_confidence=f2_conf,
         angle_error_deg=angle_error,

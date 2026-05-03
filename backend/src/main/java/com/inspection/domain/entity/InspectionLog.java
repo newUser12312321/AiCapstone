@@ -88,6 +88,19 @@ public class InspectionLog {
     @Column(name = "fiducial2_y_raw")
     private Double fiducial2YRaw;
 
+    /** YOLO 박스 중심만(타원 보정 전) — 촬영 프레임 기준 */
+    @Column(name = "fiducial1_x_yolo")
+    private Double fiducial1XYolo;
+
+    @Column(name = "fiducial1_y_yolo")
+    private Double fiducial1YYolo;
+
+    @Column(name = "fiducial2_x_yolo")
+    private Double fiducial2XYolo;
+
+    @Column(name = "fiducial2_y_yolo")
+    private Double fiducial2YYolo;
+
     /** 피듀셜 1번 YOLO 탐지 신뢰도 (0~1) */
     @Column(name = "fiducial1_confidence")
     private Float fiducial1Confidence;

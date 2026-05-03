@@ -58,6 +58,12 @@ public class InspectionRequestDto {
     private Double fiducial2XRaw;
     private Double fiducial2YRaw;
 
+    /** YOLO 박스 중심만(타원 보정 전, 촬영 프레임) */
+    private Double fiducial1XYolo;
+    private Double fiducial1YYolo;
+    private Double fiducial2XYolo;
+    private Double fiducial2YYolo;
+
     /** 피듀셜 YOLO 탐지 신뢰도 (0~1, 선택) */
     private Float fiducial1Confidence;
     private Float fiducial2Confidence;

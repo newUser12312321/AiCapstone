@@ -35,6 +35,18 @@ public sealed class InspectionIngestRequest
     [JsonPropertyName("fiducial2YRaw")]
     public double? Fiducial2YRaw { get; set; }
 
+    [JsonPropertyName("fiducial1XYolo")]
+    public double? Fiducial1XYolo { get; set; }
+
+    [JsonPropertyName("fiducial1YYolo")]
+    public double? Fiducial1YYolo { get; set; }
+
+    [JsonPropertyName("fiducial2XYolo")]
+    public double? Fiducial2XYolo { get; set; }
+
+    [JsonPropertyName("fiducial2YYolo")]
+    public double? Fiducial2YYolo { get; set; }
+
     [JsonPropertyName("fiducial1Confidence")]
     public double? Fiducial1Confidence { get; set; }
 

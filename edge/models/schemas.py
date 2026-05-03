@@ -59,6 +59,14 @@ class DetectionItem(BaseModel):
         default=None,
         description="서브픽셀 보정 중심 Y (없으면 bbox 중심 사용)",
     )
+    yolo_center_x: Optional[float] = Field(
+        default=None,
+        description="YOLO 박스만의 중심 X (타원 보정 전, 피듀셜 Stage1에서만 설정)",
+    )
+    yolo_center_y: Optional[float] = Field(
+        default=None,
+        description="YOLO 박스만의 중심 Y (타원 보정 전)",
+    )
 
     @property
     def center_x(self) -> float:
@@ -128,6 +136,12 @@ class InspectionPacket(BaseModel):
     fiducial1_y_raw: Optional[float] = Field(default=None, serialization_alias="fiducial1YRaw")
     fiducial2_x_raw: Optional[float] = Field(default=None, serialization_alias="fiducial2XRaw")
     fiducial2_y_raw: Optional[float] = Field(default=None, serialization_alias="fiducial2YRaw")
+
+    # YOLO 박스 중심만 (타원 서브픽셀 보정 전, 촬영 프레임 기준)
+    fiducial1_x_yolo: Optional[float] = Field(default=None, serialization_alias="fiducial1XYolo")
+    fiducial1_y_yolo: Optional[float] = Field(default=None, serialization_alias="fiducial1YYolo")
+    fiducial2_x_yolo: Optional[float] = Field(default=None, serialization_alias="fiducial2XYolo")
+    fiducial2_y_yolo: Optional[float] = Field(default=None, serialization_alias="fiducial2YYolo")
 
     # Stage1 YOLO 탐지 신뢰도 (0~1, 없으면 None)
     fiducial1_confidence: Optional[float] = Field(default=None, serialization_alias="fiducial1Confidence")

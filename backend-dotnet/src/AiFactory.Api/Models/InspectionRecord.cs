@@ -13,6 +13,10 @@ public sealed class InspectionRecord
     public double? Fiducial1YRaw { get; set; }
     public double? Fiducial2XRaw { get; set; }
     public double? Fiducial2YRaw { get; set; }
+    public double? Fiducial1XYolo { get; set; }
+    public double? Fiducial1YYolo { get; set; }
+    public double? Fiducial2XYolo { get; set; }
+    public double? Fiducial2YYolo { get; set; }
     public double? Fiducial1Confidence { get; set; }
     public double? Fiducial2Confidence { get; set; }
     public double? AngleErrorDeg { get; set; }

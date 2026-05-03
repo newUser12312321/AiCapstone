@@ -198,6 +198,38 @@ export default function KioskInspectionCompletePage() {
 
               <InfoRow
 
+                label="F1 YOLO 박스 중심(px)"
+
+                value={log?.fiducial1XYolo != null && log.fiducial1YYolo != null ? `(${Number(log.fiducial1XYolo).toFixed(4)}, ${Number(log.fiducial1YYolo).toFixed(4)})` : '-'}
+
+              />
+
+              <InfoRow
+
+                label="F2 YOLO 박스 중심(px)"
+
+                value={log?.fiducial2XYolo != null && log.fiducial2YYolo != null ? `(${Number(log.fiducial2XYolo).toFixed(4)}, ${Number(log.fiducial2YYolo).toFixed(4)})` : '-'}
+
+              />
+
+              <InfoRow
+
+                label="F1 서브픽셀·정합 전(px)"
+
+                value={log?.fiducial1XRaw != null && log?.fiducial1YRaw != null ? `(${Number(log.fiducial1XRaw).toFixed(4)}, ${Number(log.fiducial1YRaw).toFixed(4)})` : '-'}
+
+              />
+
+              <InfoRow
+
+                label="F2 서브픽셀·정합 전(px)"
+
+                value={log?.fiducial2XRaw != null && log?.fiducial2YRaw != null ? `(${Number(log.fiducial2XRaw).toFixed(4)}, ${Number(log.fiducial2YRaw).toFixed(4)})` : '-'}
+
+              />
+
+              <InfoRow
+
                 label="F1 정합 후(px)"
 
                 value={log?.fiducial1X != null && log.fiducial1Y != null ? `(${Number(log.fiducial1X).toFixed(4)}, ${Number(log.fiducial1Y).toFixed(4)})` : '-'}
@@ -209,22 +241,6 @@ export default function KioskInspectionCompletePage() {
                 label="F2 정합 후(px)"
 
                 value={log?.fiducial2X != null && log.fiducial2Y != null ? `(${Number(log.fiducial2X).toFixed(4)}, ${Number(log.fiducial2Y).toFixed(4)})` : '-'}
-
-              />
-
-              <InfoRow
-
-                label="F1 검출 원본(px)"
-
-                value={log?.fiducial1XRaw != null && log?.fiducial1YRaw != null ? `(${Number(log.fiducial1XRaw).toFixed(4)}, ${Number(log.fiducial1YRaw).toFixed(4)})` : '-'}
-
-              />
-
-              <InfoRow
-
-                label="F2 검출 원본(px)"
-
-                value={log?.fiducial2XRaw != null && log?.fiducial2YRaw != null ? `(${Number(log.fiducial2XRaw).toFixed(4)}, ${Number(log.fiducial2YRaw).toFixed(4)})` : '-'}
 
               />
 

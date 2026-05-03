@@ -302,16 +302,20 @@ class YoloDetector:
         )
         refined_count = 0
         for i, det in enumerate(fiducials):
+            bbox_cx = float(det.bbox.x) + float(det.bbox.width) / 2.0
+            bbox_cy = float(det.bbox.y) + float(det.bbox.height) / 2.0
+            yolo_cx = round(bbox_cx, 4)
+            yolo_cy = round(bbox_cy, 4)
             refined = _refine_fiducial_center_subpixel(image, det)
-            if refined is None:
-                continue
-            refined_count += 1
-            fiducials[i] = det.model_copy(
-                update={
-                    "refined_center_x": round(refined[0], 4),
-                    "refined_center_y": round(refined[1], 4),
-                }
-            )
+            upd: dict = {
+                "yolo_center_x": yolo_cx,
+                "yolo_center_y": yolo_cy,
+            }
+            if refined is not None:
+                refined_count += 1
+                upd["refined_center_x"] = round(refined[0], 4)
+                upd["refined_center_y"] = round(refined[1], 4)
+            fiducials[i] = det.model_copy(update=upd)
         if fiducials:
             logger.info("[YOLO] 피듀셜 서브픽셀 보정: %d/%d", refined_count, len(fiducials))
         return fiducials, ms

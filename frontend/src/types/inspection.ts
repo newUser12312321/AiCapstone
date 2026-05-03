@@ -42,6 +42,12 @@ export interface InspectionLog {
   fiducial2XRaw?: number | null
   fiducial2YRaw?: number | null
 
+  /** YOLO 박스 중심만(타원 보정 전, 촬영 프레임) — 구 이력은 null */
+  fiducial1XYolo?: number | null
+  fiducial1YYolo?: number | null
+  fiducial2XYolo?: number | null
+  fiducial2YYolo?: number | null
+
   /** Stage1 YOLO 탐지 신뢰도 (0~1, 미전송·구 이력은 null/undefined) */
   fiducial1Confidence?: number | null
   fiducial2Confidence?: number | null
