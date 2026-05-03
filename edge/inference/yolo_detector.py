@@ -75,15 +75,27 @@ def _clip_rect_to_image(
     return x0, y0, (x1 - x0), (y1 - y0)
 
 
-def _refine_fiducial_center_subpixel(image: np.ndarray, det: DetectionItem) -> tuple[float, float] | None:
+def _refine_fiducial_center_subpixel(
+    image: np.ndarray,
+    det: DetectionItem,
+    *,
+    pad_ratio: float = 0.35,
+    canny_lo: int = 40,
+    canny_hi: int = 120,
+    blur_ksize: int = 5,
+    axis_ratio_min: float = 0.4,
+) -> tuple[float, float] | None:
     """
     YOLO bbox 주변 ROI에서 타원 피팅 기반으로 피듀셜 중심을 서브픽셀로 보정한다.
     실패 시 None 반환.
+
+    pad_ratio·Canny·블러·axis_ratio_min 은 폴백 시도에서 바꿔 재호출한다.
     """
     h, w = image.shape[:2]
     b = det.bbox
-    pad_x = max(4, int(round(float(b.width) * 0.35)))
-    pad_y = max(4, int(round(float(b.height) * 0.35)))
+    pr = max(0.15, min(0.75, float(pad_ratio)))
+    pad_x = max(4, int(round(float(b.width) * pr)))
+    pad_y = max(4, int(round(float(b.height) * pr)))
     rx, ry, rw, rh = _clip_rect_to_image(
         float(b.x) - pad_x,
         float(b.y) - pad_y,
@@ -97,16 +109,21 @@ def _refine_fiducial_center_subpixel(image: np.ndarray, det: DetectionItem) -> t
         return None
 
     gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (5, 5), 0)
-    edge = cv2.Canny(gray, 40, 120)
+    bk = int(blur_ksize) if int(blur_ksize) % 2 == 1 else int(blur_ksize) + 1
+    bk = max(3, min(bk, 11))
+    gray = cv2.GaussianBlur(gray, (bk, bk), 0)
+    lo = max(1, int(canny_lo))
+    hi = max(lo + 1, int(canny_hi))
+    edge = cv2.Canny(gray, lo, hi)
     contours, _ = cv2.findContours(edge, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
     if not contours:
         return None
 
     roi_cx = rw / 2.0
     roi_cy = rh / 2.0
-    min_area = max(20.0, float(b.width * b.height) * 0.03)
-    max_area = float(rw * rh) * 0.95
+    min_area = max(15.0, float(b.width * b.height) * 0.02)
+    max_area = float(rw * rh) * 0.98
+    arm = float(axis_ratio_min)
 
     best_score = float("inf")
     best_center: tuple[float, float] | None = None
@@ -123,7 +140,7 @@ def _refine_fiducial_center_subpixel(image: np.ndarray, det: DetectionItem) -> t
         if axis_a <= 1.0 or axis_b <= 1.0:
             continue
         axis_ratio = min(axis_a, axis_b) / max(axis_a, axis_b)
-        if axis_ratio < 0.4:
+        if axis_ratio < arm:
             continue
         dist = float(np.hypot(cx - roi_cx, cy - roi_cy))
         circular_penalty = abs(1.0 - axis_ratio) * 6.0
@@ -138,6 +155,24 @@ def _refine_fiducial_center_subpixel(image: np.ndarray, det: DetectionItem) -> t
     gx = float(rx) + best_center[0]
     gy = float(ry) + best_center[1]
     return gx, gy
+
+
+def _refine_fiducial_with_fallbacks(image: np.ndarray, det: DetectionItem) -> tuple[float, float] | None:
+    """한 마크에 대해 파라미터 폴백을 순서대로 시도해 2점 모두 보정될 확률을 높인다."""
+    attempts: list[dict[str, float | int]] = [
+        {},  # 기본
+        {"pad_ratio": 0.5},
+        {"pad_ratio": 0.55, "canny_lo": 25, "canny_hi": 95},
+        {"pad_ratio": 0.5, "canny_lo": 15, "canny_hi": 70},
+        {"pad_ratio": 0.6, "canny_lo": 20, "canny_hi": 80, "axis_ratio_min": 0.28},
+        {"pad_ratio": 0.45, "canny_lo": 50, "canny_hi": 150, "blur_ksize": 3},
+        {"pad_ratio": 0.65, "canny_lo": 10, "canny_hi": 60, "axis_ratio_min": 0.25, "blur_ksize": 7},
+    ]
+    for kw in attempts:
+        out = _refine_fiducial_center_subpixel(image, det, **kw)
+        if out is not None:
+            return out
+    return None
 
 
 class YoloDetector:
@@ -306,7 +341,7 @@ class YoloDetector:
             bbox_cy = float(det.bbox.y) + float(det.bbox.height) / 2.0
             yolo_cx = round(bbox_cx, 4)
             yolo_cy = round(bbox_cy, 4)
-            refined = _refine_fiducial_center_subpixel(image, det)
+            refined = _refine_fiducial_with_fallbacks(image, det)
             upd: dict = {
                 "yolo_center_x": yolo_cx,
                 "yolo_center_y": yolo_cy,
