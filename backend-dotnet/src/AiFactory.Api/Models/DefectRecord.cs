@@ -7,8 +7,8 @@ public sealed class DefectRecord
     public InspectionRecord? InspectionRecord { get; set; }
     public string DefectType { get; set; } = string.Empty;
     public double Confidence { get; set; }
-    public int BboxX { get; set; }
-    public int BboxY { get; set; }
-    public int BboxWidth { get; set; }
-    public int BboxHeight { get; set; }
+    public double BboxX { get; set; }
+    public double BboxY { get; set; }
+    public double BboxWidth { get; set; }
+    public double BboxHeight { get; set; }
 }

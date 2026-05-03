@@ -33,6 +33,11 @@ function formatFiducialPair(
   return `(${Number(x).toFixed(4)}, ${Number(y).toFixed(4)})`
 }
 
+/** 결함 박스 좌표·크기 (서브픽셀 float) 표시 */
+function fmtPx(n: number): string {
+  return Number(n).toFixed(4)
+}
+
 /** 정합 전(Raw) 좌표: 있으면 좌표 문자열, 정합 후만 있고 Raw만 없으면 안내(구이력/미전송) */
 function formatFiducialRawOrPlaceholder(
   x: number | null | undefined,
@@ -658,8 +663,8 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                 </h4>
                 <div className="max-h-56 overflow-y-auto space-y-2 pr-1">
                   {overlayDefects.map((d, i) => {
-                    const cx = d.bboxX + Math.round(d.bboxWidth / 2)
-                    const cy = d.bboxY + Math.round(d.bboxHeight / 2)
+                    const cx = d.bboxX + d.bboxWidth / 2
+                    const cy = d.bboxY + d.bboxHeight / 2
                     const color = DEFECT_COLOR[d.defectType] ?? '#f87171'
                     return (
                       <div
@@ -675,9 +680,15 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                           </span>
                         </div>
                         <div className="text-[11px] font-mono text-gray-300 leading-relaxed">
-                          <div>좌상단: ({d.bboxX}, {d.bboxY})</div>
-                          <div>크기: {d.bboxWidth}×{d.bboxHeight}px</div>
-                          <div className="text-sky-300">중심: ({cx}, {cy})</div>
+                          <div>
+                            좌상단: ({fmtPx(d.bboxX)}, {fmtPx(d.bboxY)})
+                          </div>
+                          <div>
+                            크기: {fmtPx(d.bboxWidth)}×{fmtPx(d.bboxHeight)} px
+                          </div>
+                          <div className="text-sky-300">
+                            중심: ({fmtPx(cx)}, {fmtPx(cy)})
+                          </div>
                         </div>
                       </div>
                     )

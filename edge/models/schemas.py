@@ -33,12 +33,12 @@ class DefectType(str, Enum):
 class BoundingBox(BaseModel):
     """
     YOLO 탐지 결과 바운딩 박스 좌표.
-    좌상단 (x, y) 기준, 너비·높이 형식 (XYWH).
+    좌상단 (x, y) 기준, 너비·높이 형식 (XYWH). 픽셀 격자 상 실수(서브픽셀) 허용.
     """
-    x: int = Field(ge=0, description="좌상단 X 좌표 (픽셀)")
-    y: int = Field(ge=0, description="좌상단 Y 좌표 (픽셀)")
-    width: int = Field(gt=0, description="너비 (픽셀)")
-    height: int = Field(gt=0, description="높이 (픽셀)")
+    x: float = Field(ge=0, description="좌상단 X 좌표 (픽셀, 서브픽셀 가능)")
+    y: float = Field(ge=0, description="좌상단 Y 좌표 (픽셀, 서브픽셀 가능)")
+    width: float = Field(gt=0, description="너비 (픽셀)")
+    height: float = Field(gt=0, description="높이 (픽셀)")
 
 
 # ── 탐지 결과 단위 ────────────────────────────────────────────────────────────
@@ -61,14 +61,14 @@ class DetectionItem(BaseModel):
     )
 
     @property
-    def center_x(self) -> int:
+    def center_x(self) -> float:
         """바운딩 박스 중심 X 좌표 (정렬 계산에 사용)"""
-        return self.bbox.x + self.bbox.width // 2
+        return float(self.bbox.x) + float(self.bbox.width) / 2.0
 
     @property
-    def center_y(self) -> int:
+    def center_y(self) -> float:
         """바운딩 박스 중심 Y 좌표 (정렬 계산에 사용)"""
-        return self.bbox.y + self.bbox.height // 2
+        return float(self.bbox.y) + float(self.bbox.height) / 2.0
 
     @property
     def center_x_subpx(self) -> float:
@@ -170,10 +170,10 @@ class DefectPayload(BaseModel):
 
     defect_type: str = Field(serialization_alias="defectType")
     confidence: float = Field(serialization_alias="confidence")
-    bbox_x: int = Field(serialization_alias="bboxX")
-    bbox_y: int = Field(serialization_alias="bboxY")
-    bbox_width: int = Field(serialization_alias="bboxWidth")
-    bbox_height: int = Field(serialization_alias="bboxHeight")
+    bbox_x: float = Field(serialization_alias="bboxX")
+    bbox_y: float = Field(serialization_alias="bboxY")
+    bbox_width: float = Field(serialization_alias="bboxWidth")
+    bbox_height: float = Field(serialization_alias="bboxHeight")
     detail: Optional[str] = Field(
         default=None,
         serialization_alias="detail",

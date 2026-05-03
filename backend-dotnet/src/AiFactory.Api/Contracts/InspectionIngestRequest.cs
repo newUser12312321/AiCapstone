@@ -69,14 +69,14 @@ public sealed class DefectRequest
     public double Confidence { get; set; }
 
     [JsonPropertyName("bboxX")]
-    public int BboxX { get; set; }
+    public double BboxX { get; set; }
 
     [JsonPropertyName("bboxY")]
-    public int BboxY { get; set; }
+    public double BboxY { get; set; }
 
     [JsonPropertyName("bboxWidth")]
-    public int BboxWidth { get; set; }
+    public double BboxWidth { get; set; }
 
     [JsonPropertyName("bboxHeight")]
-    public int BboxHeight { get; set; }
+    public double BboxHeight { get; set; }
 }

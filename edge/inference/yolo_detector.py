@@ -62,11 +62,16 @@ DUMMY_CLASS_NAMES = {
 }
 
 
-def _clip_rect_to_image(x: int, y: int, w: int, h: int, img_w: int, img_h: int) -> tuple[int, int, int, int]:
-    x0 = max(0, min(x, img_w - 1))
-    y0 = max(0, min(y, img_h - 1))
-    x1 = max(x0 + 1, min(x + w, img_w))
-    y1 = max(y0 + 1, min(y + h, img_h))
+def _clip_rect_to_image(
+    x: float, y: float, w: float, h: float, img_w: int, img_h: int
+) -> tuple[int, int, int, int]:
+    """실수 박스를 이미지 경계에 맞춘 뒤, numpy 슬라이스용 정수 ROI로 반환."""
+    x0 = int(np.floor(max(0.0, min(x, float(img_w - 1)))))
+    y0 = int(np.floor(max(0.0, min(y, float(img_h - 1)))))
+    x1 = int(np.ceil(min(x + max(w, 1e-9), float(img_w))))
+    y1 = int(np.ceil(min(y + max(h, 1e-9), float(img_h))))
+    x1 = max(x0 + 1, x1)
+    y1 = max(y0 + 1, y1)
     return x0, y0, (x1 - x0), (y1 - y0)
 
 
@@ -77,9 +82,16 @@ def _refine_fiducial_center_subpixel(image: np.ndarray, det: DetectionItem) -> t
     """
     h, w = image.shape[:2]
     b = det.bbox
-    pad_x = max(4, int(round(b.width * 0.35)))
-    pad_y = max(4, int(round(b.height * 0.35)))
-    rx, ry, rw, rh = _clip_rect_to_image(b.x - pad_x, b.y - pad_y, b.width + 2 * pad_x, b.height + 2 * pad_y, w, h)
+    pad_x = max(4, int(round(float(b.width) * 0.35)))
+    pad_y = max(4, int(round(float(b.height) * 0.35)))
+    rx, ry, rw, rh = _clip_rect_to_image(
+        float(b.x) - pad_x,
+        float(b.y) - pad_y,
+        float(b.width) + 2 * pad_x,
+        float(b.height) + 2 * pad_y,
+        w,
+        h,
+    )
     roi = image[ry:ry + rh, rx:rx + rw]
     if roi.size == 0:
         return None
@@ -237,6 +249,7 @@ class YoloDetector:
         # results[0]: 단일 이미지 추론 결과
         # .boxes: 탐지된 박스 목록 (없으면 빈 텐서)
         if results and results[0].boxes is not None:
+            img_h, img_w = image.shape[:2]
             for box in results[0].boxes:
                 # 클래스 인덱스 및 이름 추출
                 class_idx = int(box.cls[0])
@@ -247,21 +260,27 @@ class YoloDetector:
                 if target_class and not _matches_target_class(class_name, target_class, num_cls):
                     continue
 
-                # YOLO xywh → 좌상단 기준 정수 좌표로 변환
+                # YOLO xywh → 좌상단 기준 float XYWH (양자화 없이 유지)
                 # box.xywh: [center_x, center_y, width, height] (float)
                 xywh = box.xywh[0].tolist()
-                cx, cy, bw, bh = xywh
-                x = int(cx - bw / 2)
-                y = int(cy - bh / 2)
+                cx, cy, bw, bh = map(float, xywh)
+                x = cx - bw / 2.0
+                y = cy - bh / 2.0
+                w_box = max(1e-9, bw)
+                h_box = max(1e-9, bh)
+                x = max(0.0, min(x, float(img_w) - 1e-9))
+                y = max(0.0, min(y, float(img_h) - 1e-9))
+                w_box = max(1e-9, min(w_box, float(img_w) - x))
+                h_box = max(1e-9, min(h_box, float(img_h) - y))
 
                 detection = DetectionItem(
                     defect_type=class_name,
                     confidence=round(conf, 4),
                     bbox=BoundingBox(
-                        x=max(0, x),
-                        y=max(0, y),
-                        width=max(1, int(bw)),
-                        height=max(1, int(bh)),
+                        x=x,
+                        y=y,
+                        width=w_box,
+                        height=h_box,
                     ),
                 )
                 detections.append(detection)

@@ -112,19 +112,21 @@ def _bbox_after_affine(bbox: BoundingBox, m23: np.ndarray) -> BoundingBox:
     xs, ys = pts[0], pts[1]
     x_min, x_max = float(xs.min()), float(xs.max())
     y_min, y_max = float(ys.min()), float(ys.max())
+    fw = max(1e-9, x_max - x_min)
+    fh = max(1e-9, y_max - y_min)
     return BoundingBox(
-        x=max(0, int(x_min)),
-        y=max(0, int(y_min)),
-        width=max(1, int(round(x_max - x_min))),
-        height=max(1, int(round(y_max - y_min))),
+        x=max(0.0, x_min),
+        y=max(0.0, y_min),
+        width=fw,
+        height=fh,
     )
 
 
 def _clip_bbox_to_image(bbox: BoundingBox, w: int, h: int) -> BoundingBox:
-    x = max(0, min(bbox.x, w - 1))
-    y = max(0, min(bbox.y, h - 1))
-    bw = max(1, min(bbox.width, w - x))
-    bh = max(1, min(bbox.height, h - y))
+    x = max(0.0, min(float(bbox.x), float(w - 1)))
+    y = max(0.0, min(float(bbox.y), float(h - 1)))
+    bw = max(1e-9, min(float(bbox.width), float(w) - x))
+    bh = max(1e-9, min(float(bbox.height), float(h) - y))
     return BoundingBox(x=x, y=y, width=bw, height=bh)
 
 
@@ -310,24 +312,33 @@ def crop_inspection_roi_with_offset(
     b1 = alignment.fiducial1.bbox
     b2 = alignment.fiducial2.bbox
 
-    x_min = min(b1.x, b2.x)
-    y_min = min(b1.y, b2.y)
-    x_max = max(b1.x + b1.width, b2.x + b2.width)
-    y_max = max(b1.y + b1.height, b2.y + b2.height)
+    x_min = min(float(b1.x), float(b2.x))
+    y_min = min(float(b1.y), float(b2.y))
+    x_max = max(float(b1.x) + float(b1.width), float(b2.x) + float(b2.width))
+    y_max = max(float(b1.y) + float(b1.height), float(b2.y) + float(b2.height))
 
-    pad_x = int((x_max - x_min) * padding_ratio)
-    pad_y = int((y_max - y_min) * padding_ratio)
+    pad_x = int(round((x_max - x_min) * padding_ratio))
+    pad_y = int(round((y_max - y_min) * padding_ratio))
 
-    x_min = max(0, x_min - pad_x)
-    y_min = max(0, y_min - pad_y)
-    x_max = min(w, x_max + pad_x)
-    y_max = min(h, y_max + pad_y)
+    x_min = max(0.0, x_min - pad_x)
+    y_min = max(0.0, y_min - pad_y)
+    x_max = min(float(w), x_max + pad_x)
+    y_max = min(float(h), y_max + pad_y)
 
-    roi = image[y_min:y_max, x_min:x_max]
+    xi0 = int(np.floor(x_min))
+    yi0 = int(np.floor(y_min))
+    xi1 = int(np.ceil(x_max))
+    yi1 = int(np.ceil(y_max))
+    xi0 = max(0, min(xi0, w - 1))
+    yi0 = max(0, min(yi0, h - 1))
+    xi1 = max(xi0 + 1, min(xi1, w))
+    yi1 = max(yi0 + 1, min(yi1, h))
+
+    roi = image[yi0:yi1, xi0:xi1]
     logger.debug("[ROI] 크롭 영역: (%d,%d) ~ (%d,%d), 크기=%dx%d",
-                 x_min, y_min, x_max, y_max, roi.shape[1], roi.shape[0])
+                 xi0, yi0, xi1, yi1, roi.shape[1], roi.shape[0])
 
-    return roi, x_min, y_min
+    return roi, xi0, yi0
 
 
 def crop_inspection_roi(

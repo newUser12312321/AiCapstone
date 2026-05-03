@@ -11,8 +11,8 @@
 export interface DefectDetail {
   defectType: string      // "TRACE_OPEN" | "METAL_DAMAGE" | "FIDUCIAL_MISSING"
   confidence: number      // 0.0 ~ 1.0
-  bboxX: number           // 좌상단 X (픽셀)
-  bboxY: number           // 좌상단 Y (픽셀)
+  bboxX: number           // 좌상단 X (픽셀, 서브픽셀 float)
+  bboxY: number           // 좌상단 Y (픽셀, 서브픽셀 float)
   bboxWidth: number       // 너비 (픽셀)
   bboxHeight: number      // 높이 (픽셀)
   /** 실크 게이트·OCR 세부 원인 등 (예: 「제조일자」실크 미검출) */

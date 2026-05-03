@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import re
 import ssl
 import time
 import urllib.error
@@ -44,6 +45,32 @@ def _gemini_api_key() -> str:
     return str(k).strip()
 
 
+def _runtime_error_is_quota_exhausted(e: RuntimeError) -> bool:
+    """무료 일일 한도 등 — 같은 날 재시도해도 소진 상태면 무의미."""
+    s = str(e)
+    return (
+        "GenerateRequestsPerDay" in s
+        or "free_tier_requests" in s
+        or ("quota exceeded" in s.lower() and "PerDay" in s)
+    )
+
+
+def _retry_delay_sec_for_runtime_error(e: RuntimeError) -> float:
+    """
+    429 응답 JSON에 retryDelay(초)가 있으면 사용, 없으면 지수 백오프용 기본.
+    """
+    s = str(e)
+    # "retryDelay": "8s" 형태(google.rpc.RetryInfo)
+    if '"retryDelay"' in s or "retryDelay" in s:
+        m = re.search(r'"retryDelay"\s*:\s*"([0-9.]+)s?"', s)
+        if m:
+            try:
+                return min(120.0, max(1.0, float(m.group(1))))
+            except ValueError:
+                pass
+    return 0.0
+
+
 def _is_transient_gemini_transport_error(e: BaseException) -> bool:
     """소켓 타임아웃·연결 끊김·일부 5xx 등 — 짧은 대기 후 재시도할 만한 오류."""
     if isinstance(e, TimeoutError):
@@ -62,6 +89,9 @@ def _is_transient_gemini_transport_error(e: BaseException) -> bool:
     # _generate_content_text 가 HTTP 오류를 RuntimeError 로 감싼 경우
     if isinstance(e, RuntimeError):
         s = str(e)
+        # 일일 무료 한도 소진 등은 재시도 무의미 → transient 아님
+        if _runtime_error_is_quota_exhausted(e):
+            return False
         return bool(
             any(x in s for x in ("HTTP 408", "HTTP 429", "HTTP 500", "HTTP 502", "HTTP 503", "HTTP 504"))
         )
@@ -168,7 +198,9 @@ def run_gemini_silk_gate(bgr_frame: np.ndarray) -> GeminiGateOutcome:
                 break
             except RuntimeError as e:
                 if attempt < extra_retries and _is_transient_gemini_transport_error(e):
-                    delay = min(30.0, 2.0**attempt)
+                    api_d = _retry_delay_sec_for_runtime_error(e)
+                    backoff = min(30.0, 2.0**attempt)
+                    delay = max(backoff, api_d) if api_d > 0 else backoff
                     logger.warning(
                         "[Gemini게이트] API 일시 오류 (%s) — %.0fs 후 재시도 [%d/%d]",
                         e,
@@ -182,6 +214,10 @@ def run_gemini_silk_gate(bgr_frame: np.ndarray) -> GeminiGateOutcome:
             except Exception as e:
                 if attempt < extra_retries and _is_transient_gemini_transport_error(e):
                     delay = min(30.0, 2.0**attempt)
+                    if isinstance(e, RuntimeError):
+                        api_d = _retry_delay_sec_for_runtime_error(e)
+                        if api_d > 0:
+                            delay = max(delay, api_d)
                     logger.warning(
                         "[Gemini게이트] 전송 예외 (%s) — %.0fs 후 재시도 [%d/%d]",
                         e,
@@ -194,7 +230,16 @@ def run_gemini_silk_gate(bgr_frame: np.ndarray) -> GeminiGateOutcome:
                 raise
 
     except RuntimeError as e:
-        logger.warning("[Gemini게이트] API 오류: %s", e)
+        if _runtime_error_is_quota_exhausted(e):
+            logger.error(
+                "[Gemini게이트] 일일(또는 무료) 쿼터 소진 — 재시도해도 당일 해소되지 않을 수 있음. "
+                "대기: https://ai.google.dev/gemini-api/docs/rate-limits | "
+                "끄기: edge/.env 에 GEMINI_GATE_ENABLED=false | "
+                "원인: %s",
+                e,
+            )
+        else:
+            logger.warning("[Gemini게이트] API 오류: %s", e)
         return GeminiGateOutcome(
             ok=False,
             full_text="",

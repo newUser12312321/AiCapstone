@@ -108,9 +108,14 @@ class ServerSender:
 
                 # 5xx 서버 오류 → 재시도
                 if response.status_code >= 500:
+                    body = (response.text or "").strip()
+                    snippet = (body[:800] + "…") if len(body) > 800 else body
                     logger.warning(
-                        "[전송] 서버 오류 %d (시도 %d/%d)",
-                        response.status_code, attempt, MAX_RETRY
+                        "[전송] 서버 오류 %d (시도 %d/%d)%s",
+                        response.status_code,
+                        attempt,
+                        MAX_RETRY,
+                        f" — 응답: {snippet}" if snippet else "",
                     )
                     raise RequestException(f"서버 오류: {response.status_code}")
 
@@ -237,10 +242,10 @@ def create_dummy_packet(
             defects.append(DefectPayload(
                 defect_type=random.choice(defect_types),
                 confidence=round(random.uniform(0.6, 0.95), 2),
-                bbox_x=random.randint(200, 800),
-                bbox_y=random.randint(100, 500),
-                bbox_width=random.randint(30, 80),
-                bbox_height=random.randint(20, 50),
+                bbox_x=round(random.uniform(200.0, 800.0), 4),
+                bbox_y=round(random.uniform(100.0, 500.0), 4),
+                bbox_width=round(random.uniform(30.0, 80.0), 4),
+                bbox_height=round(random.uniform(20.0, 50.0), 4),
             ))
 
     return InspectionPacket(

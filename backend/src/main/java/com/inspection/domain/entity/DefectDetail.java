@@ -46,21 +46,21 @@ public class DefectDetail {
 
     // ── 바운딩 박스 좌표 (원본 이미지 픽셀 기준) ──────────────────────────
 
-    /** 바운딩 박스 좌상단 X 좌표 (픽셀) */
+    /** 바운딩 박스 좌상단 X 좌표 (픽셀, 서브픽셀 가능) */
     @Column(name = "bbox_x", nullable = false)
-    private Integer bboxX;
+    private Double bboxX;
 
-    /** 바운딩 박스 좌상단 Y 좌표 (픽셀) */
+    /** 바운딩 박스 좌상단 Y 좌표 (픽셀, 서브픽셀 가능) */
     @Column(name = "bbox_y", nullable = false)
-    private Integer bboxY;
+    private Double bboxY;
 
     /** 바운딩 박스 너비 (픽셀) */
     @Column(name = "bbox_width", nullable = false)
-    private Integer bboxWidth;
+    private Double bboxWidth;
 
     /** 바운딩 박스 높이 (픽셀) */
     @Column(name = "bbox_height", nullable = false)
-    private Integer bboxHeight;
+    private Double bboxHeight;
 
     /** 실크 게이트·OCR 등 부가 설명 (엣지 optional, 예: 「제조일자」 미검출) */
     @Column(name = "detail", length = 768)
