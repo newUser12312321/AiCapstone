@@ -33,6 +33,20 @@ function formatFiducialPair(
   return `(${Number(x).toFixed(4)}, ${Number(y).toFixed(4)})`
 }
 
+/** 정합 전(Raw) 좌표: 있으면 좌표 문자열, 정합 후만 있고 Raw만 없으면 안내(구이력/미전송) */
+function formatFiducialRawOrPlaceholder(
+  x: number | null | undefined,
+  y: number | null | undefined,
+  hasPostAlignPair: boolean,
+): string | null {
+  const pair = formatFiducialPair(x, y)
+  if (pair != null) return pair
+  if (hasPostAlignPair) {
+    return '— (Raw 미저장: 이전에 저장된 이력이거나 엣지·서버가 Raw 필드 이전)'
+  }
+  return null
+}
+
 /**
  * 엣지 `alignment.compute_alignment`: 피듀셜이 2개 미만이면 angle_error_deg = 999.
  * 이 경우 Stage2(결함) 검사는 실행되지 않으며, 결함 박스 데이터도 없다.
@@ -584,16 +598,36 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                   value={formatFiducialPair(log.fiducial2X, log.fiducial2Y) ?? '—'}
                 />
               )}
-              {formatFiducialPair(log.fiducial1XRaw, log.fiducial1YRaw) != null && (
+              {formatFiducialRawOrPlaceholder(
+                log.fiducial1XRaw,
+                log.fiducial1YRaw,
+                log.fiducial1X != null && log.fiducial1Y != null,
+              ) != null && (
                 <MetaCoordRow
-                  label="F1 검출 원본 (촬영 프레임)"
-                  value={formatFiducialPair(log.fiducial1XRaw, log.fiducial1YRaw)!}
+                  label="F1 검출 원본 · 정합 전 (촬영 프레임)"
+                  value={
+                    formatFiducialRawOrPlaceholder(
+                      log.fiducial1XRaw,
+                      log.fiducial1YRaw,
+                      log.fiducial1X != null && log.fiducial1Y != null,
+                    )!
+                  }
                 />
               )}
-              {formatFiducialPair(log.fiducial2XRaw, log.fiducial2YRaw) != null && (
+              {formatFiducialRawOrPlaceholder(
+                log.fiducial2XRaw,
+                log.fiducial2YRaw,
+                log.fiducial2X != null && log.fiducial2Y != null,
+              ) != null && (
                 <MetaCoordRow
-                  label="F2 검출 원본 (촬영 프레임)"
-                  value={formatFiducialPair(log.fiducial2XRaw, log.fiducial2YRaw)!}
+                  label="F2 검출 원본 · 정합 전 (촬영 프레임)"
+                  value={
+                    formatFiducialRawOrPlaceholder(
+                      log.fiducial2XRaw,
+                      log.fiducial2YRaw,
+                      log.fiducial2X != null && log.fiducial2Y != null,
+                    )!
+                  }
                 />
               )}
               {f12DistancePx != null && (
