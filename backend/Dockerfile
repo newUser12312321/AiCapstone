@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 
 COPY --from=builder /app/target/*.jar app.jar
 
+# Inspection API: fiducial 좌표는 소수(subpixel) 저장 — DB는 JPA ddl-auto 또는 마이그레이션으로 DOUBLE 맞춤
 # compose와 같은 네트워크에서 mysql 호스트명 사용 (application-docker.yml)
 ENV SPRING_PROFILES_ACTIVE=docker
 

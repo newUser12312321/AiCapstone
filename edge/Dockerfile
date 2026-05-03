@@ -5,7 +5,7 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# OpenCV 런타임 의존 패키지
+# OpenCV 런타임 의존 (cv2: 피듀셜 ROI — Canny·contour·fitEllipse 서브픽셀 중심 보정, 정합 warpAffine)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 \
     libglib2.0-0 \

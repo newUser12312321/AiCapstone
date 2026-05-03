@@ -51,6 +51,14 @@ class DetectionItem(BaseModel):
     defect_type: str = Field(description="결함 또는 마크 종류")
     confidence: float = Field(ge=0.0, le=1.0, description="YOLO 신뢰도 (0~1)")
     bbox: BoundingBox = Field(description="바운딩 박스 좌표")
+    refined_center_x: Optional[float] = Field(
+        default=None,
+        description="서브픽셀 보정 중심 X (없으면 bbox 중심 사용)",
+    )
+    refined_center_y: Optional[float] = Field(
+        default=None,
+        description="서브픽셀 보정 중심 Y (없으면 bbox 중심 사용)",
+    )
 
     @property
     def center_x(self) -> int:
@@ -61,6 +69,20 @@ class DetectionItem(BaseModel):
     def center_y(self) -> int:
         """바운딩 박스 중심 Y 좌표 (정렬 계산에 사용)"""
         return self.bbox.y + self.bbox.height // 2
+
+    @property
+    def center_x_subpx(self) -> float:
+        """서브픽셀 중심 X. 보정값 없으면 bbox 중심(float) 반환."""
+        if self.refined_center_x is not None:
+            return float(self.refined_center_x)
+        return float(self.bbox.x) + (float(self.bbox.width) / 2.0)
+
+    @property
+    def center_y_subpx(self) -> float:
+        """서브픽셀 중심 Y. 보정값 없으면 bbox 중심(float) 반환."""
+        if self.refined_center_y is not None:
+            return float(self.refined_center_y)
+        return float(self.bbox.y) + (float(self.bbox.height) / 2.0)
 
 
 # ── 정렬 검사 결과 ────────────────────────────────────────────────────────────
@@ -96,10 +118,10 @@ class InspectionPacket(BaseModel):
     result: InspectionResult
 
     # 피듀셜 마크 좌표 (탐지 실패 시 None)
-    fiducial1_x: Optional[int] = Field(default=None, serialization_alias="fiducial1X")
-    fiducial1_y: Optional[int] = Field(default=None, serialization_alias="fiducial1Y")
-    fiducial2_x: Optional[int] = Field(default=None, serialization_alias="fiducial2X")
-    fiducial2_y: Optional[int] = Field(default=None, serialization_alias="fiducial2Y")
+    fiducial1_x: Optional[float] = Field(default=None, serialization_alias="fiducial1X")
+    fiducial1_y: Optional[float] = Field(default=None, serialization_alias="fiducial1Y")
+    fiducial2_x: Optional[float] = Field(default=None, serialization_alias="fiducial2X")
+    fiducial2_y: Optional[float] = Field(default=None, serialization_alias="fiducial2Y")
 
     # Stage1 YOLO 탐지 신뢰도 (0~1, 없으면 None)
     fiducial1_confidence: Optional[float] = Field(default=None, serialization_alias="fiducial1Confidence")

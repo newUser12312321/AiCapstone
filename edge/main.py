@@ -539,9 +539,11 @@ def _run_production_vision_pipeline(
 
         f1x = f1y = f2x = f2y = None
         if alignment.fiducial1:
-            f1x, f1y = alignment.fiducial1.center_x, alignment.fiducial1.center_y
+            f1x = round(alignment.fiducial1.center_x_subpx, 4)
+            f1y = round(alignment.fiducial1.center_y_subpx, 4)
         if alignment.fiducial2:
-            f2x, f2y = alignment.fiducial2.center_x, alignment.fiducial2.center_y
+            f2x = round(alignment.fiducial2.center_x_subpx, 4)
+            f2y = round(alignment.fiducial2.center_y_subpx, 4)
 
         if not alignment.is_aligned:
             logger.warning("[파이프라인] 피듀셜/기울기 조건 불충족 → FAIL, Stage 2 건너뜀")
@@ -592,9 +594,11 @@ def _run_production_vision_pipeline(
 
         if stage2_mode == "aligned":
             if alignment.fiducial1:
-                f1x, f1y = alignment.fiducial1.center_x, alignment.fiducial1.center_y
+                f1x = round(alignment.fiducial1.center_x_subpx, 4)
+                f1y = round(alignment.fiducial1.center_y_subpx, 4)
             if alignment.fiducial2:
-                f2x, f2y = alignment.fiducial2.center_x, alignment.fiducial2.center_y
+                f2x = round(alignment.fiducial2.center_x_subpx, 4)
+                f2y = round(alignment.fiducial2.center_y_subpx, 4)
         else:
             f1x, f1y = pre_align_f1x, pre_align_f1y
             f2x, f2y = pre_align_f2x, pre_align_f2y

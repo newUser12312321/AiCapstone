@@ -5,10 +5,10 @@ public sealed class InspectionRecord
     public long Id { get; set; }
     public string DeviceId { get; set; } = string.Empty;
     public InspectionStatus Result { get; set; }
-    public int? Fiducial1X { get; set; }
-    public int? Fiducial1Y { get; set; }
-    public int? Fiducial2X { get; set; }
-    public int? Fiducial2Y { get; set; }
+    public double? Fiducial1X { get; set; }
+    public double? Fiducial1Y { get; set; }
+    public double? Fiducial2X { get; set; }
+    public double? Fiducial2Y { get; set; }
     public double? Fiducial1Confidence { get; set; }
     public double? Fiducial2Confidence { get; set; }
     public double? AngleErrorDeg { get; set; }

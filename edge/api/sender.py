@@ -246,8 +246,8 @@ def create_dummy_packet(
     return InspectionPacket(
         device_id=device_id,
         result=result,
-        fiducial1_x=320, fiducial1_y=240,
-        fiducial2_x=960, fiducial2_y=242,
+        fiducial1_x=320.25, fiducial1_y=240.5,
+        fiducial2_x=960.75, fiducial2_y=242.125,
         fiducial1_confidence=round(random.uniform(0.82, 0.96), 3),
         fiducial2_confidence=round(random.uniform(0.82, 0.96), 3),
         angle_error_deg=round(random.uniform(0.1, 1.5), 2),

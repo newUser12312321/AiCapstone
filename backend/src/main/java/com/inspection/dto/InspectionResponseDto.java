@@ -32,10 +32,10 @@ public class InspectionResponseDto {
     private String result;
 
     // ── 피듀셜 마크 좌표 ─────────────────────────────────────────────────────
-    private Integer fiducial1X;
-    private Integer fiducial1Y;
-    private Integer fiducial2X;
-    private Integer fiducial2Y;
+    private Double fiducial1X;
+    private Double fiducial1Y;
+    private Double fiducial2X;
+    private Double fiducial2Y;
 
     private Float fiducial1Confidence;
     private Float fiducial2Confidence;

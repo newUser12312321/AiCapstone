@@ -62,19 +62,19 @@ public class InspectionLog {
      * null 허용: 마크를 찾지 못했을 경우
      */
     @Column(name = "fiducial1_x")
-    private Integer fiducial1X;
+    private Double fiducial1X;
 
     /** 피듀셜 마크 1번 탐지 좌표 Y (픽셀) */
     @Column(name = "fiducial1_y")
-    private Integer fiducial1Y;
+    private Double fiducial1Y;
 
     /** 피듀셜 마크 2번 탐지 좌표 X (픽셀) */
     @Column(name = "fiducial2_x")
-    private Integer fiducial2X;
+    private Double fiducial2X;
 
     /** 피듀셜 마크 2번 탐지 좌표 Y (픽셀) */
     @Column(name = "fiducial2_y")
-    private Integer fiducial2Y;
+    private Double fiducial2Y;
 
     /** 피듀셜 1번 YOLO 탐지 신뢰도 (0~1) */
     @Column(name = "fiducial1_confidence")

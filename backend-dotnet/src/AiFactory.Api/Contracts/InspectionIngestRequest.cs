@@ -12,16 +12,16 @@ public sealed class InspectionIngestRequest
     public InspectionStatus Result { get; set; }
 
     [JsonPropertyName("fiducial1X")]
-    public int? Fiducial1X { get; set; }
+    public double? Fiducial1X { get; set; }
 
     [JsonPropertyName("fiducial1Y")]
-    public int? Fiducial1Y { get; set; }
+    public double? Fiducial1Y { get; set; }
 
     [JsonPropertyName("fiducial2X")]
-    public int? Fiducial2X { get; set; }
+    public double? Fiducial2X { get; set; }
 
     [JsonPropertyName("fiducial2Y")]
-    public int? Fiducial2Y { get; set; }
+    public double? Fiducial2Y { get; set; }
 
     [JsonPropertyName("fiducial1Confidence")]
     public double? Fiducial1Confidence { get; set; }

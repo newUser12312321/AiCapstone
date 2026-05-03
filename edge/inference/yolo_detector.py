@@ -15,6 +15,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Optional
 
+import cv2
 import numpy as np
 
 from config.settings import settings
@@ -59,6 +60,72 @@ DUMMY_CLASS_NAMES = {
     1: "TRACE_OPEN",
     2: "METAL_DAMAGE",
 }
+
+
+def _clip_rect_to_image(x: int, y: int, w: int, h: int, img_w: int, img_h: int) -> tuple[int, int, int, int]:
+    x0 = max(0, min(x, img_w - 1))
+    y0 = max(0, min(y, img_h - 1))
+    x1 = max(x0 + 1, min(x + w, img_w))
+    y1 = max(y0 + 1, min(y + h, img_h))
+    return x0, y0, (x1 - x0), (y1 - y0)
+
+
+def _refine_fiducial_center_subpixel(image: np.ndarray, det: DetectionItem) -> tuple[float, float] | None:
+    """
+    YOLO bbox 주변 ROI에서 타원 피팅 기반으로 피듀셜 중심을 서브픽셀로 보정한다.
+    실패 시 None 반환.
+    """
+    h, w = image.shape[:2]
+    b = det.bbox
+    pad_x = max(4, int(round(b.width * 0.35)))
+    pad_y = max(4, int(round(b.height * 0.35)))
+    rx, ry, rw, rh = _clip_rect_to_image(b.x - pad_x, b.y - pad_y, b.width + 2 * pad_x, b.height + 2 * pad_y, w, h)
+    roi = image[ry:ry + rh, rx:rx + rw]
+    if roi.size == 0:
+        return None
+
+    gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
+    edge = cv2.Canny(gray, 40, 120)
+    contours, _ = cv2.findContours(edge, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    if not contours:
+        return None
+
+    roi_cx = rw / 2.0
+    roi_cy = rh / 2.0
+    min_area = max(20.0, float(b.width * b.height) * 0.03)
+    max_area = float(rw * rh) * 0.95
+
+    best_score = float("inf")
+    best_center: tuple[float, float] | None = None
+    for cnt in contours:
+        area = float(cv2.contourArea(cnt))
+        if area < min_area or area > max_area:
+            continue
+        if len(cnt) < 5:
+            continue
+        try:
+            (cx, cy), (axis_a, axis_b), _angle = cv2.fitEllipse(cnt)
+        except cv2.error:
+            continue
+        if axis_a <= 1.0 or axis_b <= 1.0:
+            continue
+        axis_ratio = min(axis_a, axis_b) / max(axis_a, axis_b)
+        if axis_ratio < 0.4:
+            continue
+        dist = float(np.hypot(cx - roi_cx, cy - roi_cy))
+        circular_penalty = abs(1.0 - axis_ratio) * 6.0
+        score = dist + circular_penalty
+        if score < best_score:
+            best_score = score
+            best_center = (float(cx), float(cy))
+
+    if best_center is None:
+        return None
+
+    gx = float(rx) + best_center[0]
+    gy = float(ry) + best_center[1]
+    return gx, gy
 
 
 class YoloDetector:
@@ -209,11 +276,26 @@ class YoloDetector:
         Returns:
             (피듀셜 마크 목록, 추론 ms)
         """
-        return self.detect(
+        fiducials, ms = self.detect(
             image,
             target_class="FIDUCIAL",
             conf=settings.effective_fiducial_confidence(),
         )
+        refined_count = 0
+        for i, det in enumerate(fiducials):
+            refined = _refine_fiducial_center_subpixel(image, det)
+            if refined is None:
+                continue
+            refined_count += 1
+            fiducials[i] = det.model_copy(
+                update={
+                    "refined_center_x": round(refined[0], 4),
+                    "refined_center_y": round(refined[1], 4),
+                }
+            )
+        if fiducials:
+            logger.info("[YOLO] 피듀셜 서브픽셀 보정: %d/%d", refined_count, len(fiducials))
+        return fiducials, ms
 
     def detect_defects(self, roi: np.ndarray) -> tuple[list[DetectionItem], int]:
         """

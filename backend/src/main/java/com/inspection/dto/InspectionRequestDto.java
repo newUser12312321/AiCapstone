@@ -17,8 +17,8 @@ import java.util.List;
  * {
  *   "deviceId": "RPI5-LINE-A",
  *   "result": "FAIL",
- *   "fiducial1X": 320, "fiducial1Y": 240,
- *   "fiducial2X": 960, "fiducial2Y": 240,
+ *   "fiducial1X": 320.25, "fiducial1Y": 240.50,
+ *   "fiducial2X": 960.75, "fiducial2Y": 240.12,
  *   "angleErrorDeg": 2.3,
  *   "inferenceTimeMs": 145,
  *   "totalTimeMs": 312,
@@ -47,10 +47,10 @@ public class InspectionRequestDto {
     private String result;
 
     // ── 피듀셜 마크 좌표 (마크를 찾지 못한 경우 null 허용) ───────────────────
-    private Integer fiducial1X;
-    private Integer fiducial1Y;
-    private Integer fiducial2X;
-    private Integer fiducial2Y;
+    private Double fiducial1X;
+    private Double fiducial1Y;
+    private Double fiducial2X;
+    private Double fiducial2Y;
 
     /** 피듀셜 YOLO 탐지 신뢰도 (0~1, 선택) */
     private Float fiducial1Confidence;
