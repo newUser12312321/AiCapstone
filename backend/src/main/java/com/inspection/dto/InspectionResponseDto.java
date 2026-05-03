@@ -37,6 +37,11 @@ public class InspectionResponseDto {
     private Double fiducial2X;
     private Double fiducial2Y;
 
+    private Double fiducial1XRaw;
+    private Double fiducial1YRaw;
+    private Double fiducial2XRaw;
+    private Double fiducial2YRaw;
+
     private Float fiducial1Confidence;
     private Float fiducial2Confidence;
 
@@ -95,6 +100,10 @@ public class InspectionResponseDto {
                 .fiducial1Y(log.getFiducial1Y())
                 .fiducial2X(log.getFiducial2X())
                 .fiducial2Y(log.getFiducial2Y())
+                .fiducial1XRaw(log.getFiducial1XRaw())
+                .fiducial1YRaw(log.getFiducial1YRaw())
+                .fiducial2XRaw(log.getFiducial2XRaw())
+                .fiducial2YRaw(log.getFiducial2YRaw())
                 .fiducial1Confidence(log.getFiducial1Confidence())
                 .fiducial2Confidence(log.getFiducial2Confidence())
                 .angleErrorDeg(log.getAngleErrorDeg())

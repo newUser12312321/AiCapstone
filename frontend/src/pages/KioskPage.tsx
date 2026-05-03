@@ -65,12 +65,19 @@ export default function KioskPage() {
     onSuccess: async () => {
       const prevLatestId = latest?.id ?? 0
       setActionMsg('검사 진행 중... 결과를 확인하고 있습니다.')
-      const detectedId = await waitForNewInspectionId(prevLatestId)
-      if (detectedId != null) {
-        navigate(`/kiosk/complete/${detectedId}`)
-        return
+      try {
+        const detectedId = await waitForNewInspectionId(prevLatestId)
+        if (detectedId != null) {
+          navigate(`/kiosk/complete/${detectedId}`)
+          return
+        }
+        setActionMsg(
+          '클라우드에서 검사 이력을 찾지 못했습니다. Pi의 SERVER_BASE_URL(http)과 GCP 방화벽(8080)을 확인하세요.',
+        )
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e)
+        setActionMsg(`이력 조회 실패: ${msg}`)
       }
-      setActionMsg('검사 완료 기록을 아직 찾지 못했습니다. 잠시 후 다시 시도해 주세요.')
     },
     onError: (e: Error) => setActionMsg(e.message || '검사 요청 실패'),
   })
@@ -272,13 +279,14 @@ export default function KioskPage() {
 }
 
 async function waitForNewInspectionId(previousId: number): Promise<number | null> {
-  const maxAttempts = 10
+  /* 트리거는 파이프라인 완료 후 응답하므로 보통 1~2회 안에 잡힘. 클라우드 반영 지연 대비 여유. */
+  const maxAttempts = 40
   for (let i = 0; i < maxAttempts; i += 1) {
-    await delay(1000)
+    await delay(i === 0 ? 500 : 1000)
     const logs = await fetchRecentInspections(1)
-    const latest = logs[0]
-    if (latest && latest.id > previousId) {
-      return latest.id
+    const head = logs[0]
+    if (head && head.id > previousId) {
+      return head.id
     }
   }
   return null

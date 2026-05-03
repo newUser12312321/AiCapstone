@@ -24,6 +24,15 @@ function fiducialDistancePx(log: {
   return Math.hypot(x2 - x1, y2 - y1)
 }
 
+/** 좌표 소수 표시 (검출 원본용) */
+function formatFiducialPair(
+  x: number | null | undefined,
+  y: number | null | undefined,
+): string | null {
+  if (x == null || y == null) return null
+  return `(${Number(x).toFixed(4)}, ${Number(y).toFixed(4)})`
+}
+
 /**
  * 엣지 `alignment.compute_alignment`: 피듀셜이 2개 미만이면 angle_error_deg = 999.
  * 이 경우 Stage2(결함) 검사는 실행되지 않으며, 결함 박스 데이터도 없다.
@@ -144,7 +153,7 @@ function FiducialMarker({
         textAnchor="middle"
         fontFamily="ui-monospace, monospace"
       >
-        {`(${Math.round(x)}, ${Math.round(y)}) px`}
+        {`(${Number(x).toFixed(4)}, ${Number(y).toFixed(4)}) px`}
       </text>
     </g>
   )
@@ -565,14 +574,26 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
               )}
               {log.fiducial1X != null && log.fiducial1Y != null && (
                 <MetaCoordRow
-                  label="F1 중심 (px)"
-                  value={`(${log.fiducial1X}, ${log.fiducial1Y})`}
+                  label="F1 중심 — 정합 후 (기준 좌표계)"
+                  value={formatFiducialPair(log.fiducial1X, log.fiducial1Y) ?? '—'}
                 />
               )}
               {log.fiducial2X != null && log.fiducial2Y != null && (
                 <MetaCoordRow
-                  label="F2 중심 (px)"
-                  value={`(${log.fiducial2X}, ${log.fiducial2Y})`}
+                  label="F2 중심 — 정합 후 (기준 좌표계)"
+                  value={formatFiducialPair(log.fiducial2X, log.fiducial2Y) ?? '—'}
+                />
+              )}
+              {formatFiducialPair(log.fiducial1XRaw, log.fiducial1YRaw) != null && (
+                <MetaCoordRow
+                  label="F1 검출 원본 (촬영 프레임)"
+                  value={formatFiducialPair(log.fiducial1XRaw, log.fiducial1YRaw)!}
+                />
+              )}
+              {formatFiducialPair(log.fiducial2XRaw, log.fiducial2YRaw) != null && (
+                <MetaCoordRow
+                  label="F2 검출 원본 (촬영 프레임)"
+                  value={formatFiducialPair(log.fiducial2XRaw, log.fiducial2YRaw)!}
                 />
               )}
               {f12DistancePx != null && (

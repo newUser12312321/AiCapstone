@@ -545,12 +545,19 @@ def _run_production_vision_pipeline(
             f2x = round(alignment.fiducial2.center_x_subpx, 4)
             f2y = round(alignment.fiducial2.center_y_subpx, 4)
 
+        # 정합 전 검출 원본 좌표 (정합 후 fiducial* 는 기준 좌표로 스냅되므로 별도 보존)
+        raw_f1x, raw_f1y, raw_f2x, raw_f2y = f1x, f1y, f2x, f2y
+
         if not alignment.is_aligned:
             logger.warning("[파이프라인] 피듀셜/기울기 조건 불충족 → FAIL, Stage 2 건너뜀")
             f1c, f2c = _fiducial_confidences(alignment)
             packet = _build_packet(
                 result=InspectionResult.FAIL,
                 f1x=f1x, f1y=f1y, f2x=f2x, f2y=f2y,
+                raw_f1x=raw_f1x,
+                raw_f1y=raw_f1y,
+                raw_f2x=raw_f2x,
+                raw_f2y=raw_f2y,
                 f1_conf=f1c, f2_conf=f2c,
                 angle_error=measured_skew_deg,
                 inference_ms=fiducial_ms,
@@ -694,6 +701,10 @@ def _run_production_vision_pipeline(
         packet = _build_packet(
             result=final_result,
             f1x=f1x, f1y=f1y, f2x=f2x, f2y=f2y,
+            raw_f1x=raw_f1x,
+            raw_f1y=raw_f1y,
+            raw_f2x=raw_f2x,
+            raw_f2y=raw_f2y,
             f1_conf=f1c, f2_conf=f2c,
             angle_error=measured_skew_deg,
             inference_ms=fiducial_ms + defect_ms,
@@ -765,6 +776,10 @@ def _build_packet(
     f2_conf: Optional[float] = None,
     device_id: Optional[str] = None,
     *,
+    raw_f1x: Optional[float] = None,
+    raw_f1y: Optional[float] = None,
+    raw_f2x: Optional[float] = None,
+    raw_f2y: Optional[float] = None,
     silk_series_name: Optional[str] = None,
     silk_board_name: Optional[str] = None,
     silk_manufacturer: Optional[str] = None,
@@ -777,6 +792,10 @@ def _build_packet(
         result=result,
         fiducial1_x=f1x, fiducial1_y=f1y,
         fiducial2_x=f2x, fiducial2_y=f2y,
+        fiducial1_x_raw=raw_f1x,
+        fiducial1_y_raw=raw_f1y,
+        fiducial2_x_raw=raw_f2x,
+        fiducial2_y_raw=raw_f2y,
         fiducial1_confidence=f1_conf,
         fiducial2_confidence=f2_conf,
         angle_error_deg=angle_error,

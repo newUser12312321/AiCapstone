@@ -221,26 +221,31 @@ async def camera_preview_stream() -> StreamingResponse:
 
 @router.post("/inspect/trigger", summary="수동 검사 트리거")
 async def trigger_inspection(
-    background_tasks: BackgroundTasks,
     stage2Source: Optional[str] = None,
 ) -> dict[str, str]:
     """
     운영자가 HTTP 요청으로 즉시 검사를 한 번 실행하도록 트리거한다.
 
-    실제 검사 파이프라인은 main.py의 run_inspection_pipeline()을 호출하며,
-    BackgroundTasks로 비동기 실행하여 API 응답을 즉시 반환한다.
+    파이프라인(캡처·추론·클라우드 전송)이 끝난 뒤 응답한다.
+    키오스크는 응답 직후 클라우드 이력을 조회하므로, 백그라운드만 두면
+    폴링이 검사 완료 전에 끝나 결과 화면으로 넘어가지 못한다.
 
     Returns:
-        요청 수락 메시지 (실제 검사 결과는 서버 DB에서 확인)
+        완료 메시지 (실패 시 500)
     """
     mode = _normalize_stage2_mode(stage2Source)
     logger.info("[라우터] 수동 검사 트리거 요청 수신 (stage2=%s)", mode)
 
-    # main 모듈의 파이프라인을 지연 import (순환 참조 방지)
     try:
         from main import run_inspection_pipeline
-        background_tasks.add_task(run_inspection_pipeline, mode)
-        return {"message": f"검사가 백그라운드에서 시작되었습니다. (stage2={mode})"}
+
+        packet = await run_inspection_pipeline(mode)
+        if packet is None:
+            raise HTTPException(
+                status_code=500,
+                detail="검사 파이프라인이 실패했습니다.",
+            )
+        return {"message": f"검사가 완료되었습니다. (stage2={mode}, 결과={packet.result.value})"}
     except ImportError:
         raise HTTPException(status_code=503, detail="검사 파이프라인을 로드할 수 없습니다.")
 

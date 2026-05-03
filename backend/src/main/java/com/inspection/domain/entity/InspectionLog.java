@@ -76,6 +76,18 @@ public class InspectionLog {
     @Column(name = "fiducial2_y")
     private Double fiducial2Y;
 
+    @Column(name = "fiducial1_x_raw")
+    private Double fiducial1XRaw;
+
+    @Column(name = "fiducial1_y_raw")
+    private Double fiducial1YRaw;
+
+    @Column(name = "fiducial2_x_raw")
+    private Double fiducial2XRaw;
+
+    @Column(name = "fiducial2_y_raw")
+    private Double fiducial2YRaw;
+
     /** 피듀셜 1번 YOLO 탐지 신뢰도 (0~1) */
     @Column(name = "fiducial1_confidence")
     private Float fiducial1Confidence;

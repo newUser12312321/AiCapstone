@@ -123,6 +123,12 @@ class InspectionPacket(BaseModel):
     fiducial2_x: Optional[float] = Field(default=None, serialization_alias="fiducial2X")
     fiducial2_y: Optional[float] = Field(default=None, serialization_alias="fiducial2Y")
 
+    # 정합 전·촬영 프레임 기준 검출 중심 (서브픽셀, 정합 전 단계)
+    fiducial1_x_raw: Optional[float] = Field(default=None, serialization_alias="fiducial1XRaw")
+    fiducial1_y_raw: Optional[float] = Field(default=None, serialization_alias="fiducial1YRaw")
+    fiducial2_x_raw: Optional[float] = Field(default=None, serialization_alias="fiducial2XRaw")
+    fiducial2_y_raw: Optional[float] = Field(default=None, serialization_alias="fiducial2YRaw")
+
     # Stage1 YOLO 탐지 신뢰도 (0~1, 없으면 None)
     fiducial1_confidence: Optional[float] = Field(default=None, serialization_alias="fiducial1Confidence")
     fiducial2_confidence: Optional[float] = Field(default=None, serialization_alias="fiducial2Confidence")

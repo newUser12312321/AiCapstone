@@ -52,6 +52,12 @@ public class InspectionRequestDto {
     private Double fiducial2X;
     private Double fiducial2Y;
 
+    /** 정합 전 촬영 프레임 기준 검출 중심 X/Y (서브픽셀, 선택) */
+    private Double fiducial1XRaw;
+    private Double fiducial1YRaw;
+    private Double fiducial2XRaw;
+    private Double fiducial2YRaw;
+
     /** 피듀셜 YOLO 탐지 신뢰도 (0~1, 선택) */
     private Float fiducial1Confidence;
     private Float fiducial2Confidence;

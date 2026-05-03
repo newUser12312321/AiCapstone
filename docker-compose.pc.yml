@@ -1,8 +1,17 @@
-# PC/서버 스택: MySQL + Spring Boot + 프론트(대시보드)만 컨테이너로 기동.
-# 엣지 검사 API·캡처는 Pi 등 별도 호스트 :8000 에서 띄운 뒤, 아래 주소를 맞춘다.
+# PC/클라우드 서버 스택: MySQL + Spring Boot + 프론트(대시보드)만 컨테이너로 기동.
+# (엣지 Pi는 별도 호스트 :8000 — 이 파일만으로는 edge 컨테이너를 띄우지 않음)
 #
-#   프로젝트 루트에 .env 를 두고 예: VITE_EDGE_CAPTURE_URL=http://192.168.0.13:8000
-#   (미설정 시 기본 host.docker.internal:8000 — Linux 는 extra_hosts 로 host-gateway 매핑)
+# 사전 요건: Docker / Docker Compose V2
+#
+# 엣지 캡처·MJPEG URL (Vite 빌드 시 박힘):
+#   export VITE_EDGE_CAPTURE_URL=http://<엣지-IP>:8000
+#   docker compose -f docker-compose.pc.yml up --build
+# 미설정 시 기본 http://host.docker.internal:8000
+# (Linux: 아래 extra_hosts 가 host-gateway 로 호스트 루프백에 연결)
+#
+# 주의: frontend/.env 는 git에 없음. 로컬 오버라이드가 필요하면
+#   cp frontend/.env.example frontend/.env
+# compose의 environment / 빌드 args 가 우선이므로 클라우드에서는 생략 가능.
 #
 # 실행: docker compose -f docker-compose.pc.yml up --build
 
@@ -52,8 +61,6 @@ services:
     # Linux 서버: host.docker.internal → 호스트 루프백 (Docker 20.10+ host-gateway)
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    env_file:
-      - ./frontend/.env
     environment:
       VITE_API_PROXY_TARGET: http://backend:8080
       VITE_EDGE_CAPTURE_URL: ${VITE_EDGE_CAPTURE_URL:-http://host.docker.internal:8000}
