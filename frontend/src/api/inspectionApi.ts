@@ -14,7 +14,8 @@ import type { InspectionLog, InspectionStats } from '@/types/inspection'
 const apiClient = axios.create({
   /* Vite 프록시(/api → :8080)를 사용하므로 baseURL은 /api만 지정 */
   baseURL: '/api',
-  timeout: 10_000,  // 10초 응답 없으면 에러
+  /* Pi 키오스크 → 클라우드 VM 왕복 시 10초 부족으로 폴링 실패하는 경우가 있어 여유를 둠 */
+  timeout: 45_000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
