@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICES=(
+  "pcb-kiosk-browser.service"
+  "pcb-kiosk-web.service"
+  "pcb-react-kiosk-browser.service"
+  "pcb-react-kiosk-web.service"
+)
+
+found=()
+for svc in "${SERVICES[@]}"; do
+  unit_info="$(systemctl list-unit-files "${svc}" --no-legend 2>/dev/null || true)"
+  if [ -n "${unit_info}" ]; then
+    found+=("${svc}")
+  fi
+done
+
+if [ "${#found[@]}" -eq 0 ]; then
+  echo "No kiosk services found."
+  echo "Expected one of: ${SERVICES[*]}"
+  exit 1
+fi
+
+for svc in "${found[@]}"; do
+  echo "Stopping ${svc} ..."
+  sudo systemctl stop "${svc}"
+done
+
+echo
+echo "Stopped services:"
+for svc in "${found[@]}"; do
+  echo "- ${svc}"
+done
