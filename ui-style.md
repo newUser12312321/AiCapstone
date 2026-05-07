@@ -1,220 +1,246 @@
-# UI Style Guide - Premium Minimal (Apple-inspired)
+# UI Style Guide - 2026 Global Trend Edition
 
 ## 1) Document Purpose
-- This guide defines a premium, minimal UI direction inspired by Apple's design tone.
-- It is tailored for this project's web frontend and kiosk interface.
-- Goal: maintain technical stack (React) while upgrading visual consistency, readability, and touch usability.
+- This guide defines a globally relevant 2026 UI direction for the project's web dashboard and kiosk interface.
+- Design target: quiet luxury minimal, high clarity, touch-first reliability, and premium consistency.
+- Goal: keep the current React stack while upgrading perception quality, usability speed, and design cohesion.
 
-## 2) Brand Tone and Principles
+## 2) Style Direction
+
+### Name
+- Quiet Luxury Minimal + High Clarity UX
 
 ### Tone Keywords
-- Minimal
-- Premium
+- Refined
+- Clean
 - Calm
 - Precise
-- Human-centered
+- Trustworthy
 
 ### Core Principles
-- Remove visual noise and keep only meaningful elements.
-- Use generous spacing to create focus and hierarchy.
-- Prefer strong typography and contrast over decorative effects.
-- Keep interactions subtle, fast, and predictable.
-- Ensure consistency across web and kiosk while optimizing each context.
+- Remove anything that does not improve comprehension or decision speed.
+- Use spacing and typography to create hierarchy before using decoration.
+- Keep one clear primary action per section.
+- Make interfaces look simple while preserving professional information density.
+- Ensure dashboard and kiosk feel like one design system with context-specific behavior.
 
-## 3) Color System
+## 3) Color System (Global 2026)
 
-### Neutral Palette
-- `--color-text-primary`: `#111111`
-- `--color-text-secondary`: `#6E6E73`
-- `--color-bg-primary`: `#FFFFFF`
-- `--color-bg-secondary`: `#F5F5F7`
-- `--color-border`: `#D2D2D7`
+### Base (Light)
+- `--color-bg-primary`: `#FCFCFD`
+- `--color-bg-secondary`: `#F5F6F8`
+- `--color-surface`: `#FFFFFF`
+- `--color-border`: `#E5E7EB`
+- `--color-text-primary`: `#111827`
+- `--color-text-secondary`: `#6B7280`
 
-### Brand / Action Colors
-- `--color-accent`: `#0071E3`
-- `--color-accent-hover`: `#0077ED`
-- `--color-success`: `#34C759`
-- `--color-error`: `#FF3B30`
-- `--color-warning`: `#FF9F0A`
+### Accent and Feedback
+- `--color-accent`: `#2563EB`
+- `--color-accent-hover`: `#1D4ED8`
+- `--color-success`: `#16A34A`
+- `--color-warning`: `#D97706`
+- `--color-error`: `#DC2626`
+- `--color-info`: `#0891B2`
 
-### Color Usage Rules
-- Use neutral backgrounds by default and reserve accent colors for key actions.
-- Never use more than one strong accent color in the same section.
-- Maintain sufficient text contrast for accessibility (WCAG AA minimum).
+### Optional Dark Mode Tokens
+- `--color-dark-bg-primary`: `#0B0D10`
+- `--color-dark-bg-secondary`: `#12161B`
+- `--color-dark-surface`: `#171B21`
+- `--color-dark-border`: `#2A313A`
+- `--color-dark-text-primary`: `#F3F4F6`
+- `--color-dark-text-secondary`: `#9CA3AF`
+
+### Color Rules
+- Default to neutral surfaces; use accent color only for key actions, links, and focused states.
+- Keep one dominant accent color across the product.
+- Use semantic colors only for status and feedback.
+- Enforce WCAG AA minimum contrast for all core flows.
 
 ## 4) Typography System
 
 ### Font Stack
-- `Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif`
+- `Pretendard Variable, Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif`
 
-### Type Scale
-- `Display`: `56/64`, `700` (hero headline only)
-- `H1`: `48/56`, `700`
-- `H2`: `36/44`, `700`
-- `H3`: `28/36`, `600`
-- `Body Large`: `19/30`, `400`
-- `Body`: `17/26`, `400`
-- `Body Small`: `15/22`, `400`
+### Weight Strategy
+- `700`: key headlines only
+- `600`: section titles, important labels
+- `500`: data emphasis, tab labels
+- `400`: default body text
+
+### Type Scale (Desktop / Kiosk)
+- `Display`: `60/68`, `700`
+- `H1`: `44/52`, `700`
+- `H2`: `32/40`, `700`
+- `H3`: `24/32`, `600`
+- `Body Large`: `20/30`, `400`
+- `Body`: `17/27`, `400`
+- `Body Small`: `15/24`, `400`
 - `Caption`: `13/18`, `400`
 
 ### Typography Rules
-- Keep heading hierarchy strict and avoid skipping levels.
-- Limit text width for long paragraphs (recommended 60-75 characters per line).
-- Use secondary text color only for supportive information, not for primary content.
+- Avoid multiple headline sizes in one section.
+- Keep long-form text width to roughly 60-75 characters.
+- Prefer stronger contrast and weight over decorative text effects.
+- For kiosk actions, use at least `20px` text on primary buttons.
 
-## 5) Layout, Spacing, and Geometry
+## 5) Spacing, Grid, and Geometry
 
-### Spacing Scale (px)
-- `4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80`
+### Spacing Scale (8pt base)
+- `4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96`
 
-### Radius
-- Small controls: `10px`
-- Standard cards/inputs: `16px`
-- Hero containers: `24px`
-- Pill buttons/chips: `9999px`
+### Radius Scale
+- `--radius-sm`: `10px`
+- `--radius-md`: `14px`
+- `--radius-lg`: `18px`
+- `--radius-xl`: `24px`
+- `--radius-pill`: `9999px`
 
-### Shadows
-- Default: minimal or none.
-- Elevated card (optional):
-  - `0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)`
-- Avoid heavy, layered shadows.
+### Elevation
+- Flat by default with border-defined surfaces.
+- `--shadow-soft`: `0 1px 2px rgba(15,23,42,0.05), 0 10px 30px rgba(15,23,42,0.06)`
+- Avoid stacked heavy shadows and bright glows.
 
-### Width and Grid
-- Web content max width: `1200px`
-- Recommended page padding: `24px` (mobile), `40px` (tablet), `64px` (desktop)
-- Use simple 12-column grid on web for scalable layout consistency.
+### Grid
+- Dashboard: 12-column responsive grid.
+- Kiosk: simple single-column or two-zone layout to reduce cognitive load.
+- Max content width:
+  - Dashboard standard: `1280px`
+  - Dense analytics page: `1440px`
 
-## 6) Component Guidelines
+## 6) Component Standards
 
 ### Button
+- Heights:
+  - Dashboard: `44px`
+  - Kiosk: `56px` minimum, `64px` recommended for primary actions
 - Primary:
-  - Background: accent color
+  - Fill: accent
   - Text: white
   - Border: none
-  - Hover: slightly brighter accent
 - Secondary:
-  - Background: white
+  - Fill: surface
+  - Border: `1px solid` border color
   - Text: primary text
-  - Border: `1px` border color
-- Tertiary (text button):
-  - No fill, no border
+- Tertiary:
+  - Transparent background
   - Accent text
-- Heights:
-  - Web: `44px`
-  - Kiosk: `56px` minimum
-- Disabled:
-  - Reduce contrast clearly but keep legible text.
+- Interaction:
+  - Hover: subtle darken or border emphasis
+  - Active: tiny scale-down (`0.99`) with instant feedback
 
-### Card
-- Background: secondary background or white
-- Border: `1px solid` border color
-- Radius: `16px`
-- Padding: `20-24px`
-- Keep content grouping simple: title, body, action.
-
-### Input / Select
+### Input, Select, Search
 - Heights:
-  - Web: `44px`
+  - Dashboard: `44px`
   - Kiosk: `56px`
-- Border: `1px solid` neutral border
-- Focus:
-  - `2px` accent ring (or equivalent focus style)
-- Placeholder:
-  - secondary text color, never too low contrast.
+- Use clear labels above controls (not placeholder-only forms).
+- Focus style must be highly visible (`2px` accent ring).
+- Error message appears directly below field with corrective instruction.
 
-### Header / Navigation
-- Clean, low-noise top bar with strong spacing.
-- Keep primary navigation options limited (recommended 4-6 max).
-- Current section should be clearly identifiable.
+### Card and Panel
+- Use cards to group related actions, not to decorate every block.
+- Standard card:
+  - Surface: white
+  - Border: `1px solid` neutral border
+  - Radius: `14-18px`
+  - Padding: `20-24px`
+- Keep card internal structure strict: title, key value/content, action.
 
-## 7) Motion and Interaction
-- Transition duration: `160-220ms`
-- Easing: `ease-out` for entry, `ease-in-out` for state changes
-- Hover effects:
-  - subtle background shift, border emphasis, or tiny scale (`1.01`)
-- Press/click feedback should feel immediate.
-- Avoid bouncy, exaggerated, or long animations.
+### Navigation
+- Top navigation should stay low-noise with strong spacing rhythm.
+- Keep top-level nav items limited (4-6 preferred).
+- Active state must be immediately recognizable by color + shape, not color only.
 
-## 8) Iconography and Imagery
-- Prefer simple line icons with consistent stroke weight.
-- Do not mix many icon styles in one view.
-- Product imagery should be high quality with ample whitespace.
-- Avoid overly saturated or noisy visuals.
+## 7) Motion and Microinteraction
+- Default duration: `160-220ms`
+- Exit duration: `120-180ms`
+- Easing:
+  - Entry: `cubic-bezier(0.2, 0.8, 0.2, 1)`
+  - State change: `ease-in-out`
+- Use motion to clarify state change, not to entertain.
+- Respect reduced-motion preferences.
 
-## 9) Web Frontend Screen Rules
+## 8) Dashboard-Specific Rules
 
-### Home / Landing
-- Large, concise headline.
-- Short supporting text.
-- One primary CTA and one optional secondary CTA.
-- Strong vertical rhythm between sections.
+### Information Hierarchy
+- Lead each page with one primary KPI cluster and one primary CTA.
+- Group secondary metrics into digestible cards.
+- Use visual rhythm: heading -> summary -> detail -> action.
 
-### List / Catalog
-- Clear filter/sort hierarchy.
-- Card spacing should emphasize scanability.
-- Important values (price, status, ETA) must be visually prominent.
+### Data Density
+- Keep dense data sections scannable with clear labels and spacing tiers.
+- Use subtle separators instead of heavy boxes.
+- Highlight only the most important deltas and anomalies.
 
-### Detail / Checkout
-- Minimize distractions during critical tasks.
-- Keep summary and action area visible.
-- Emphasize trust cues and final confirmation clarity.
+### Tables and Filters
+- Sticky headers for long tables.
+- Filters should be visible and reversible.
+- Use inline status chips with semantic color + clear text labels.
 
-## 10) Kiosk-Specific Rules
+## 9) Kiosk-Specific Rules
 
-### Touch and Readability
+### Touch-First Standards
 - Minimum touch target: `48x48px`; recommended `56x56px+`
-- Main action buttons: `56-72px` height
-- Minimum readable text: `18px` (primary actions often `20px+`)
-- High contrast between interactive elements and background.
+- Primary kiosk actions: `56-72px` height
+- Minimum body text: `18px`
+- Primary action labels: `20-24px`
 
-### Flow Simplification
-- Keep primary ordering/payment flow to `3-4` steps when possible.
-- Show clear progress indicator (Step 1/3 style).
-- Avoid dense text blocks; prefer chunked choices and visual grouping.
+### Flow Design
+- Keep primary flow to `3-4` steps where possible.
+- Show progress as explicit steps (`Step 2 of 4`).
+- Keep only one dominant action per screen.
 
-### Error Prevention
-- Require explicit confirmation for destructive actions (cancel, reset).
-- Provide easy back navigation without losing all progress.
-- Show concise, clear error text with direct recovery action.
+### Reliability and Error Recovery
+- Always provide a clear back path.
+- Confirm destructive actions (cancel, reset, delete).
+- Error message formula:
+  - what happened
+  - what to do next
+  - one direct recovery action
 
-### Environmental Considerations
-- Account for glare and viewing distance.
-- Do not rely on hover-only affordances (touch-first UI).
-- Use larger spacing to reduce mis-taps.
+### Environmental Constraints
+- Design for glare, distance, and quick glance reading.
+- Never rely on hover-only affordances.
+- Increase spacing around critical buttons to reduce mis-taps.
 
-## 11) Accessibility Baseline
-- Meet WCAG AA contrast requirements.
-- All controls must have visible focus states.
-- Support keyboard navigation on web.
-- Do not encode meaning by color alone.
-- Provide text alternatives for key icons/images where needed.
+## 10) Accessibility Baseline
+- Meet WCAG AA across dashboard and kiosk critical paths.
+- Keep visible focus indicators for keyboard and switch devices.
+- Do not use color as the only meaning signal.
+- Provide text alternatives for critical icons and visual states.
+- Ensure interaction states are perceivable in both light and dark contexts.
 
-## 12) Implementation Notes for React
-- Keep React stack unchanged; apply this guide through design tokens and shared components.
-- Recommended rollout order:
-  1. Create global tokens (color, type, spacing, radius, motion)
-  2. Refactor shared UI components (Button, Input, Card, Modal)
-  3. Apply page-level layout updates
-  4. Apply kiosk touch optimizations
-- Use one source of truth for tokens to keep web and kiosk aligned.
+## 11) Token-First Implementation (React)
 
-## 13) Do / Don't Checklist
+### Rollout Sequence
+1. Define global design tokens (color, type, spacing, radius, motion, shadow).
+2. Refactor shared components (`Button`, `Input`, `Select`, `Card`, `Modal`, `Tabs`).
+3. Update dashboard layout templates and navigation shell.
+4. Apply kiosk touch-first sizing and flow simplification.
+5. Add visual regression checks for key screens.
+
+### Governance Rules
+- Use one source of truth for tokens.
+- Do not hardcode random color or spacing values in feature components.
+- Add new variants only when a real repeated use case exists.
+
+## 12) 2026 Do / Don't
 
 ### Do
-- Use generous spacing and clear hierarchy.
-- Keep UI calm and focused.
-- Make primary actions obvious.
-- Preserve consistency across screens and devices.
+- Keep UI quiet and intentional.
+- Create hierarchy with spacing and type first.
+- Make key actions obvious and fast.
+- Standardize across dashboard and kiosk through shared tokens.
 
 ### Don't
-- Overuse shadows, gradients, or decorative effects.
-- Mix too many accent colors.
-- Use small touch targets in kiosk screens.
-- Add animation that delays user intent.
+- Over-decorate with gradients, shadows, or glass effects.
+- Introduce multiple competing accent colors.
+- Shrink tap targets to fit more content.
+- Use long animation that slows task completion.
 
-## 14) Review Criteria (for submission and QA)
-- Visual consistency across main pages is maintained.
-- Typography and spacing follow the token system.
-- Primary user tasks are faster and clearer than before.
-- Kiosk tasks are touch-friendly and readable from distance.
-- Accessibility baseline checks pass for core flows.
+## 13) Review Checklist (QA + Design)
+- Is the first-screen hierarchy clear in under 3 seconds?
+- Is the primary action obvious without searching?
+- Are spacing and typography aligned to token scales?
+- Are kiosk actions touch-friendly and readable from distance?
+- Are error states actionable and recoverable?
+- Do accessibility baseline checks pass on core flows?

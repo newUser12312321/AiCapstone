@@ -92,17 +92,17 @@ export default function KioskInspectionCompletePage() {
 
   return (
 
-    <div className="h-screen w-full bg-[#f5f5f7] text-[#111111] p-4 md:p-6">
+    <div className="kiosk-theme h-screen w-full bg-[var(--kiosk-bg-primary)] text-[var(--kiosk-text-primary)] p-4 md:p-6">
 
       <div className="mx-auto h-full max-w-[980px] flex flex-col gap-4">
 
-        <header className="rounded-3xl border border-[#d2d2d7] bg-white px-6 py-5 flex items-center justify-between gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
+        <header className="rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] px-6 py-5 flex items-center justify-between gap-4 shadow-[var(--kiosk-shadow-soft)]">
 
           <div>
 
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#111111]">검사 완료</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--kiosk-text-primary)]">검사 완료</h1>
 
-            <p className="text-[#6e6e73] mt-1 text-base">
+            <p className="text-[var(--kiosk-text-secondary)] mt-1 text-base">
 
               {log ? new Date(log.inspectedAt).toLocaleString('ko-KR') : '검사 결과 불러오는 중'}
 
@@ -110,7 +110,7 @@ export default function KioskInspectionCompletePage() {
 
             {silkPrintDefect && log && (
 
-              <p className="text-amber-700 text-base font-semibold mt-2">
+              <p className="text-[var(--kiosk-warning)] text-base font-semibold mt-2">
 
                 실크 OCR 필드 미검출 — 시리즈·기판명·제조사·제조일을 모두 읽어야 합니다.
 
@@ -124,7 +124,7 @@ export default function KioskInspectionCompletePage() {
 
             className={`rounded-2xl px-6 py-3 text-2xl md:text-3xl font-black text-white ${
 
-              isPass ? 'bg-emerald-500' : 'bg-red-500'
+              isPass ? 'bg-[var(--kiosk-success)]' : 'bg-[var(--kiosk-danger)]'
 
             }`}
 
@@ -138,11 +138,11 @@ export default function KioskInspectionCompletePage() {
 
 
 
-        <section className="flex-1 min-h-0 rounded-3xl border border-[#d2d2d7] bg-white p-4 md:p-6 flex flex-col gap-4 overflow-y-auto shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
+        <section className="flex-1 min-h-0 rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-4 md:p-6 flex flex-col gap-4 overflow-y-auto shadow-[var(--kiosk-shadow-soft)]">
 
           {isLoading ? (
 
-            <div className="flex-1 grid place-items-center text-[#6e6e73] py-24">
+            <div className="flex-1 grid place-items-center text-[var(--kiosk-text-secondary)] py-24">
 
               <Loader2 className="animate-spin" size={36} />
 
@@ -150,14 +150,14 @@ export default function KioskInspectionCompletePage() {
 
           ) : isError || !log ? (
 
-            <div className="flex-1 grid place-items-center text-[#6e6e73] py-24">검사 데이터를 불러오지 못했습니다.</div>
+            <div className="flex-1 grid place-items-center text-[var(--kiosk-text-secondary)] py-24">검사 데이터를 불러오지 못했습니다.</div>
 
           ) : (
 
             <>
 
-              <h2 className="text-3xl font-bold tracking-tight text-[#111111] mb-1">검사 정보</h2>
-              <p className="text-sm text-[#6e6e73]">핵심 정보는 상단에, 정합/좌표 상세는 하단에 배치했습니다.</p>
+              <h2 className="text-3xl font-bold tracking-tight text-[var(--kiosk-text-primary)] mb-1">검사 정보</h2>
+              <p className="text-sm text-[var(--kiosk-text-secondary)]">핵심 정보는 상단에, 정합/좌표 상세는 하단에 배치했습니다.</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <InfoRow label="시리즈명 (실크 OCR)" value={log?.silkSeriesName?.trim() || '—'} />
@@ -214,7 +214,7 @@ export default function KioskInspectionCompletePage() {
 
             onClick={() => navigate('/kiosk')}
 
-            className="mt-auto w-full rounded-full bg-[#0071e3] hover:bg-[#0077ed] px-6 py-5 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3 shrink-0"
+            className="mt-auto w-full rounded-full bg-[var(--kiosk-accent)] hover:bg-[var(--kiosk-accent-hover)] px-6 py-5 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3 shrink-0"
 
           >
 
@@ -240,11 +240,11 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
   return (
 
-    <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] px-4 py-3">
+    <div className="rounded-2xl border border-[var(--kiosk-border)] bg-[var(--kiosk-bg-secondary)] px-4 py-3">
 
-      <p className="text-sm text-[#6e6e73]">{label}</p>
+      <p className="text-sm text-[var(--kiosk-text-secondary)]">{label}</p>
 
-      <p className="text-2xl font-bold text-[#111111] mt-1">{value}</p>
+      <p className="text-2xl font-bold text-[var(--kiosk-text-primary)] mt-1">{value}</p>
 
     </div>
 

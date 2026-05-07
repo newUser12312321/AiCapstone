@@ -12,3 +12,19 @@
 /* 부드러운 화면 전환 */
 * { transition-property: background-color, border-color, color;
     transition-duration: 150ms; }
+
+/* Kiosk-only 2026 trend tokens */
+.kiosk-theme {
+  --kiosk-bg-primary: #fcfcfd;
+  --kiosk-bg-secondary: #f5f6f8;
+  --kiosk-surface: #ffffff;
+  --kiosk-border: #e5e7eb;
+  --kiosk-text-primary: #111827;
+  --kiosk-text-secondary: #6b7280;
+  --kiosk-accent: #2563eb;
+  --kiosk-accent-hover: #1d4ed8;
+  --kiosk-success: #16a34a;
+  --kiosk-danger: #dc2626;
+  --kiosk-warning: #d97706;
+  --kiosk-shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.05), 0 10px 30px rgba(15, 23, 42, 0.06);
+}
