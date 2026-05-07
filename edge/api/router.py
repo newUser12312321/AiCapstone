@@ -11,6 +11,7 @@ Base URL: http://<라즈베리파이_IP>:8000
 import asyncio
 import logging
 import re
+import subprocess
 import threading
 import time
 from datetime import datetime
@@ -303,6 +304,21 @@ async def set_camera_focus(body: CameraFocusBody) -> dict[str, Any]:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"초점 설정 실패: {e}") from e
+
+
+@router.post("/system/exit-kiosk", summary="키오스크 브라우저 종료 (라즈베리파이 바탕화면 복귀)")
+async def exit_kiosk_browser() -> dict[str, str]:
+    """
+    Chromium 키오스크 프로세스를 종료해 바탕화면으로 복귀한다.
+    브라우저 서비스는 systemd에서 재시작될 수 있으므로 운영 환경에 맞춰
+    browser service 정책(자동 재시작 여부)을 함께 설정해야 한다.
+    """
+    try:
+        subprocess.run(["pkill", "-f", "chromium-browser"], check=False)
+        subprocess.run(["pkill", "-f", "chromium"], check=False)
+        return {"message": "키오스크 브라우저 종료 요청을 전송했습니다."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"키오스크 종료 실패: {e}") from e
 
 
 @router.post("/inspect/upload", summary="이미지 업로드 후 검사 (캡처 생략)")

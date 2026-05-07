@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Aperture, Camera, Loader2, RefreshCcw } from 'lucide-react'
+import { Aperture, Camera, Loader2, MonitorX, RefreshCcw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import {
   fetchCameraFocus,
+  exitKioskToDesktop,
   triggerEdgeInspection,
   updateCameraFocus,
   type CameraFocusState,
@@ -17,7 +18,7 @@ export default function KioskPage() {
   const queryClient = useQueryClient()
   const [actionMsg, setActionMsg] = useState<string | null>(null)
   const [focusDraft, setFocusDraft] = useState<number | null>(null)
-  const { data: recentLogs = [] } = useRecentInspections(1)
+  const { data: recentLogs = [] } = useRecentInspections(5)
   const latest = recentLogs[0]
 
   const focusQuery = useQuery({
@@ -82,6 +83,14 @@ export default function KioskPage() {
     onError: (e: Error) => setActionMsg(e.message || '검사 요청 실패'),
   })
 
+  const exitMutation = useMutation({
+    mutationFn: exitKioskToDesktop,
+    onSuccess: () => {
+      setActionMsg('키오스크 종료 요청을 보냈습니다. 잠시 후 라즈베리파이 바탕화면으로 복귀합니다.')
+    },
+    onError: (e: Error) => setActionMsg(e.message || '키오스크 종료 요청 실패'),
+  })
+
   const verdict = useMemo(() => {
     if (!latest) return '대기'
     return latest.result === 'PASS' ? '정상' : '불량'
@@ -105,17 +114,28 @@ export default function KioskPage() {
   }
 
   return (
-    <div className="h-screen w-full bg-[#f5f5f7] text-[#111111] p-4 md:p-8">
-      <div className="mx-auto h-full max-w-7xl grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
-        <section className="rounded-3xl border border-[#d2d2d7] bg-white p-5 md:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
+    <div className="h-screen w-full bg-[#f5f5f7] text-[#111111] p-4 md:p-6 overflow-hidden">
+      <div className="mx-auto h-full max-w-7xl grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-5">
+        <section className="rounded-3xl border border-[#d2d2d7] bg-white p-5 md:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.05)] overflow-auto">
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm text-[#6e6e73]">PCB Inspection Kiosk</p>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">검사 화면</h1>
             </div>
-            <span className="text-sm px-3 h-9 inline-flex items-center rounded-full border border-[#d2d2d7] bg-[#f5f5f7] text-[#6e6e73]">실시간 프리뷰</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm px-3 h-9 inline-flex items-center rounded-full border border-[#d2d2d7] bg-[#f5f5f7] text-[#6e6e73]">실시간 프리뷰</span>
+              <button
+                type="button"
+                onClick={() => exitMutation.mutate()}
+                disabled={exitMutation.isPending}
+                className="h-11 px-4 rounded-full bg-[#111111] text-white inline-flex items-center gap-2 text-sm font-semibold hover:bg-[#2a2a2a] disabled:opacity-50"
+              >
+                {exitMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <MonitorX size={16} />}
+                키오스크 종료
+              </button>
+            </div>
           </div>
-          <div className="w-full h-[52vh] md:h-[70vh] rounded-2xl overflow-hidden bg-black border border-[#d2d2d7]">
+          <div className="w-full h-[42vh] md:h-[48vh] rounded-2xl overflow-hidden bg-black border border-[#d2d2d7]">
             <img
               src="/edge/camera/stream.mjpg"
               alt="카메라 프리뷰"
@@ -123,7 +143,7 @@ export default function KioskPage() {
             />
           </div>
 
-          <div className="mt-4 rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4 md:p-5">
+          <div className="mt-4 rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <div className="flex items-center gap-2 min-w-0">
                 <Aperture size={20} className="text-[#0071e3] shrink-0" aria-hidden />
@@ -247,7 +267,7 @@ export default function KioskPage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-[#d2d2d7] bg-white p-5 md:p-6 flex flex-col gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
+        <section className="rounded-3xl border border-[#d2d2d7] bg-white p-5 md:p-6 flex flex-col gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.05)] overflow-auto">
           <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4">
             <p className="text-base text-[#6e6e73] mb-2">최신 판정</p>
             <div className={`w-full rounded-2xl px-4 py-8 text-center text-5xl md:text-6xl text-white font-extrabold ${verdictClass}`}>
@@ -258,14 +278,32 @@ export default function KioskPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-[#d2d2d7] bg-[#fafafc] px-4 py-3">
-              <p className="text-xs text-[#6e6e73]">상태</p>
-              <p className="text-lg font-semibold">{triggerMutation.isPending ? '검사중' : '대기중'}</p>
-            </div>
+          <div className="grid grid-cols-1 gap-3">
             <div className="rounded-2xl border border-[#d2d2d7] bg-[#fafafc] px-4 py-3">
               <p className="text-xs text-[#6e6e73]">초점 모드</p>
               <p className="text-lg font-semibold">{focusAuto ? '오토' : '수동'}</p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4">
+            <p className="text-base text-[#6e6e73] mb-3">최근 검사이력 5건</p>
+            <div className="space-y-2">
+              {recentLogs.length === 0 && (
+                <p className="text-sm text-[#6e6e73]">표시할 검사 이력이 없습니다.</p>
+              )}
+              {recentLogs.map((log) => (
+                <div key={log.id} className="rounded-xl border border-[#d2d2d7] bg-white px-3 py-2">
+                  <p className="text-sm font-semibold text-[#111111] truncate">
+                    {log.silkBoardName?.trim() || `검사 #${log.id}`}
+                  </p>
+                  <div className="mt-1 flex items-center justify-between gap-2 text-xs">
+                    <span className="text-[#6e6e73]">{new Date(log.inspectedAt).toLocaleTimeString('ko-KR')}</span>
+                    <span className={clsx('font-semibold', log.result === 'PASS' ? 'text-emerald-600' : 'text-red-600')}>
+                      {log.result === 'PASS' ? '정상' : '불량'}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

@@ -103,3 +103,12 @@ export async function fetchRetryQueueStatus(): Promise<RetryQueueStatus> {
   }
   return res.json() as Promise<RetryQueueStatus>
 }
+
+export async function exitKioskToDesktop(): Promise<{ message: string }> {
+  const res = await fetch('/edge/system/exit-kiosk', { method: 'POST' })
+  if (!res.ok) {
+    const detail = await res.text()
+    throw new Error(detail || `${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<{ message: string }>
+}
