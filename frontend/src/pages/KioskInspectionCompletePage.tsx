@@ -94,9 +94,9 @@ export default function KioskInspectionCompletePage() {
 
     <div className="h-screen w-full bg-[#f5f5f7] text-[#111111] p-4 md:p-6">
 
-      <div className="mx-auto h-full max-w-[760px] flex flex-col gap-4">
+      <div className="mx-auto h-full max-w-[980px] flex flex-col gap-4">
 
-        <header className="rounded-3xl border border-[#d2d2d7] bg-white px-6 py-5 flex items-center justify-between gap-4">
+        <header className="rounded-3xl border border-[#d2d2d7] bg-white px-6 py-5 flex items-center justify-between gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
 
           <div>
 
@@ -138,7 +138,7 @@ export default function KioskInspectionCompletePage() {
 
 
 
-        <section className="flex-1 min-h-0 rounded-3xl border border-[#d2d2d7] bg-white p-4 md:p-6 flex flex-col gap-3 overflow-y-auto">
+        <section className="flex-1 min-h-0 rounded-3xl border border-[#d2d2d7] bg-white p-4 md:p-6 flex flex-col gap-4 overflow-y-auto shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
 
           {isLoading ? (
 
@@ -157,98 +157,50 @@ export default function KioskInspectionCompletePage() {
             <>
 
               <h2 className="text-3xl font-bold tracking-tight text-[#111111] mb-1">검사 정보</h2>
+              <p className="text-sm text-[#6e6e73]">핵심 정보는 상단에, 정합/좌표 상세는 하단에 배치했습니다.</p>
 
-              <InfoRow
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <InfoRow label="시리즈명 (실크 OCR)" value={log?.silkSeriesName?.trim() || '—'} />
+                <InfoRow label="기판명 (실크 OCR)" value={log?.silkBoardName?.trim() || '—'} />
+                <InfoRow label="제조회사 (실크 OCR)" value={log?.silkManufacturer?.trim() || '—'} />
+                <InfoRow label="제조일자 (실크 OCR)" value={log?.silkManufactureDate?.trim() || '—'} />
+                <InfoRow label="검사 ID" value={log ? `#${log.id}` : '-'} />
+                <InfoRow label="디바이스" value={log?.deviceId ?? '-'} />
+                <InfoRow label="검출 수" value={log ? `${overlayDefects.length}건` : '-'} />
+                <InfoRow label="F1-F2 거리" value={distance != null ? `${distance.toFixed(1)} px` : '-'} />
+                <InfoRow label="추론 시간" value={log?.inferenceTimeMs != null ? `${log.inferenceTimeMs} ms` : '-'} />
+                <InfoRow label="총 처리 시간" value={log?.totalTimeMs != null ? `${log.totalTimeMs} ms` : '-'} />
+              </div>
 
-                label="시리즈명 (실크 OCR)"
-
-                value={log?.silkSeriesName?.trim() || '—'}
-
-              />
-
-              <InfoRow
-
-                label="기판명 (실크 OCR)"
-
-                value={log?.silkBoardName?.trim() || '—'}
-
-              />
-
-              <InfoRow
-
-                label="제조회사 (실크 OCR)"
-
-                value={log?.silkManufacturer?.trim() || '—'}
-
-              />
-
-              <InfoRow
-
-                label="제조일자 (실크 OCR)"
-
-                value={log?.silkManufactureDate?.trim() || '—'}
-
-              />
-
-              <InfoRow label="검사 ID" value={log ? `#${log.id}` : '-'} />
-
-              <InfoRow label="디바이스" value={log?.deviceId ?? '-'} />
-
-              <InfoRow label="검출 수" value={log ? `${overlayDefects.length}건` : '-'} />
-
-              <InfoRow
-
-                label="F1 YOLO 박스 중심(px)"
-
-                value={log?.fiducial1XYolo != null && log.fiducial1YYolo != null ? `(${Number(log.fiducial1XYolo).toFixed(4)}, ${Number(log.fiducial1YYolo).toFixed(4)})` : '-'}
-
-              />
-
-              <InfoRow
-
-                label="F2 YOLO 박스 중심(px)"
-
-                value={log?.fiducial2XYolo != null && log.fiducial2YYolo != null ? `(${Number(log.fiducial2XYolo).toFixed(4)}, ${Number(log.fiducial2YYolo).toFixed(4)})` : '-'}
-
-              />
-
-              <InfoRow
-
-                label="F1 서브픽셀·정합 전(px)"
-
-                value={log?.fiducial1XRaw != null && log?.fiducial1YRaw != null ? `(${Number(log.fiducial1XRaw).toFixed(4)}, ${Number(log.fiducial1YRaw).toFixed(4)})` : '-'}
-
-              />
-
-              <InfoRow
-
-                label="F2 서브픽셀·정합 전(px)"
-
-                value={log?.fiducial2XRaw != null && log?.fiducial2YRaw != null ? `(${Number(log.fiducial2XRaw).toFixed(4)}, ${Number(log.fiducial2YRaw).toFixed(4)})` : '-'}
-
-              />
-
-              <InfoRow
-
-                label="F1 정합 후(px)"
-
-                value={log?.fiducial1X != null && log.fiducial1Y != null ? `(${Number(log.fiducial1X).toFixed(4)}, ${Number(log.fiducial1Y).toFixed(4)})` : '-'}
-
-              />
-
-              <InfoRow
-
-                label="F2 정합 후(px)"
-
-                value={log?.fiducial2X != null && log.fiducial2Y != null ? `(${Number(log.fiducial2X).toFixed(4)}, ${Number(log.fiducial2Y).toFixed(4)})` : '-'}
-
-              />
-
-              <InfoRow label="F1-F2 거리" value={distance != null ? `${distance.toFixed(1)} px` : '-'} />
-
-              <InfoRow label="추론 시간" value={log?.inferenceTimeMs != null ? `${log.inferenceTimeMs} ms` : '-'} />
-
-              <InfoRow label="총 처리 시간" value={log?.totalTimeMs != null ? `${log.totalTimeMs} ms` : '-'} />
+              <div className="mt-2">
+                <h3 className="text-xl font-semibold tracking-tight">좌표 상세</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                  <InfoRow
+                    label="F1 YOLO 박스 중심(px)"
+                    value={log?.fiducial1XYolo != null && log.fiducial1YYolo != null ? `(${Number(log.fiducial1XYolo).toFixed(4)}, ${Number(log.fiducial1YYolo).toFixed(4)})` : '-'}
+                  />
+                  <InfoRow
+                    label="F2 YOLO 박스 중심(px)"
+                    value={log?.fiducial2XYolo != null && log.fiducial2YYolo != null ? `(${Number(log.fiducial2XYolo).toFixed(4)}, ${Number(log.fiducial2YYolo).toFixed(4)})` : '-'}
+                  />
+                  <InfoRow
+                    label="F1 서브픽셀·정합 전(px)"
+                    value={log?.fiducial1XRaw != null && log?.fiducial1YRaw != null ? `(${Number(log.fiducial1XRaw).toFixed(4)}, ${Number(log.fiducial1YRaw).toFixed(4)})` : '-'}
+                  />
+                  <InfoRow
+                    label="F2 서브픽셀·정합 전(px)"
+                    value={log?.fiducial2XRaw != null && log?.fiducial2YRaw != null ? `(${Number(log.fiducial2XRaw).toFixed(4)}, ${Number(log.fiducial2YRaw).toFixed(4)})` : '-'}
+                  />
+                  <InfoRow
+                    label="F1 정합 후(px)"
+                    value={log?.fiducial1X != null && log.fiducial1Y != null ? `(${Number(log.fiducial1X).toFixed(4)}, ${Number(log.fiducial1Y).toFixed(4)})` : '-'}
+                  />
+                  <InfoRow
+                    label="F2 정합 후(px)"
+                    value={log?.fiducial2X != null && log.fiducial2Y != null ? `(${Number(log.fiducial2X).toFixed(4)}, ${Number(log.fiducial2Y).toFixed(4)})` : '-'}
+                  />
+                </div>
+              </div>
 
             </>
 
@@ -262,7 +214,7 @@ export default function KioskInspectionCompletePage() {
 
             onClick={() => navigate('/kiosk')}
 
-            className="mt-auto w-full rounded-2xl bg-[#0071e3] hover:bg-[#0077ed] px-6 py-5 min-h-16 text-2xl font-bold text-white inline-flex items-center justify-center gap-3 shrink-0"
+            className="mt-auto w-full rounded-full bg-[#0071e3] hover:bg-[#0077ed] px-6 py-5 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3 shrink-0"
 
           >
 

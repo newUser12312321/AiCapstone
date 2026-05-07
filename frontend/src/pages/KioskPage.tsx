@@ -105,12 +105,15 @@ export default function KioskPage() {
   }
 
   return (
-    <div className="h-screen w-full bg-[#f5f5f7] text-[#111111] p-5 md:p-8">
-      <div className="mx-auto h-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <section className="lg:col-span-2 rounded-3xl border border-[#d2d2d7] bg-white p-5 md:p-6">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">검사 화면</h1>
-            <span className="text-sm text-[#6e6e73]">실시간 프리뷰</span>
+    <div className="h-screen w-full bg-[#f5f5f7] text-[#111111] p-4 md:p-8">
+      <div className="mx-auto h-full max-w-7xl grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+        <section className="rounded-3xl border border-[#d2d2d7] bg-white p-5 md:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm text-[#6e6e73]">PCB Inspection Kiosk</p>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">검사 화면</h1>
+            </div>
+            <span className="text-sm px-3 h-9 inline-flex items-center rounded-full border border-[#d2d2d7] bg-[#f5f5f7] text-[#6e6e73]">실시간 프리뷰</span>
           </div>
           <div className="w-full h-[52vh] md:h-[70vh] rounded-2xl overflow-hidden bg-black border border-[#d2d2d7]">
             <img
@@ -244,7 +247,7 @@ export default function KioskPage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-[#d2d2d7] bg-white p-5 md:p-6 flex flex-col gap-4">
+        <section className="rounded-3xl border border-[#d2d2d7] bg-white p-5 md:p-6 flex flex-col gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
           <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4">
             <p className="text-base text-[#6e6e73] mb-2">최신 판정</p>
             <div className={`w-full rounded-2xl px-4 py-8 text-center text-5xl md:text-6xl text-white font-extrabold ${verdictClass}`}>
@@ -255,8 +258,19 @@ export default function KioskPage() {
             </p>
           </div>
 
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-[#d2d2d7] bg-[#fafafc] px-4 py-3">
+              <p className="text-xs text-[#6e6e73]">상태</p>
+              <p className="text-lg font-semibold">{triggerMutation.isPending ? '검사중' : '대기중'}</p>
+            </div>
+            <div className="rounded-2xl border border-[#d2d2d7] bg-[#fafafc] px-4 py-3">
+              <p className="text-xs text-[#6e6e73]">초점 모드</p>
+              <p className="text-lg font-semibold">{focusAuto ? '오토' : '수동'}</p>
+            </div>
+          </div>
+
           <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4">
-            <p className="text-base text-[#6e6e73] mb-3 text-center">검사</p>
+            <p className="text-base text-[#6e6e73] mb-3 text-center">검사 실행</p>
             <button
               type="button"
               onClick={() => {
@@ -264,7 +278,7 @@ export default function KioskPage() {
                 triggerMutation.mutate()
               }}
               disabled={triggerMutation.isPending}
-              className="w-full rounded-2xl bg-[#0071e3] hover:bg-[#0077ed] disabled:opacity-50 px-6 py-6 min-h-16 text-2xl font-bold text-white inline-flex items-center justify-center gap-3"
+              className="w-full rounded-full bg-[#0071e3] hover:bg-[#0077ed] disabled:opacity-50 px-6 py-6 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3"
             >
               {triggerMutation.isPending ? <Loader2 className="animate-spin" size={28} /> : <Camera size={28} />}
               검사 시작
