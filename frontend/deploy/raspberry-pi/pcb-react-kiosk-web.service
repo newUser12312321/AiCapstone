@@ -8,10 +8,9 @@ Type=simple
 User=pi
 WorkingDirectory=/home/pi/AiCapstoneV2/frontend
 Environment=NODE_ENV=production
-# Spring Boot가 클라우드 VM에만 있을 때 Pi 로컬 프리뷰가 /api를 넘길 대상 (실제 IP로 바꿔 주석 해제)
-# Environment=VITE_API_PROXY_TARGET=http://YOUR_CLOUD_IP:8080
-# 엣지(uvicorn)는 같은 Pi에서 실행된다면:
-# Environment=VITE_EDGE_CAPTURE_URL=http://127.0.0.1:8000
+EnvironmentFile=/etc/default/aicapstone
+Environment=VITE_API_PROXY_TARGET=http://${API_HOST}:8080
+Environment=VITE_EDGE_CAPTURE_URL=http://${EDGE_HOST}:8000
 ExecStartPre=/usr/bin/npm run build
 ExecStart=/usr/bin/npm run preview -- --host 127.0.0.1 --port 4173
 Restart=always
