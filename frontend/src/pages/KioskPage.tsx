@@ -9,7 +9,6 @@ import {
   updateCameraFocus,
   type CameraFocusState,
 } from '@/api/edgeApi'
-import { fetchRecentInspectionsWithTimeout } from '@/api/inspectionApi'
 import { useRecentInspections } from '@/hooks/useInspectionData'
 import clsx from 'clsx'
 
@@ -50,21 +49,8 @@ export default function KioskPage() {
   const triggerMutation = useMutation({
     mutationFn: () => triggerEdgeInspection('aligned'),
     onSuccess: async () => {
-      const prevLatestId = latest?.id ?? 0
-      setActionMsg('검사 진행 중... 결과를 확인하고 있습니다.')
-      try {
-        const detectedId = await waitForNewInspectionId(prevLatestId)
-        if (detectedId != null) {
-          navigate(`/kiosk/complete/${detectedId}`)
-          return
-        }
-        setActionMsg(
-          '클라우드에서 검사 이력을 찾지 못했습니다. Pi의 SERVER_BASE_URL(http)과 GCP 방화벽(8080)을 확인하세요.',
-        )
-      } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : String(e)
-        setActionMsg(`이력 조회 실패: ${msg}`)
-      }
+      await queryClient.invalidateQueries({ queryKey: ['inspections', 'recent'] })
+      setActionMsg('검사가 완료되었습니다. 우측 최근 검사이력에서 항목을 선택해 상세 결과를 확인하세요.')
     },
     onError: (e: Error) => setActionMsg(e.message || '검사 요청 실패'),
   })
@@ -243,7 +229,12 @@ export default function KioskPage() {
                 <p className="text-sm text-[var(--kiosk-text-secondary)]">표시할 검사 이력이 없습니다.</p>
               )}
               {recentLogs.map((log) => (
-                <div key={log.id} className="rounded-xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] px-3 py-2">
+                <button
+                  key={log.id}
+                  type="button"
+                  onClick={() => navigate(`/kiosk/complete/${log.id}`)}
+                  className="w-full text-left rounded-xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] px-3 py-2 hover:bg-[var(--kiosk-bg-primary)] transition-colors"
+                >
                   <p className="text-sm font-semibold text-[var(--kiosk-text-primary)] truncate">
                     {log.silkBoardName?.trim() || `검사 #${log.id}`}
                   </p>
@@ -253,7 +244,7 @@ export default function KioskPage() {
                       {log.result === 'PASS' ? '정상' : '불량'}
                     </span>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -265,35 +256,3 @@ export default function KioskPage() {
   )
 }
 
-async function waitForNewInspectionId(previousId: number): Promise<number | null> {
-  /* 트리거는 파이프라인 완료 후 응답하므로 보통 1~2회 안에 잡힘. 클라우드 반영 지연 대비 여유. */
-  const maxAttempts = 40
-  let networkFailCount = 0
-  for (let i = 0; i < maxAttempts; i += 1) {
-    await delay(i === 0 ? 500 : 1000)
-    let logs
-    try {
-      // 폴링은 짧게 실패하고 다음 턴으로 넘어가야 화면이 오래 멈추지 않는다.
-      logs = await fetchRecentInspectionsWithTimeout(1, 5000)
-    } catch {
-      networkFailCount += 1
-      if (networkFailCount >= 3) {
-        throw new Error(
-          '클라우드 이력 API 응답이 지연됩니다. Pi의 VITE_API_PROXY_TARGET 또는 VITE_API_BASE_URL 설정을 확인하세요.',
-        )
-      }
-      continue
-    }
-    const head = logs[0]
-    if (head && head.id > previousId) {
-      return head.id
-    }
-  }
-  return null
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms)
-  })
-}
