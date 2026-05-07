@@ -13,8 +13,8 @@ import { useStats } from '@/hooks/useInspectionData'
 import type { PieDataPoint } from '@/types/inspection'
 
 /* 합격/불합격 색상 */
-const PASS_COLOR = '#16a34a'
-const FAIL_COLOR = '#dc2626'
+const PASS_COLOR = '#111827'
+const FAIL_COLOR = '#eb6a4d'
 
 // ── 커스텀 중앙 레이블 ────────────────────────────────────────────────────────
 
@@ -72,7 +72,7 @@ export default function PassFailChart() {
   /* 로딩 스켈레톤 */
   if (isLoading || !stats) {
     return (
-      <div className="bg-[var(--dash-surface)] rounded-xl p-5 border border-[var(--dash-border)] flex items-center justify-center h-72 animate-pulse">
+      <div className="bg-[var(--dash-surface)] rounded-2xl p-5 border border-[var(--dash-border)] flex items-center justify-center h-72 animate-pulse">
         <div className="w-48 h-48 rounded-full bg-[var(--dash-bg-secondary)]" />
       </div>
     )
@@ -85,7 +85,7 @@ export default function PassFailChart() {
   ]
 
   return (
-    <div className="bg-[var(--dash-surface)] rounded-xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
+    <div className="bg-[var(--dash-surface)] rounded-2xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
       <h2 className="text-sm font-semibold text-[var(--dash-text-secondary)] mb-4">합격 / 불합격 비율</h2>
 
       <ResponsiveContainer width="100%" height={260}>

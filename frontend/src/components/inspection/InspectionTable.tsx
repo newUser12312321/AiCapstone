@@ -161,7 +161,7 @@ export default function InspectionTable({
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)]">
+      <div className="overflow-x-auto rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] shadow-[var(--dash-shadow-soft)]">
         <table className="w-full text-sm">
           {/* 헤더 */}
           <thead>
@@ -169,7 +169,7 @@ export default function InspectionTable({
               {['ID', '시각', '실크 OCR', '디바이스', '결과', '검출 클래스', '오차 (°)', '추론 (ms)', ''].map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-3 text-xs font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider"
+                  className="px-4 py-3.5 text-[11px] font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider"
                 >
                   {h}
                 </th>

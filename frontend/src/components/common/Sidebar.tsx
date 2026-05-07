@@ -39,7 +39,7 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-56 bg-[var(--dash-surface)] border-r border-[var(--dash-border)] flex flex-col py-4 shrink-0">
+    <aside className="w-56 bg-[var(--dash-bg-primary)] border-r border-[var(--dash-border)] flex flex-col py-4 shrink-0">
 
       {/* 네비게이션 메뉴 */}
       <nav className="flex flex-col gap-1 px-3">
@@ -50,7 +50,7 @@ export default function Sidebar() {
             end={end}
             className={({ isActive }) =>
               clsx(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
                 isActive
                   /* 활성 메뉴: 인디고 배경 + 흰 텍스트 */
                   ? 'bg-[var(--dash-accent)] text-white'

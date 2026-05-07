@@ -34,13 +34,13 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
 
   return (
     <div className={clsx(
-      'bg-[var(--dash-surface)] rounded-xl p-5 border shadow-[var(--dash-shadow-soft)]',
+      'bg-[var(--dash-surface)] rounded-2xl p-5 border shadow-[var(--dash-shadow-soft)]',
       colors.border
     )}>
       {/* 상단: 아이콘 + 제목 */}
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm text-[var(--dash-text-secondary)] font-medium">{title}</span>
-        <div className={clsx('w-9 h-9 rounded-lg flex items-center justify-center', colors.bg)}>
+        <div className={clsx('w-9 h-9 rounded-full flex items-center justify-center', colors.bg)}>
           <Icon size={18} className={colors.text} />
         </div>
       </div>

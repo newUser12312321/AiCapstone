@@ -56,23 +56,26 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto h-full">
+    <div className="p-6 md:p-7 space-y-6 overflow-y-auto h-full">
 
       {/* 페이지 제목 + 엣지 액션 */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-4">
         <div>
-          <h2 className="text-lg font-bold text-[var(--dash-text-primary)]">실시간 대시보드</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--dash-text-primary)]">실시간 대시보드</h2>
           <p className="text-xs text-[var(--dash-text-secondary)] mt-0.5">
             5초마다 자동 갱신 · 클라우드 통합 모니터링
           </p>
         </div>
-        <div className="flex flex-col items-stretch sm:items-end gap-2 shrink-0 min-w-[min(100%,280px)]">
-          <div className="flex flex-wrap items-center gap-2 justify-end">
+        <div className="flex items-center justify-between xl:justify-end gap-3">
+          <p className="hidden xl:block text-[42px] leading-[0.95] tracking-tight text-[var(--dash-text-primary)]/95">
+            Hey, need help?
+            <span className="block text-[var(--dash-text-tertiary)] font-normal">Just ask me anything.</span>
+          </p>
           <button
             type="button"
             onClick={handleDeleteHistory}
             disabled={deleteMutation.isPending}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] hover:border-[var(--dash-danger)] text-[var(--dash-text-primary)] disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] border border-transparent text-white disabled:opacity-50 transition-colors"
           >
             {deleteMutation.isPending ? (
               <Loader2 size={16} className="animate-spin" />
@@ -81,7 +84,6 @@ export default function DashboardPage() {
             )}
             이력 전체 삭제
           </button>
-          </div>
         </div>
       </div>
 
@@ -101,7 +103,7 @@ export default function DashboardPage() {
       <StatCardGroup />
 
       {/* 2행: 도넛 차트 + 트렌드 차트 */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
         {/* PassFailChart: 2/5 너비 */}
         <div className="lg:col-span-2">
           <PassFailChart />
@@ -113,7 +115,7 @@ export default function DashboardPage() {
       </div>
 
       {/* 3행: 실시간 이력 테이블 */}
-      <div>
+      <div className="pt-1">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-[var(--dash-text-secondary)]">최근 검사 이력</h2>
           <span className="text-xs text-[var(--dash-text-tertiary)]">최근 15건</span>
