@@ -23,10 +23,10 @@ interface StatCardProps {
 }
 
 const THEME_MAP: Record<StatCardProps['theme'], { bg: string; text: string; border: string }> = {
-  indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20' },
-  green:  { bg: 'bg-green-500/10',  text: 'text-green-400',  border: 'border-green-500/20'  },
-  red:    { bg: 'bg-red-500/10',    text: 'text-red-400',    border: 'border-red-500/20'    },
-  yellow: { bg: 'bg-yellow-500/10', text: 'text-yellow-400', border: 'border-yellow-500/20' },
+  indigo: { bg: 'bg-blue-50', text: 'text-[var(--dash-accent)]', border: 'border-blue-100' },
+  green:  { bg: 'bg-green-50', text: 'text-[var(--dash-success)]', border: 'border-green-100'  },
+  red:    { bg: 'bg-red-50', text: 'text-[var(--dash-danger)]', border: 'border-red-100'    },
+  yellow: { bg: 'bg-[var(--dash-warning)]/10', text: 'text-[var(--dash-warning)]', border: 'border-[var(--dash-warning)]/25' },
 }
 
 function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
@@ -34,23 +34,23 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
 
   return (
     <div className={clsx(
-      'bg-gray-900 rounded-xl p-5 border',
+      'bg-[var(--dash-surface)] rounded-xl p-5 border shadow-[var(--dash-shadow-soft)]',
       colors.border
     )}>
       {/* 상단: 아이콘 + 제목 */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-gray-400 font-medium">{title}</span>
+        <span className="text-sm text-[var(--dash-text-secondary)] font-medium">{title}</span>
         <div className={clsx('w-9 h-9 rounded-lg flex items-center justify-center', colors.bg)}>
           <Icon size={18} className={colors.text} />
         </div>
       </div>
 
       {/* 주요 수치 */}
-      <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
+      <p className="text-3xl font-bold text-[var(--dash-text-primary)] tracking-tight">{value}</p>
 
       {/* 보조 설명 */}
       {caption && (
-        <p className="text-xs text-gray-500 mt-1.5">{caption}</p>
+        <p className="text-xs text-[var(--dash-text-tertiary)] mt-1.5">{caption}</p>
       )}
     </div>
   )
@@ -60,13 +60,13 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
 
 function StatCardSkeleton() {
   return (
-    <div className="bg-gray-900 rounded-xl p-5 border border-gray-800 animate-pulse">
+    <div className="bg-[var(--dash-surface)] rounded-xl p-5 border border-[var(--dash-border)] animate-pulse">
       <div className="flex items-center justify-between mb-3">
-        <div className="h-4 w-20 bg-gray-800 rounded" />
-        <div className="w-9 h-9 bg-gray-800 rounded-lg" />
+        <div className="h-4 w-20 bg-[var(--dash-bg-secondary)] rounded" />
+        <div className="w-9 h-9 bg-[var(--dash-bg-secondary)] rounded-lg" />
       </div>
-      <div className="h-8 w-24 bg-gray-800 rounded mt-1" />
-      <div className="h-3 w-32 bg-gray-800 rounded mt-3" />
+      <div className="h-8 w-24 bg-[var(--dash-bg-secondary)] rounded mt-1" />
+      <div className="h-3 w-32 bg-[var(--dash-bg-secondary)] rounded mt-3" />
     </div>
   )
 }
@@ -92,7 +92,7 @@ export default function StatCardGroup() {
   /* 오류 시: 안내 메시지 */
   if (isError || !stats) {
     return (
-      <div className="col-span-4 text-center py-8 text-gray-500 text-sm">
+      <div className="col-span-4 text-center py-8 text-[var(--dash-text-secondary)] text-sm">
         통계 데이터를 불러올 수 없습니다. 서버 연결을 확인하세요.
       </div>
     )

@@ -27,8 +27,8 @@ function ResultBadge({ result }: { result: 'PASS' | 'FAIL' }) {
       className={clsx(
         'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold',
         result === 'PASS'
-          ? 'bg-green-500/15 text-green-400 ring-1 ring-green-500/30'
-          : 'bg-red-500/15 text-red-400 ring-1 ring-red-500/30'
+          ? 'bg-green-50 text-[var(--dash-success)] ring-1 ring-green-100'
+          : 'bg-red-50 text-[var(--dash-danger)] ring-1 ring-red-100'
       )}
     >
       {result}
@@ -39,7 +39,7 @@ function ResultBadge({ result }: { result: 'PASS' | 'FAIL' }) {
 /** 결함 종류 태그 목록 */
 function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
   if (!defects.length) {
-    return <span className="text-xs text-gray-600">—</span>
+    return <span className="text-xs text-[var(--dash-text-tertiary)]">—</span>
   }
 
   const grouped = new Map<
@@ -108,10 +108,10 @@ function SilkOcrCell({
     silkManufactureDate ? `제조일: ${silkManufactureDate}` : null,
   ].filter(Boolean)
   if (lines.length === 0) {
-    return <span className="text-xs text-gray-600">—</span>
+    return <span className="text-xs text-[var(--dash-text-tertiary)]">—</span>
   }
   return (
-    <div className="text-xs text-gray-300 space-y-0.5 leading-snug">
+    <div className="text-xs text-[var(--dash-text-secondary)] space-y-0.5 leading-snug">
       {lines.map((line, idx) => (
         <div key={idx}>{line}</div>
       ))}
@@ -123,10 +123,10 @@ function TableSkeleton() {
   return (
     <>
       {Array.from({ length: 8 }).map((_, i) => (
-        <tr key={i} className="border-b border-gray-800 animate-pulse">
+        <tr key={i} className="border-b border-[var(--dash-border)] animate-pulse">
           {Array.from({ length: 9 }).map((_, j) => (
             <td key={j} className="px-4 py-3">
-              <div className="h-3.5 bg-gray-800 rounded w-3/4" />
+              <div className="h-3.5 bg-[var(--dash-bg-secondary)] rounded w-3/4" />
             </td>
           ))}
         </tr>
@@ -161,15 +161,15 @@ export default function InspectionTable({
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-gray-800">
+      <div className="overflow-x-auto rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)]">
         <table className="w-full text-sm">
           {/* 헤더 */}
           <thead>
-            <tr className="bg-gray-900 text-left">
+            <tr className="bg-[var(--dash-bg-secondary)] text-left">
               {['ID', '시각', '실크 OCR', '디바이스', '결과', '검출 클래스', '오차 (°)', '추론 (ms)', ''].map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  className="px-4 py-3 text-xs font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider"
                 >
                   {h}
                 </th>
@@ -178,13 +178,13 @@ export default function InspectionTable({
           </thead>
 
           {/* 바디 */}
-          <tbody className="divide-y divide-gray-800/60">
+          <tbody className="divide-y divide-[var(--dash-border)]">
             {isLoading ? (
               <TableSkeleton />
             ) : filtered.length === 0 ? (
               /* 데이터 없음 */
               <tr>
-                <td colSpan={9} className="px-4 py-12 text-center text-gray-500 text-sm">
+                <td colSpan={9} className="px-4 py-12 text-center text-[var(--dash-text-secondary)] text-sm">
                   검사 이력이 없습니다.
                 </td>
               </tr>
@@ -195,21 +195,21 @@ export default function InspectionTable({
                   <tr
                     key={log.id}
                     className={clsx(
-                      'bg-gray-900/60 hover:bg-gray-800/60 cursor-pointer transition-colors',
+                      'bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] cursor-pointer transition-colors',
                       /* 선택된 행: 인디고 좌측 테두리 강조 */
-                      selectedId === log.id && 'ring-1 ring-inset ring-indigo-500/40'
+                      selectedId === log.id && 'ring-1 ring-inset ring-[var(--dash-accent)]/40'
                     )}
                     onClick={() => setSelectedId(log.id)}
                   >
                     {/* ID */}
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">
+                    <td className="px-4 py-3 font-mono text-xs text-[var(--dash-text-tertiary)]">
                       #{log.id}
                     </td>
 
                     {/* 시각 */}
                     <td className="px-4 py-3">
-                      <p className="text-gray-300 text-xs">{date}</p>
-                      <p className="text-gray-500 text-xs font-mono">{time}</p>
+                      <p className="text-[var(--dash-text-secondary)] text-xs">{date}</p>
+                      <p className="text-[var(--dash-text-tertiary)] text-xs font-mono">{time}</p>
                     </td>
 
                     {/* 실크 OCR */}
@@ -223,7 +223,7 @@ export default function InspectionTable({
                     </td>
 
                     {/* 디바이스 */}
-                    <td className="px-4 py-3 text-xs text-gray-400 font-mono">
+                    <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
                       {log.deviceId}
                     </td>
 
@@ -233,7 +233,7 @@ export default function InspectionTable({
                         <ResultBadge result={log.result} />
                         {log.result === 'FAIL' &&
                           log.defects.some((d) => d.defectType === 'SILK_SCREEN_PRINT_DEFECT') && (
-                            <span className="text-[10px] font-semibold text-amber-400/95">
+                            <span className="text-[10px] font-semibold text-[var(--dash-warning)]">
                               실크인쇄불량
                             </span>
                           )}
@@ -246,14 +246,14 @@ export default function InspectionTable({
                     </td>
 
                     {/* 오차 각도 */}
-                    <td className="px-4 py-3 text-xs text-gray-400 font-mono">
+                    <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
                       {log.angleErrorDeg != null
                         ? `${log.angleErrorDeg.toFixed(2)}°`
                         : '—'}
                     </td>
 
                     {/* 추론 시간 */}
-                    <td className="px-4 py-3 text-xs text-gray-400 font-mono">
+                    <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
                       {log.inferenceTimeMs != null ? `${log.inferenceTimeMs}ms` : '—'}
                     </td>
 
@@ -263,7 +263,7 @@ export default function InspectionTable({
                         size={16}
                         className={clsx(
                           'transition-colors',
-                          selectedId === log.id ? 'text-indigo-400' : 'text-gray-600'
+                          selectedId === log.id ? 'text-[var(--dash-accent)]' : 'text-[var(--dash-text-tertiary)]'
                         )}
                       />
                     </td>

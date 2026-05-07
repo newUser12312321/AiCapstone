@@ -29,6 +29,26 @@
   --kiosk-shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.05), 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
+/* Dashboard 2026 tokens */
+.dashboard-theme {
+  --dash-bg-primary: #fcfcfd;
+  --dash-bg-secondary: #f5f6f8;
+  --dash-surface: #ffffff;
+  --dash-border: #e5e7eb;
+  --dash-text-primary: #111827;
+  --dash-text-secondary: #6b7280;
+  --dash-text-tertiary: #9ca3af;
+  --dash-accent: #2563eb;
+  --dash-accent-hover: #1d4ed8;
+  --dash-success: #16a34a;
+  --dash-danger: #dc2626;
+  --dash-warning: #d97706;
+  --dash-info: #0891b2;
+  --dash-shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.05), 0 10px 30px rgba(15, 23, 42, 0.06);
+  --dash-overlay-bg: #0f172a;
+  --dash-overlay-soft: #1e293b;
+}
+
 /* Right-side kiosk panel: swipe-to-scroll without visible bar */
 .kiosk-touch-scroll {
   touch-action: pan-y;

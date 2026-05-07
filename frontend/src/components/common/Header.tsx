@@ -17,16 +17,16 @@ export default function Header() {
     : '--:--:--'
 
   return (
-    <header className="h-16 bg-gray-900 border-b border-gray-800 flex items-center px-6 shrink-0">
+    <header className="h-16 bg-[var(--dash-surface)] border-b border-[var(--dash-border)] flex items-center px-6 shrink-0">
 
       {/* 서비스 로고 + 이름 */}
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+        <div className="w-8 h-8 bg-[var(--dash-accent)] rounded-lg flex items-center justify-center">
           <Cpu size={16} className="text-white" />
         </div>
         <div>
-          <h1 className="text-sm font-bold text-white leading-none">PCB 비전 검사</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Edge Vision Inspection Station</p>
+          <h1 className="text-sm font-bold text-[var(--dash-text-primary)] leading-none">PCB 비전 검사</h1>
+          <p className="text-xs text-[var(--dash-text-tertiary)] mt-0.5">Edge Vision Inspection Station</p>
         </div>
       </div>
 
@@ -37,16 +37,16 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <span
             className={`w-2 h-2 rounded-full ${
-              isFetching ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'
+              isFetching ? 'bg-[var(--dash-warning)] animate-pulse' : 'bg-[var(--dash-success)]'
             }`}
           />
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-[var(--dash-text-secondary)]">
             {isFetching ? '갱신 중...' : 'LIVE'}
           </span>
         </div>
 
         {/* 마지막 데이터 갱신 시각 */}
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+        <div className="flex items-center gap-1.5 text-xs text-[var(--dash-text-tertiary)]">
           <Activity size={12} />
           <span>최종 갱신: {lastUpdated}</span>
         </div>

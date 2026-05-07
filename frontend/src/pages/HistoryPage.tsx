@@ -44,14 +44,14 @@ function FilterButton({ label, value, current, count, onClick }: FilterButtonPro
       className={clsx(
         'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
         active
-          ? 'bg-indigo-600 text-white'
-          : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+          ? 'bg-[var(--dash-accent)] text-white'
+          : 'bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)] hover:bg-[var(--dash-bg-secondary)]'
       )}
     >
       {label}
       <span className={clsx(
         'px-1.5 py-0.5 rounded-full text-xs',
-        active ? 'bg-white/20' : 'bg-gray-700'
+        active ? 'bg-white/20' : 'bg-[var(--dash-bg-secondary)]'
       )}>
         {count}
       </span>
@@ -127,14 +127,14 @@ export default function HistoryPage() {
       {/* 페이지 제목 */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">검사 이력</h2>
-          <p className="text-xs text-gray-500 mt-0.5">전체 검사 기록 조회 및 결함 상세 확인</p>
+          <h2 className="text-lg font-bold text-[var(--dash-text-primary)]">검사 이력</h2>
+          <p className="text-xs text-[var(--dash-text-secondary)] mt-0.5">전체 검사 기록 조회 및 결함 상세 확인</p>
         </div>
 
         {/* CSV 내보내기 버튼 */}
         <button
           onClick={() => downloadCsv(filteredLogs)}
-          className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg text-xs font-medium transition-colors"
+          className="flex items-center gap-2 px-3 py-2 bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] rounded-lg text-xs font-medium transition-colors"
         >
           <Download size={14} />
           CSV 내보내기
@@ -142,33 +142,33 @@ export default function HistoryPage() {
       </div>
 
       {/* 필터 영역 */}
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+      <div className="bg-[var(--dash-surface)] rounded-xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
         <div className="flex flex-wrap gap-4 items-end">
 
           {/* 날짜 범위 필터 */}
           <div className="flex items-center gap-2">
-            <Filter size={14} className="text-gray-500 shrink-0" />
+            <Filter size={14} className="text-[var(--dash-text-tertiary)] shrink-0" />
             <div className="flex items-center gap-2">
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-gray-500">시작일</label>
+                <label className="text-xs text-[var(--dash-text-tertiary)]">시작일</label>
                 <input
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
                   max={dateTo || today}
-                  className="bg-gray-800 border border-gray-700 text-gray-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
                 />
               </div>
-              <span className="text-gray-600 text-sm mt-4">~</span>
+              <span className="text-[var(--dash-text-tertiary)] text-sm mt-4">~</span>
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-gray-500">종료일</label>
+                <label className="text-xs text-[var(--dash-text-tertiary)]">종료일</label>
                 <input
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
                   min={dateFrom}
                   max={today}
-                  className="bg-gray-800 border border-gray-700 text-gray-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
                 />
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function HistoryPage() {
 
           {/* 결과 필터 버튼 그룹 */}
           <div className="flex items-center gap-2 ml-auto">
-            <Search size={14} className="text-gray-500" />
+            <Search size={14} className="text-[var(--dash-text-tertiary)]" />
             <FilterButton label="전체"  value="ALL"  current={resultFilter} count={allLogs.length}                        onClick={setResultFilter} />
             <FilterButton label="PASS"  value="PASS" current={resultFilter} count={allLogs.filter(l => l.result==='PASS').length} onClick={setResultFilter} />
             <FilterButton label="FAIL"  value="FAIL" current={resultFilter} count={allLogs.filter(l => l.result==='FAIL').length} onClick={setResultFilter} />
@@ -185,19 +185,19 @@ export default function HistoryPage() {
       </div>
 
       {/* 필터 결과 미니 통계 바 */}
-      <div className="flex items-center gap-4 text-xs text-gray-500">
+      <div className="flex items-center gap-4 text-xs text-[var(--dash-text-secondary)]">
         <span>
-          조회 결과: <span className="text-white font-semibold">{filteredLogs.length}건</span>
+          조회 결과: <span className="text-[var(--dash-text-primary)] font-semibold">{filteredLogs.length}건</span>
         </span>
         <span>
-          합격: <span className="text-green-400 font-semibold">{passCount}건</span>
+          합격: <span className="text-[var(--dash-success)] font-semibold">{passCount}건</span>
         </span>
         <span>
-          불합격: <span className="text-red-400 font-semibold">{failCount}건</span>
+          불합격: <span className="text-[var(--dash-danger)] font-semibold">{failCount}건</span>
         </span>
         {filteredLogs.length > 0 && (
           <span>
-            불량률: <span className="text-yellow-400 font-semibold">
+            불량률: <span className="text-[var(--dash-warning)] font-semibold">
               {((failCount / filteredLogs.length) * 100).toFixed(2)}%
             </span>
           </span>

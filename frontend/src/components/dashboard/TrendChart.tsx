@@ -14,8 +14,8 @@ import {
 import { useTrendData } from '@/hooks/useInspectionData'
 
 /* 색상 상수 */
-const PASS_COLOR = '#22c55e'
-const FAIL_COLOR = '#ef4444'
+const PASS_COLOR = '#16a34a'
+const FAIL_COLOR = '#dc2626'
 
 // ── 커스텀 툴팁 ───────────────────────────────────────────────────────────────
 
@@ -31,20 +31,20 @@ function CustomTooltip({
   const total = payload.reduce((sum, p) => sum + (p.value ?? 0), 0)
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs shadow-xl">
-      <p className="text-gray-400 mb-1.5">{label}</p>
+    <div className="bg-[var(--dash-surface)] border border-[var(--dash-border)] rounded-lg px-3 py-2 text-xs shadow-[var(--dash-shadow-soft)]">
+      <p className="text-[var(--dash-text-tertiary)] mb-1.5">{label}</p>
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
           <span
             className="w-2 h-2 rounded-full inline-block"
             style={{ backgroundColor: p.fill }}
           />
-          <span className="text-gray-300">{p.name}:</span>
-          <span className="text-white font-bold">{p.value}건</span>
+          <span className="text-[var(--dash-text-secondary)]">{p.name}:</span>
+          <span className="text-[var(--dash-text-primary)] font-bold">{p.value}건</span>
         </div>
       ))}
-      <div className="border-t border-gray-700 mt-1.5 pt-1.5 text-gray-400">
-        합계: <span className="text-white">{total}건</span>
+      <div className="border-t border-[var(--dash-border)] mt-1.5 pt-1.5 text-[var(--dash-text-tertiary)]">
+        합계: <span className="text-[var(--dash-text-primary)]">{total}건</span>
       </div>
     </div>
   )
@@ -58,9 +58,9 @@ export default function TrendChart() {
   /* 로딩 스켈레톤 */
   if (isLoading) {
     return (
-      <div className="bg-gray-900 rounded-xl p-5 border border-gray-800 h-72 animate-pulse">
-        <div className="h-4 w-36 bg-gray-800 rounded mb-4" />
-        <div className="h-full bg-gray-800/50 rounded" />
+      <div className="bg-[var(--dash-surface)] rounded-xl p-5 border border-[var(--dash-border)] h-72 animate-pulse">
+        <div className="h-4 w-36 bg-[var(--dash-bg-secondary)] rounded mb-4" />
+        <div className="h-full bg-[var(--dash-bg-secondary)] rounded" />
       </div>
     )
   }
@@ -68,17 +68,17 @@ export default function TrendChart() {
   /* 데이터 없음 안내 */
   if (!trendData.length) {
     return (
-      <div className="bg-gray-900 rounded-xl p-5 border border-gray-800 flex items-center justify-center h-72">
-        <p className="text-sm text-gray-500">최근 24시간 검사 데이터가 없습니다.</p>
+      <div className="bg-[var(--dash-surface)] rounded-xl p-5 border border-[var(--dash-border)] flex items-center justify-center h-72">
+        <p className="text-sm text-[var(--dash-text-secondary)]">최근 24시간 검사 데이터가 없습니다.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
+    <div className="bg-[var(--dash-surface)] rounded-xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-gray-300">시간대별 검사 추이</h2>
-        <span className="text-xs text-gray-500">최근 24시간</span>
+        <h2 className="text-sm font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 추이</h2>
+        <span className="text-xs text-[var(--dash-text-tertiary)]">최근 24시간</span>
       </div>
 
       <ResponsiveContainer width="100%" height={240}>
@@ -90,7 +90,7 @@ export default function TrendChart() {
           {/* 배경 그리드 */}
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="#1f2937"
+            stroke="#e5e7eb"
             vertical={false}
           />
 
@@ -113,13 +113,13 @@ export default function TrendChart() {
           {/* 호버 툴팁 */}
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+            cursor={{ fill: 'rgba(37,99,235,0.06)' }}
           />
 
           {/* 범례 */}
           <Legend
             formatter={(value) => (
-              <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>{value}</span>
+              <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>{value}</span>
             )}
           />
 

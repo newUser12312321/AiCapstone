@@ -287,7 +287,7 @@ function deriveRawImagePathFromStored(stored: string | null): string | null {
 
 function PanelBadge({ children }: { children: ReactNode }) {
   return (
-    <span className="absolute top-2 left-2 z-10 text-[10px] font-semibold uppercase tracking-wide bg-black/65 text-gray-100 px-2 py-0.5 rounded border border-gray-700/80">
+    <span className="absolute top-2 left-2 z-10 text-[10px] font-semibold uppercase tracking-wide bg-[var(--dash-overlay-bg)]/70 text-white px-2 py-0.5 rounded border border-[var(--dash-border)]">
       {children}
     </span>
   )
@@ -337,16 +337,16 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
   const scaleY = imgSize.h / Math.max(1, refPixels.h)
 
   return (
-    <div className="mt-4 bg-gray-900 rounded-xl border border-gray-700 overflow-hidden">
+    <div className="mt-4 bg-[var(--dash-surface)] rounded-xl border border-[var(--dash-border)] overflow-hidden shadow-[var(--dash-shadow-soft)]">
 
       {/* 헤더 바 */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--dash-border)]">
         <div className="flex items-center gap-2">
-          <AlertCircle size={15} className="text-indigo-400" />
-          <span className="text-sm font-semibold text-gray-200">
+          <AlertCircle size={15} className="text-[var(--dash-accent)]" />
+          <span className="text-sm font-semibold text-[var(--dash-text-primary)]">
             검사 상세 (피듀셜)
             {log && (
-              <span className="ml-2 text-xs text-gray-500 font-normal">
+              <span className="ml-2 text-xs text-[var(--dash-text-tertiary)] font-normal">
                 #{log.id} — {log.result === 'PASS' ? '✅ PASS' : '❌ FAIL'}
               </span>
             )}
@@ -354,7 +354,7 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
         </div>
         <button
           onClick={onClose}
-          className="p-1 rounded hover:bg-gray-800 text-gray-500 hover:text-white transition-colors"
+          className="p-1 rounded hover:bg-[var(--dash-bg-secondary)] text-[var(--dash-text-tertiary)] hover:text-[var(--dash-text-primary)] transition-colors"
           aria-label="닫기"
         >
           <X size={16} />
@@ -362,13 +362,13 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
       </div>
 
       {log && isFiducialAlignmentSentinel(log) && (
-        <div className="px-4 py-2.5 bg-amber-950/50 border-b border-amber-900/40 text-[11px] text-amber-100/95 leading-relaxed">
-          <strong className="text-amber-200">정렬(피듀셜) 단계에서 실패했습니다.</strong> 마크가 2개
+        <div className="px-4 py-2.5 bg-[var(--dash-warning)]/10 border-b border-[var(--dash-warning)]/25 text-[11px] text-[var(--dash-warning)] leading-relaxed">
+          <strong className="text-[var(--dash-warning)]">정렬(피듀셜) 단계에서 실패했습니다.</strong> 마크가 2개
           이상 잡히지 않아 기울기 값이 999°로 기록됩니다. 이 상태에서는{' '}
           <strong>결함 검사가 실행되지 않습니다</strong> — 표시할 결함 박스가 없는 것이 정상입니다.
-          <span className="text-amber-200/80">
+          <span className="text-[var(--dash-warning)]/80">
             {' '}
-            엣지 <code className="text-amber-300/90">YOLO_FIDUCIAL_CONFIDENCE_THRESHOLD</code>를
+            엣지 <code className="text-[var(--dash-warning)]/90">YOLO_FIDUCIAL_CONFIDENCE_THRESHOLD</code>를
             0.2~0.35로 낮추거나, 학습 이미지와 비슷한 밝기·구도로 촬영해 보세요.
           </span>
         </div>
@@ -377,9 +377,9 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
       {/* 본문 */}
       {isLoading ? (
         /* 로딩 스켈레톤 */
-        <div className="h-64 animate-pulse bg-gray-800/50" />
+        <div className="h-64 animate-pulse bg-[var(--dash-bg-secondary)]" />
       ) : !log ? (
-        <div className="h-32 flex items-center justify-center text-gray-500 text-sm">
+        <div className="h-32 flex items-center justify-center text-[var(--dash-text-secondary)] text-sm">
           데이터를 불러올 수 없습니다.
         </div>
       ) : (
@@ -389,13 +389,13 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
           <div
             className={
               showSideBySide
-                ? 'flex flex-col sm:flex-row flex-1 min-w-0 border-b lg:border-b-0 lg:border-r border-gray-800'
-                : 'relative flex-1 bg-gray-950 min-h-48 border-b lg:border-b-0 lg:border-r border-gray-800'
+                ? 'flex flex-col sm:flex-row flex-1 min-w-0 border-b lg:border-b-0 lg:border-r border-[var(--dash-border)]'
+                : 'relative flex-1 bg-[var(--dash-overlay-bg)] min-h-48 border-b lg:border-b-0 lg:border-r border-[var(--dash-border)]'
             }
           >
             {showSideBySide ? (
               <>
-                <div className="relative flex-1 min-w-0 bg-gray-950 border-b sm:border-b-0 sm:border-r border-gray-800/90">
+                <div className="relative flex-1 min-w-0 bg-[var(--dash-overlay-bg)] border-b sm:border-b-0 sm:border-r border-[var(--dash-border)]">
                   <PanelBadge>보정 전</PanelBadge>
                   {rawSrc && !rawLoadError ? (
                     <img
@@ -405,13 +405,13 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                       onError={() => setRawLoadError(true)}
                     />
                   ) : (
-                    <div className="w-full min-h-32 flex flex-col items-center justify-center gap-2 px-4 py-8 bg-gray-900/50">
-                      <ImageOff size={28} className="text-gray-600" />
-                      <p className="text-xs text-gray-500">원본 이미지를 불러오지 못했습니다.</p>
+                    <div className="w-full min-h-32 flex flex-col items-center justify-center gap-2 px-4 py-8 bg-[var(--dash-overlay-soft)]/60">
+                      <ImageOff size={28} className="text-[var(--dash-text-tertiary)]" />
+                      <p className="text-xs text-[var(--dash-text-secondary)]">원본 이미지를 불러오지 못했습니다.</p>
                     </div>
                   )}
                 </div>
-                <div className="relative flex-1 min-w-0 bg-gray-950">
+                <div className="relative flex-1 min-w-0 bg-[var(--dash-overlay-bg)]">
                   <PanelBadge>보정 후 · 피듀셜 + 결함</PanelBadge>
                   {deskewSrc && !deskewLoadError ? (
                     <>
@@ -471,9 +471,9 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                       </svg>
                     </>
                   ) : (
-                    <div className="w-full aspect-video bg-gray-800/60 flex flex-col items-center justify-center gap-2 px-4 text-center">
-                      <ImageOff size={32} className="text-gray-600" />
-                      <p className="text-xs text-gray-400">보정 이미지를 불러오지 못했습니다.</p>
+                    <div className="w-full aspect-video bg-[var(--dash-overlay-soft)]/70 flex flex-col items-center justify-center gap-2 px-4 text-center">
+                      <ImageOff size={32} className="text-[var(--dash-text-tertiary)]" />
+                      <p className="text-xs text-[var(--dash-text-secondary)]">보정 이미지를 불러오지 못했습니다.</p>
                     </div>
                   )}
                 </div>
@@ -536,30 +536,30 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                 </svg>
               </div>
             ) : deskewSrc && deskewLoadError ? (
-              <div className="w-full aspect-video bg-gray-800/60 flex flex-col items-center justify-center gap-2 px-4 text-center">
-                <ImageOff size={32} className="text-gray-600" />
-                <p className="text-xs text-gray-400">캡처 이미지를 불러오지 못했습니다.</p>
-                <p className="text-xs text-gray-500">
-                  <code className="text-indigo-300">frontend/vite.config.ts</code>의{' '}
-                  <code className="text-indigo-300">/captures</code> 프록시가 Pi IP와 맞는지,
-                  Pi에서 <code className="text-indigo-300">uvicorn</code>이 떠 있는지 확인하세요.
+              <div className="w-full aspect-video bg-[var(--dash-overlay-soft)]/70 flex flex-col items-center justify-center gap-2 px-4 text-center">
+                <ImageOff size={32} className="text-[var(--dash-text-tertiary)]" />
+                <p className="text-xs text-[var(--dash-text-secondary)]">캡처 이미지를 불러오지 못했습니다.</p>
+                <p className="text-xs text-[var(--dash-text-tertiary)]">
+                  <code className="text-[var(--dash-accent)]">frontend/vite.config.ts</code>의{' '}
+                  <code className="text-[var(--dash-accent)]">/captures</code> 프록시가 Pi IP와 맞는지,
+                  Pi에서 <code className="text-[var(--dash-accent)]">uvicorn</code>이 떠 있는지 확인하세요.
                 </p>
               </div>
             ) : (
               <div
                 ref={imgRef as React.RefObject<HTMLDivElement> as React.RefObject<any>}
-                className="w-full aspect-video bg-gray-800/60 flex flex-col items-center justify-center gap-2"
+                className="w-full aspect-video bg-[var(--dash-overlay-soft)]/70 flex flex-col items-center justify-center gap-2"
               >
-                <ImageOff size={32} className="text-gray-600" />
-                <p className="text-xs text-gray-500">캡처 이미지 없음</p>
-                <p className="text-xs text-gray-600">(더미 모드에서는 이미지가 저장되지 않습니다)</p>
+                <ImageOff size={32} className="text-[var(--dash-text-tertiary)]" />
+                <p className="text-xs text-[var(--dash-text-secondary)]">캡처 이미지 없음</p>
+                <p className="text-xs text-[var(--dash-text-tertiary)]">(더미 모드에서는 이미지가 저장되지 않습니다)</p>
               </div>
             )}
           </div>
 
           {/* 우측: 검사 메타데이터 패널 */}
-          <div className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l border-gray-800 p-4 shrink-0">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          <div className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l border-[var(--dash-border)] p-4 shrink-0">
+            <h3 className="text-xs font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider mb-3">
               검사 정보
             </h3>
 
@@ -690,11 +690,11 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
             </dl>
 
             {missingReasons.length > 0 && (
-              <div className="mt-3 rounded-md border border-red-900/50 bg-red-950/25 px-3 py-2">
-                <h4 className="text-[11px] font-semibold text-red-300 mb-1">FAIL 원인</h4>
+              <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
+                <h4 className="text-[11px] font-semibold text-[var(--dash-danger)] mb-1">FAIL 원인</h4>
                 <ul className="space-y-1">
                   {missingReasons.map((d, i) => (
-                    <li key={`${d.defectType}-${i}`} className="text-[11px] text-red-200">
+                    <li key={`${d.defectType}-${i}`} className="text-[11px] text-[var(--dash-danger)]">
                       - {defectDisplayName(d.defectType, d.detail)}
                     </li>
                   ))}
@@ -703,8 +703,8 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
             )}
 
             {overlayDefects.length > 0 && (
-              <div className="mt-4 border-t border-gray-800 pt-3">
-                <h4 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              <div className="mt-4 border-t border-[var(--dash-border)] pt-3">
+                <h4 className="text-[11px] font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider mb-2">
                   검출 좌표
                 </h4>
                 <div className="max-h-56 overflow-y-auto space-y-2 pr-1">
@@ -715,24 +715,24 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
                     return (
                       <div
                         key={`${d.defectType}-${d.bboxX}-${d.bboxY}-${i}`}
-                        className="rounded-md border border-gray-700/80 bg-gray-950/80 px-2.5 py-2"
+                        className="rounded-md border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-2.5 py-2"
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <span className="text-[11px] font-semibold truncate" style={{ color }}>
                             {i + 1}. {defectDisplayName(d.defectType, d.detail)}
                           </span>
-                          <span className="text-[11px] font-mono text-gray-400">
+                          <span className="text-[11px] font-mono text-[var(--dash-text-secondary)]">
                             {(d.confidence * 100).toFixed(1)}%
                           </span>
                         </div>
-                        <div className="text-[11px] font-mono text-gray-300 leading-relaxed">
+                        <div className="text-[11px] font-mono text-[var(--dash-text-secondary)] leading-relaxed">
                           <div>
                             좌상단: ({fmtPx(d.bboxX)}, {fmtPx(d.bboxY)})
                           </div>
                           <div>
                             크기: {fmtPx(d.bboxWidth)}×{fmtPx(d.bboxHeight)} px
                           </div>
-                          <div className="text-sky-300">
+                          <div className="text-[var(--dash-info)]">
                             중심: ({fmtPx(cx)}, {fmtPx(cy)})
                           </div>
                         </div>
@@ -754,8 +754,8 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
 function MetaRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-2">
-      <dt className="text-gray-500 shrink-0">{label}</dt>
-      <dd className="text-gray-300 font-mono text-right truncate">{value}</dd>
+      <dt className="text-[var(--dash-text-tertiary)] shrink-0">{label}</dt>
+      <dd className="text-[var(--dash-text-secondary)] font-mono text-right truncate">{value}</dd>
     </div>
   )
 }
@@ -763,9 +763,9 @@ function MetaRow({ label, value }: { label: string; value: string }) {
 /** 피듀셜 중심 좌표 — 패널에서 가장 눈에 띄게 */
 function MetaCoordRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg border-2 border-sky-600/50 bg-slate-950 px-3 py-2.5 shadow-lg shadow-sky-950/40">
-      <dt className="text-[11px] font-semibold text-sky-200/90 tracking-wide">{label}</dt>
-      <dd className="text-base sm:text-lg font-bold font-mono text-sky-300 tabular-nums tracking-tight break-all">
+    <div className="flex flex-col gap-1.5 rounded-lg border border-[var(--dash-info)]/40 bg-cyan-50 px-3 py-2.5">
+      <dt className="text-[11px] font-semibold text-[var(--dash-info)] tracking-wide">{label}</dt>
+      <dd className="text-base sm:text-lg font-bold font-mono text-[var(--dash-info)] tabular-nums tracking-tight break-all">
         {value}
       </dd>
     </div>

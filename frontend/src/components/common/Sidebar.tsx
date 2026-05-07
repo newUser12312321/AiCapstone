@@ -39,7 +39,7 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-56 bg-gray-900 border-r border-gray-800 flex flex-col py-4 shrink-0">
+    <aside className="w-56 bg-[var(--dash-surface)] border-r border-[var(--dash-border)] flex flex-col py-4 shrink-0">
 
       {/* 네비게이션 메뉴 */}
       <nav className="flex flex-col gap-1 px-3">
@@ -53,9 +53,9 @@ export default function Sidebar() {
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 isActive
                   /* 활성 메뉴: 인디고 배경 + 흰 텍스트 */
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-[var(--dash-accent)] text-white'
                   /* 비활성 메뉴: 회색 텍스트, 호버 시 배경 */
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                  : 'text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)] hover:text-[var(--dash-text-primary)]'
               )
             }
           >
@@ -66,9 +66,9 @@ export default function Sidebar() {
       </nav>
 
       {/* 하단 디바이스 정보 */}
-      <div className="mt-auto px-4 pb-2 border-t border-gray-800 pt-4">
-        <p className="text-xs text-gray-600 font-mono">RPI5-LINE-A</p>
-        <p className="text-xs text-gray-600">Spring Boot :8080</p>
+      <div className="mt-auto px-4 pb-2 border-t border-[var(--dash-border)] pt-4">
+        <p className="text-xs text-[var(--dash-text-tertiary)] font-mono">RPI5-LINE-A</p>
+        <p className="text-xs text-[var(--dash-text-tertiary)]">Spring Boot :8080</p>
       </div>
     </aside>
   )

@@ -61,8 +61,8 @@ export default function DashboardPage() {
       {/* 페이지 제목 + 엣지 액션 */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-white">실시간 대시보드</h2>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <h2 className="text-lg font-bold text-[var(--dash-text-primary)]">실시간 대시보드</h2>
+          <p className="text-xs text-[var(--dash-text-secondary)] mt-0.5">
             5초마다 자동 갱신 · 클라우드 통합 모니터링
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function DashboardPage() {
             type="button"
             onClick={handleDeleteHistory}
             disabled={deleteMutation.isPending}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-gray-800 hover:bg-red-950/80 border border-gray-700 hover:border-red-900 text-gray-200 disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] hover:border-[var(--dash-danger)] text-[var(--dash-text-primary)] disabled:opacity-50 transition-colors"
           >
             {deleteMutation.isPending ? (
               <Loader2 size={16} className="animate-spin" />
@@ -89,8 +89,8 @@ export default function DashboardPage() {
         <p
           className={
             actionMsg.type === 'ok'
-              ? 'text-xs text-emerald-400/90'
-              : 'text-xs text-red-400/90'
+              ? 'text-xs text-[var(--dash-success)]'
+              : 'text-xs text-[var(--dash-danger)]'
           }
         >
           {actionMsg.text}
@@ -115,8 +115,8 @@ export default function DashboardPage() {
       {/* 3행: 실시간 이력 테이블 */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-gray-300">최근 검사 이력</h2>
-          <span className="text-xs text-gray-500">최근 15건</span>
+          <h2 className="text-sm font-semibold text-[var(--dash-text-secondary)]">최근 검사 이력</h2>
+          <span className="text-xs text-[var(--dash-text-tertiary)]">최근 15건</span>
         </div>
         <InspectionTable logs={recentLogs} isLoading={isLoading} />
       </div>
