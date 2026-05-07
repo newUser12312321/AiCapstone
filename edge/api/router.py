@@ -309,14 +309,31 @@ async def set_camera_focus(body: CameraFocusBody) -> dict[str, Any]:
 @router.post("/system/exit-kiosk", summary="키오스크 브라우저 종료 (라즈베리파이 바탕화면 복귀)")
 async def exit_kiosk_browser() -> dict[str, str]:
     """
-    Chromium 키오스크 프로세스를 종료해 바탕화면으로 복귀한다.
-    브라우저 서비스는 systemd에서 재시작될 수 있으므로 운영 환경에 맞춰
-    browser service 정책(자동 재시작 여부)을 함께 설정해야 한다.
+    키오스크 브라우저 systemd 서비스를 중지해 바탕화면으로 복귀한다.
+    sudoers NOPASSWD 권한이 없으면 systemctl 중지가 실패할 수 있으므로
+    마지막 수단으로 Chromium 프로세스를 직접 종료한다.
     """
     try:
+        stop = subprocess.run(
+            ["sudo", "-n", "systemctl", "stop", "pcb-react-kiosk-browser.service"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if stop.returncode == 0:
+            return {"message": "키오스크 브라우저 서비스를 중지했습니다. 바탕화면으로 복귀합니다."}
+
+        logger.warning(
+            "[system/exit-kiosk] systemctl stop 실패(returncode=%s): %s",
+            stop.returncode,
+            (stop.stderr or "").strip(),
+        )
         subprocess.run(["pkill", "-f", "chromium-browser"], check=False)
         subprocess.run(["pkill", "-f", "chromium"], check=False)
-        return {"message": "키오스크 브라우저 종료 요청을 전송했습니다."}
+        return {
+            "message": "서비스 중지는 실패하여 브라우저 프로세스만 종료했습니다. "
+            "자동 재실행되면 sudoers 권한 설정이 필요합니다."
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"키오스크 종료 실패: {e}") from e
 

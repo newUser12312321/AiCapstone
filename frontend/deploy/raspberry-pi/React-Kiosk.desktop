@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=React Kiosk Start
+Comment=Start PCB React kiosk services
+Exec=/home/pi/AiCapstoneV2/frontend/deploy/raspberry-pi/react-kiosk-start
+Terminal=true
+Icon=utilities-terminal
+Categories=Utility;

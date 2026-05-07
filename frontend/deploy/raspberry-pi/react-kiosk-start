@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[react-kiosk-start] starting services..."
+sudo systemctl start pcb-react-kiosk-web.service
+sudo systemctl start pcb-react-kiosk-browser.service
+echo "[react-kiosk-start] done."
