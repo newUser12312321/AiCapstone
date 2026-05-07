@@ -34,7 +34,7 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
 
   return (
     <div className={clsx(
-      'bg-[var(--dash-surface)] rounded-2xl p-5 border shadow-[var(--dash-shadow-soft)]',
+      'bg-[var(--dash-surface)] rounded-2xl p-5 border shadow-[var(--dash-shadow-soft)] min-h-[140px]',
       colors.border
     )}>
       {/* 상단: 아이콘 + 제목 */}
@@ -46,7 +46,7 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
       </div>
 
       {/* 주요 수치 */}
-      <p className="text-3xl font-bold text-[var(--dash-text-primary)] tracking-tight">{value}</p>
+      <p className="text-[32px] leading-none font-bold text-[var(--dash-text-primary)] tracking-tight">{value}</p>
 
       {/* 보조 설명 */}
       {caption && (

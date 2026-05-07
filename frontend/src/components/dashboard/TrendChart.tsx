@@ -14,8 +14,8 @@ import {
 import { useTrendData } from '@/hooks/useInspectionData'
 
 /* 색상 상수 */
-const PASS_COLOR = '#111827'
-const FAIL_COLOR = '#eb6a4d'
+const PASS_COLOR = '#16a34a'
+const FAIL_COLOR = '#dc2626'
 
 // ── 커스텀 툴팁 ───────────────────────────────────────────────────────────────
 

@@ -13,8 +13,8 @@ import { useStats } from '@/hooks/useInspectionData'
 import type { PieDataPoint } from '@/types/inspection'
 
 /* 합격/불합격 색상 */
-const PASS_COLOR = '#111827'
-const FAIL_COLOR = '#eb6a4d'
+const PASS_COLOR = '#16a34a'
+const FAIL_COLOR = '#dc2626'
 
 // ── 커스텀 중앙 레이블 ────────────────────────────────────────────────────────
 

@@ -56,21 +56,17 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 md:p-7 space-y-6 overflow-y-auto h-full">
+    <div className="p-6 space-y-5 overflow-y-auto h-full">
 
       {/* 페이지 제목 + 엣지 액션 */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-4">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-[var(--dash-text-primary)]">실시간 대시보드</h2>
-          <p className="text-xs text-[var(--dash-text-secondary)] mt-0.5">
+          <h2 className="text-xl font-semibold tracking-tight text-[var(--dash-text-primary)]">실시간 대시보드</h2>
+          <p className="text-sm text-[var(--dash-text-secondary)] mt-0.5">
             5초마다 자동 갱신 · 클라우드 통합 모니터링
           </p>
         </div>
-        <div className="flex items-center justify-between xl:justify-end gap-3">
-          <p className="hidden xl:block text-[42px] leading-[0.95] tracking-tight text-[var(--dash-text-primary)]/95">
-            Hey, need help?
-            <span className="block text-[var(--dash-text-tertiary)] font-normal">Just ask me anything.</span>
-          </p>
+        <div className="flex items-center justify-end gap-3">
           <button
             type="button"
             onClick={handleDeleteHistory}
@@ -103,7 +99,7 @@ export default function DashboardPage() {
       <StatCardGroup />
 
       {/* 2행: 도넛 차트 + 트렌드 차트 */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* PassFailChart: 2/5 너비 */}
         <div className="lg:col-span-2">
           <PassFailChart />
@@ -115,7 +111,7 @@ export default function DashboardPage() {
       </div>
 
       {/* 3행: 실시간 이력 테이블 */}
-      <div className="pt-1">
+      <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-[var(--dash-text-secondary)]">최근 검사 이력</h2>
           <span className="text-xs text-[var(--dash-text-tertiary)]">최근 15건</span>
