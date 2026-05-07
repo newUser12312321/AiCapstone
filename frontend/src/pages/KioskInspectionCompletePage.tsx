@@ -92,17 +92,17 @@ export default function KioskInspectionCompletePage() {
 
   return (
 
-    <div className="h-screen w-full bg-slate-950 text-slate-100 p-4 md:p-6">
+    <div className="h-screen w-full bg-[#f5f5f7] text-[#111111] p-4 md:p-6">
 
-      <div className="mx-auto h-full max-w-[680px] flex flex-col gap-4">
+      <div className="mx-auto h-full max-w-[760px] flex flex-col gap-4">
 
-        <header className="rounded-2xl border border-sky-900/50 bg-gradient-to-b from-slate-900 to-slate-950 px-5 py-4 flex items-center justify-between">
+        <header className="rounded-3xl border border-[#d2d2d7] bg-white px-6 py-5 flex items-center justify-between gap-4">
 
           <div>
 
-            <h1 className="text-2xl md:text-3xl font-extrabold text-cyan-100">검사 완료</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#111111]">검사 완료</h1>
 
-            <p className="text-cyan-200/70 mt-1">
+            <p className="text-[#6e6e73] mt-1 text-base">
 
               {log ? new Date(log.inspectedAt).toLocaleString('ko-KR') : '검사 결과 불러오는 중'}
 
@@ -110,7 +110,7 @@ export default function KioskInspectionCompletePage() {
 
             {silkPrintDefect && log && (
 
-              <p className="text-amber-300/95 text-sm md:text-base font-semibold mt-2">
+              <p className="text-amber-700 text-base font-semibold mt-2">
 
                 실크 OCR 필드 미검출 — 시리즈·기판명·제조사·제조일을 모두 읽어야 합니다.
 
@@ -122,9 +122,9 @@ export default function KioskInspectionCompletePage() {
 
           <div
 
-            className={`rounded-xl px-5 py-2 text-xl md:text-3xl font-black ${
+            className={`rounded-2xl px-6 py-3 text-2xl md:text-3xl font-black text-white ${
 
-              isPass ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
+              isPass ? 'bg-emerald-500' : 'bg-red-500'
 
             }`}
 
@@ -138,11 +138,11 @@ export default function KioskInspectionCompletePage() {
 
 
 
-        <section className="flex-1 min-h-0 rounded-2xl border border-sky-900/50 bg-slate-900/70 p-4 md:p-5 flex flex-col gap-3 overflow-y-auto">
+        <section className="flex-1 min-h-0 rounded-3xl border border-[#d2d2d7] bg-white p-4 md:p-6 flex flex-col gap-3 overflow-y-auto">
 
           {isLoading ? (
 
-            <div className="flex-1 grid place-items-center text-slate-300 py-24">
+            <div className="flex-1 grid place-items-center text-[#6e6e73] py-24">
 
               <Loader2 className="animate-spin" size={36} />
 
@@ -150,13 +150,13 @@ export default function KioskInspectionCompletePage() {
 
           ) : isError || !log ? (
 
-            <div className="flex-1 grid place-items-center text-slate-300 py-24">검사 데이터를 불러오지 못했습니다.</div>
+            <div className="flex-1 grid place-items-center text-[#6e6e73] py-24">검사 데이터를 불러오지 못했습니다.</div>
 
           ) : (
 
             <>
 
-              <h2 className="text-2xl font-bold text-cyan-100">검사 정보</h2>
+              <h2 className="text-3xl font-bold tracking-tight text-[#111111] mb-1">검사 정보</h2>
 
               <InfoRow
 
@@ -262,7 +262,7 @@ export default function KioskInspectionCompletePage() {
 
             onClick={() => navigate('/kiosk')}
 
-            className="mt-auto w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 px-5 py-5 text-xl md:text-2xl font-bold inline-flex items-center justify-center gap-3 shrink-0"
+            className="mt-auto w-full rounded-2xl bg-[#0071e3] hover:bg-[#0077ed] px-6 py-5 min-h-16 text-2xl font-bold text-white inline-flex items-center justify-center gap-3 shrink-0"
 
           >
 
@@ -288,11 +288,11 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
   return (
 
-    <div className="rounded-xl border border-sky-900/40 bg-slate-950/70 px-3 py-2">
+    <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] px-4 py-3">
 
-      <p className="text-sm text-cyan-300/70">{label}</p>
+      <p className="text-sm text-[#6e6e73]">{label}</p>
 
-      <p className="text-xl font-bold text-cyan-50 mt-1">{value}</p>
+      <p className="text-2xl font-bold text-[#111111] mt-1">{value}</p>
 
     </div>
 
