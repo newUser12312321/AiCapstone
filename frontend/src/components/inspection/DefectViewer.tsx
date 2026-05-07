@@ -244,6 +244,7 @@ function DefectBox({
 interface DefectViewerProps {
   inspectionId: number
   onClose:      () => void
+  inline?: boolean
 }
 
 /**
@@ -293,7 +294,7 @@ function PanelBadge({ children }: { children: ReactNode }) {
   )
 }
 
-export default function DefectViewer({ inspectionId, onClose }: DefectViewerProps) {
+export default function DefectViewer({ inspectionId, onClose, inline = false }: DefectViewerProps) {
   const { data: log, isLoading } = useInspectionById(inspectionId)
   const deskewSrc = resolveImageSrc(log?.imagePath ?? null)
   const rawStored = deriveRawImagePathFromStored(log?.imagePath ?? null)
@@ -337,7 +338,7 @@ export default function DefectViewer({ inspectionId, onClose }: DefectViewerProp
   const scaleY = imgSize.h / Math.max(1, refPixels.h)
 
   return (
-    <div className="mt-4 bg-[var(--dash-surface)] rounded-xl border border-[var(--dash-border)] overflow-hidden shadow-[var(--dash-shadow-soft)]">
+    <div className={`${inline ? 'mt-0' : 'mt-4'} bg-[var(--dash-surface)] rounded-xl border border-[var(--dash-border)] overflow-hidden shadow-[var(--dash-shadow-soft)]`}>
 
       {/* 헤더 바 */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--dash-border)]">

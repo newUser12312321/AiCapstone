@@ -11,7 +11,7 @@
  * - 클릭으로 상세 DefectViewer 연동
  */
 
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { ChevronRight, AlertCircle } from 'lucide-react'
 import clsx from 'clsx'
 import type { InspectionLog } from '@/types/inspection'
@@ -192,82 +192,94 @@ export default function InspectionTable({
               filtered.map((log) => {
                 const { date, time } = formatDateTime(log.inspectedAt)
                 return (
-                  <tr
-                    key={log.id}
-                    className={clsx(
-                      'bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] cursor-pointer transition-colors',
-                      /* 선택된 행: 인디고 좌측 테두리 강조 */
-                      selectedId === log.id && 'ring-1 ring-inset ring-[var(--dash-accent)]/40'
-                    )}
-                    onClick={() => setSelectedId(log.id)}
-                  >
-                    {/* ID */}
-                    <td className="px-4 py-3 font-mono text-xs text-[var(--dash-text-tertiary)]">
-                      #{log.id}
-                    </td>
+                  <Fragment key={log.id}>
+                    <tr
+                      className={clsx(
+                        'bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] cursor-pointer transition-colors',
+                        /* 선택된 행: 인디고 좌측 테두리 강조 */
+                        selectedId === log.id && 'ring-1 ring-inset ring-[var(--dash-accent)]/40'
+                      )}
+                      onClick={() => setSelectedId((prev) => (prev === log.id ? undefined : log.id))}
+                    >
+                      {/* ID */}
+                      <td className="px-4 py-3 font-mono text-xs text-[var(--dash-text-tertiary)]">
+                        #{log.id}
+                      </td>
 
-                    {/* 시각 */}
-                    <td className="px-4 py-3">
-                      <p className="text-[var(--dash-text-secondary)] text-xs">{date}</p>
-                      <p className="text-[var(--dash-text-tertiary)] text-xs font-mono">{time}</p>
-                    </td>
+                      {/* 시각 */}
+                      <td className="px-4 py-3">
+                        <p className="text-[var(--dash-text-secondary)] text-xs">{date}</p>
+                        <p className="text-[var(--dash-text-tertiary)] text-xs font-mono">{time}</p>
+                      </td>
 
-                    {/* 실크 OCR */}
-                    <td className="px-4 py-3 align-top">
-                      <SilkOcrCell
-                        silkSeriesName={log.silkSeriesName}
-                        silkBoardName={log.silkBoardName}
-                        silkManufacturer={log.silkManufacturer}
-                        silkManufactureDate={log.silkManufactureDate}
-                      />
-                    </td>
+                      {/* 실크 OCR */}
+                      <td className="px-4 py-3 align-top">
+                        <SilkOcrCell
+                          silkSeriesName={log.silkSeriesName}
+                          silkBoardName={log.silkBoardName}
+                          silkManufacturer={log.silkManufacturer}
+                          silkManufactureDate={log.silkManufactureDate}
+                        />
+                      </td>
 
-                    {/* 디바이스 */}
-                    <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
-                      {log.deviceId}
-                    </td>
+                      {/* 디바이스 */}
+                      <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
+                        {log.deviceId}
+                      </td>
 
-                    {/* 결과 뱃지 */}
-                    <td className="px-4 py-3">
-                      <div className="flex flex-col gap-0.5">
-                        <ResultBadge result={log.result} />
-                        {log.result === 'FAIL' &&
-                          log.defects.some((d) => d.defectType === 'SILK_SCREEN_PRINT_DEFECT') && (
-                            <span className="text-[10px] font-semibold text-[var(--dash-warning)]">
-                              실크인쇄불량
-                            </span>
+                      {/* 결과 뱃지 */}
+                      <td className="px-4 py-3">
+                        <div className="flex flex-col gap-0.5">
+                          <ResultBadge result={log.result} />
+                          {log.result === 'FAIL' &&
+                            log.defects.some((d) => d.defectType === 'SILK_SCREEN_PRINT_DEFECT') && (
+                              <span className="text-[10px] font-semibold text-[var(--dash-warning)]">
+                                실크인쇄불량
+                              </span>
+                            )}
+                        </div>
+                      </td>
+
+                      {/* 결함 태그 */}
+                      <td className="px-4 py-3">
+                        <DefectTags defects={log.defects} />
+                      </td>
+
+                      {/* 오차 각도 */}
+                      <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
+                        {log.angleErrorDeg != null
+                          ? `${log.angleErrorDeg.toFixed(2)}°`
+                          : '—'}
+                      </td>
+
+                      {/* 추론 시간 */}
+                      <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
+                        {log.inferenceTimeMs != null ? `${log.inferenceTimeMs}ms` : '—'}
+                      </td>
+
+                      {/* 상세 버튼 */}
+                      <td className="px-4 py-3">
+                        <ChevronRight
+                          size={16}
+                          className={clsx(
+                            'transition-colors',
+                            selectedId === log.id ? 'text-[var(--dash-accent)]' : 'text-[var(--dash-text-tertiary)]'
                           )}
-                      </div>
-                    </td>
-
-                    {/* 결함 태그 */}
-                    <td className="px-4 py-3">
-                      <DefectTags defects={log.defects} />
-                    </td>
-
-                    {/* 오차 각도 */}
-                    <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
-                      {log.angleErrorDeg != null
-                        ? `${log.angleErrorDeg.toFixed(2)}°`
-                        : '—'}
-                    </td>
-
-                    {/* 추론 시간 */}
-                    <td className="px-4 py-3 text-xs text-[var(--dash-text-secondary)] font-mono">
-                      {log.inferenceTimeMs != null ? `${log.inferenceTimeMs}ms` : '—'}
-                    </td>
-
-                    {/* 상세 버튼 */}
-                    <td className="px-4 py-3">
-                      <ChevronRight
-                        size={16}
-                        className={clsx(
-                          'transition-colors',
-                          selectedId === log.id ? 'text-[var(--dash-accent)]' : 'text-[var(--dash-text-tertiary)]'
-                        )}
-                      />
-                    </td>
-                  </tr>
+                        />
+                      </td>
+                    </tr>
+                    {selectedId === log.id && (
+                      <tr key={`detail-${log.id}`} className="bg-[var(--dash-bg-primary)]">
+                        <td colSpan={9} className="px-4 py-3">
+                          <DefectViewer
+                            inspectionId={selectedId}
+                            onClose={() => setSelectedId(undefined)}
+                            inline
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 )
               })
             )}
@@ -275,13 +287,6 @@ export default function InspectionTable({
         </table>
       </div>
 
-      {/* 행 클릭 시 DefectViewer 슬라이드다운 */}
-      {selectedId !== undefined && (
-        <DefectViewer
-          inspectionId={selectedId}
-          onClose={() => setSelectedId(undefined)}
-        />
-      )}
     </>
   )
 }
