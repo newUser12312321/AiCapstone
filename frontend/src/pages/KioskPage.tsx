@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Aperture, Camera, Loader2, MonitorX, RefreshCcw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -37,28 +37,14 @@ export default function KioskPage() {
   })
 
   const focusFromServer = focusQuery.data
-  const manualValue = focusDraft ?? focusFromServer?.value ?? 30
-
-  const focusDebounceRef = useRef<number | null>(null)
+  const manualValue = focusDraft ?? focusFromServer?.value ?? 25
+  const focusInitRef = useRef(false)
 
   const applyFocus = useCallback(
     (next: CameraFocusState) => {
       focusMutation.mutate(next)
     },
     [focusMutation]
-  )
-
-  const scheduleManualFocus = useCallback(
-    (value: number) => {
-      if (focusDebounceRef.current != null) {
-        window.clearTimeout(focusDebounceRef.current)
-      }
-      focusDebounceRef.current = window.setTimeout(() => {
-        focusDebounceRef.current = null
-        applyFocus({ auto: false, value })
-      }, 320)
-    },
-    [applyFocus]
   )
 
   const triggerMutation = useMutation({
@@ -91,10 +77,7 @@ export default function KioskPage() {
     onError: (e: Error) => setActionMsg(e.message || '키오스크 종료 요청 실패'),
   })
 
-  const verdict = useMemo(() => {
-    if (!latest) return '대기'
-    return latest.result === 'PASS' ? '정상' : '불량'
-  }, [latest])
+  const verdict = !latest ? '대기' : latest.result === 'PASS' ? '정상' : '불량'
 
   const verdictClass = latest?.result === 'PASS'
     ? 'bg-emerald-500'
@@ -102,16 +85,23 @@ export default function KioskPage() {
       ? 'bg-red-500'
       : 'bg-gray-400'
 
-  const focusAuto = focusFromServer?.auto === true
   const focusControlsDisabled =
     focusQuery.isLoading || focusMutation.isPending || focusFromServer == null
-  const manualSliderDisabled = focusControlsDisabled || focusAuto
 
   const bumpManualFocus = (delta: number) => {
     const v = Math.max(0, Math.min(255, manualValue + delta))
     setFocusDraft(v)
     applyFocus({ auto: false, value: v })
   }
+
+  useEffect(() => {
+    if (focusFromServer == null || focusMutation.isPending || focusInitRef.current) return
+    focusInitRef.current = true
+    if (focusFromServer.auto || focusFromServer.value !== 25) {
+      setFocusDraft(25)
+      applyFocus({ auto: false, value: 25 })
+    }
+  }, [applyFocus, focusFromServer, focusMutation.isPending])
 
   return (
     <div className="kiosk-theme h-screen w-full bg-[var(--kiosk-bg-primary)] text-[var(--kiosk-text-primary)] p-4 md:p-6 overflow-hidden">
@@ -149,7 +139,7 @@ export default function KioskPage() {
                 <Aperture size={20} className="text-[var(--kiosk-accent)] shrink-0" aria-hidden />
                 <div>
                   <p className="text-base font-semibold text-[var(--kiosk-text-primary)]">프리뷰 초점</p>
-                  <p className="text-sm text-[var(--kiosk-text-secondary)]">엣지 카메라(UVC) 초점 - 오토 또는 0~255 수동</p>
+                  <p className="text-sm text-[var(--kiosk-text-secondary)]">수동 초점값 기본 25, 버튼으로 1단계씩 조절</p>
                 </div>
               </div>
               <button
@@ -179,88 +169,40 @@ export default function KioskPage() {
             {focusFromServer != null && (
               <div className="mt-4 flex flex-col gap-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm text-[var(--kiosk-text-secondary)] w-full sm:w-auto">모드</span>
-                  <div className="inline-flex rounded-xl border border-[var(--kiosk-border)] p-1 bg-[var(--kiosk-surface)]">
-                    <button
-                      type="button"
-                      disabled={focusControlsDisabled || focusAuto}
-                      onClick={() => {
-                        setFocusDraft(null)
-                        applyFocus({ auto: true, value: manualValue })
-                      }}
-                      className={clsx(
-                        'px-5 h-12 rounded-lg text-base font-semibold transition-colors',
-                        focusAuto
-                          ? 'bg-[var(--kiosk-accent)] text-white'
-                          : 'text-[var(--kiosk-text-secondary)] hover:text-[var(--kiosk-text-primary)] hover:bg-[var(--kiosk-bg-secondary)]',
-                      )}
-                    >
-                      오토포커스
-                    </button>
-                    <button
-                      type="button"
-                      disabled={focusControlsDisabled || !focusAuto}
-                      onClick={() => {
-                        setFocusDraft(null)
-                        applyFocus({ auto: false, value: focusFromServer.value })
-                      }}
-                      className={clsx(
-                        'px-5 h-12 rounded-lg text-base font-semibold transition-colors',
-                        !focusAuto
-                          ? 'bg-[var(--kiosk-accent)] text-white'
-                          : 'text-[var(--kiosk-text-secondary)] hover:text-[var(--kiosk-text-primary)] hover:bg-[var(--kiosk-bg-secondary)]',
-                      )}
-                    >
-                      수동 초점
-                    </button>
-                  </div>
+                  <span className="text-sm text-[var(--kiosk-text-secondary)] w-full sm:w-auto">수동 초점</span>
                   {focusMutation.isPending && (
                     <Loader2 className="animate-spin size-4 text-[var(--kiosk-accent)]" aria-label="적용 중" />
                   )}
                 </div>
 
-                <div className={clsx('flex flex-col gap-2', manualSliderDisabled && 'opacity-60')}>
+                <div className={clsx('flex flex-col gap-2', focusControlsDisabled && 'opacity-60')}>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm text-[var(--kiosk-text-secondary)]">수동 값</span>
+                    <span className="text-sm text-[var(--kiosk-text-secondary)]">현재 초점값</span>
                     <span className="text-base font-mono tabular-nums text-[var(--kiosk-accent)]">{manualValue}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      disabled={manualSliderDisabled}
-                      onClick={() => bumpManualFocus(-10)}
+                      disabled={focusControlsDisabled}
+                      onClick={() => bumpManualFocus(-1)}
                       className="shrink-0 w-14 h-14 rounded-xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] hover:bg-[var(--kiosk-bg-secondary)] text-2xl font-bold disabled:opacity-40"
                       aria-label="초점 가까이"
                     >
                       −
                     </button>
-                    <input
-                      type="range"
-                      min={0}
-                      max={255}
-                      value={manualValue}
-                      disabled={manualSliderDisabled}
-                      onChange={(e) => {
-                        const v = Number(e.target.value)
-                        setFocusDraft(v)
-                        scheduleManualFocus(v)
-                      }}
-                      className="flex-1 min-w-0 h-3 accent-[var(--kiosk-accent)] disabled:cursor-not-allowed"
-                      aria-label="수동 초점"
-                    />
+                    <div className="flex-1 h-14 rounded-xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] grid place-items-center text-lg font-semibold text-[var(--kiosk-text-primary)]">
+                      {manualValue}
+                    </div>
                     <button
                       type="button"
-                      disabled={manualSliderDisabled}
-                      onClick={() => bumpManualFocus(10)}
+                      disabled={focusControlsDisabled}
+                      onClick={() => bumpManualFocus(1)}
                       className="shrink-0 w-14 h-14 rounded-xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] hover:bg-[var(--kiosk-bg-secondary)] text-2xl font-bold disabled:opacity-40"
                       aria-label="초점 멀리"
                     >
                       +
                     </button>
                   </div>
-                  {focusAuto && (
-                    <p className="text-sm text-[var(--kiosk-text-secondary)]">수동 슬라이더를 쓰려면 &ldquo;수동 초점&rdquo;을 누르세요.</p>
-                  )}
                 </div>
               </div>
             )}
@@ -270,7 +212,7 @@ export default function KioskPage() {
         <section className="rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-5 md:p-6 flex flex-col gap-4 shadow-[var(--kiosk-shadow-soft)] overflow-auto">
           <div className="rounded-2xl border border-[var(--kiosk-border)] bg-[var(--kiosk-bg-secondary)] p-4">
             <p className="text-base text-[var(--kiosk-text-secondary)] mb-2">최신 판정</p>
-            <div className={`w-full rounded-2xl px-4 py-8 text-center text-5xl md:text-6xl text-white font-extrabold ${verdictClass}`}>
+            <div className={`w-full rounded-2xl px-4 py-10 text-center text-6xl md:text-7xl text-white font-extrabold ${verdictClass}`}>
               {verdict}
             </div>
             <p className="mt-3 text-sm text-[var(--kiosk-text-secondary)]">
