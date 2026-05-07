@@ -10,10 +10,15 @@ import axios from 'axios'
 import type { InspectionLog, InspectionStats } from '@/types/inspection'
 
 // ── Axios 인스턴스 생성 ───────────────────────────────────────────────────────
+const apiBaseUrlFromEnv = import.meta.env.VITE_API_BASE_URL?.trim()
 
 const apiClient = axios.create({
-  /* Vite 프록시(/api → :8080)를 사용하므로 baseURL은 /api만 지정 */
-  baseURL: '/api',
+  /*
+   * 기본은 Vite 프록시(/api).
+   * 라즈베리파이 키오스크에서 프록시 타깃 설정이 어려우면
+   * VITE_API_BASE_URL(예: http://192.168.0.10:8080/api)로 직접 지정할 수 있다.
+   */
+  baseURL: apiBaseUrlFromEnv || '/api',
   /* Pi 키오스크 → 클라우드 VM 왕복 시 10초 부족으로 폴링 실패하는 경우가 있어 여유를 둠 */
   timeout: 45_000,
   headers: {
@@ -75,6 +80,21 @@ export const fetchInspectionById = async (id: number): Promise<InspectionLog> =>
 export const fetchRecentInspections = async (limit = 10): Promise<InspectionLog[]> => {
   const { data } = await apiClient.get<InspectionLog[]>('/inspections/recent', {
     params: { limit },
+  })
+  return data
+}
+
+/**
+ * 최근 N건 조회(요청 타임아웃 커스터마이즈 가능).
+ * 키오스크 폴링처럼 "빠른 실패 + 재시도"가 필요한 호출에서 사용한다.
+ */
+export const fetchRecentInspectionsWithTimeout = async (
+  limit = 10,
+  timeoutMs = 45_000
+): Promise<InspectionLog[]> => {
+  const { data } = await apiClient.get<InspectionLog[]>('/inspections/recent', {
+    params: { limit },
+    timeout: timeoutMs,
   })
   return data
 }
