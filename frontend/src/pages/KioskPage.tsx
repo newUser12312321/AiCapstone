@@ -90,9 +90,9 @@ export default function KioskPage() {
   }, [applyFocus, focusFromServer, focusMutation.isPending])
 
   return (
-    <div className="kiosk-theme h-screen w-full bg-[var(--kiosk-bg-primary)] text-[var(--kiosk-text-primary)] p-4 md:p-6 overflow-hidden">
-      <div className="mx-auto h-full max-w-7xl grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-5">
-        <section className="rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-5 md:p-6 shadow-[var(--kiosk-shadow-soft)] overflow-auto">
+    <div className="kiosk-theme min-h-screen w-full bg-[var(--kiosk-bg-primary)] text-[var(--kiosk-text-primary)] p-4 md:p-6 overflow-y-auto">
+      <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-5 items-start">
+        <section className="rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-5 md:p-6 shadow-[var(--kiosk-shadow-soft)]">
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm text-[var(--kiosk-text-secondary)]">PCB Inspection Kiosk</p>
@@ -195,7 +195,7 @@ export default function KioskPage() {
           </div>
         </section>
 
-        <section className="kiosk-touch-scroll rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-5 md:p-6 flex flex-col gap-4 shadow-[var(--kiosk-shadow-soft)] overflow-auto">
+        <section className="select-none rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-5 md:p-6 flex flex-col gap-4 shadow-[var(--kiosk-shadow-soft)]">
           <div className="rounded-2xl border border-[var(--kiosk-border)] bg-[var(--kiosk-bg-secondary)] p-4">
             <p className="text-base text-[var(--kiosk-text-secondary)] mb-2">최신 판정</p>
             <div className={`w-full rounded-2xl px-4 py-10 text-center text-6xl md:text-7xl text-white font-extrabold ${verdictClass}`}>

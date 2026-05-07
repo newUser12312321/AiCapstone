@@ -92,9 +92,9 @@ export default function KioskInspectionCompletePage() {
 
   return (
 
-    <div className="kiosk-theme h-screen w-full bg-[var(--kiosk-bg-primary)] text-[var(--kiosk-text-primary)] p-4 md:p-6">
+    <div className="kiosk-theme min-h-screen w-full bg-[var(--kiosk-bg-primary)] text-[var(--kiosk-text-primary)] p-4 md:p-6 overflow-y-auto">
 
-      <div className="mx-auto h-full max-w-[980px] flex flex-col gap-4">
+      <div className="mx-auto max-w-[980px] flex flex-col gap-4">
 
         <header className="rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] px-6 py-5 flex items-center justify-between gap-4 shadow-[var(--kiosk-shadow-soft)]">
 
@@ -138,7 +138,7 @@ export default function KioskInspectionCompletePage() {
 
 
 
-        <section className="flex-1 min-h-0 rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-4 md:p-6 flex flex-col gap-4 overflow-y-auto shadow-[var(--kiosk-shadow-soft)]">
+        <section className="rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-4 md:p-6 flex flex-col gap-4 shadow-[var(--kiosk-shadow-soft)]">
 
           {isLoading ? (
 
