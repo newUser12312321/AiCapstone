@@ -49,7 +49,15 @@ chmod +x /home/pi/AiCapstoneV2/frontend/deploy/raspberry-pi/react-kiosk-start
 
 ```bash
 cp /home/pi/AiCapstoneV2/frontend/deploy/raspberry-pi/React-Kiosk.desktop /home/pi/Desktop/React-Kiosk.desktop
+cp /home/pi/AiCapstoneV2/frontend/deploy/raspberry-pi/React-Kiosk-UI-Only.desktop /home/pi/Desktop/React-Kiosk-UI-Only.desktop
 chmod +x /home/pi/Desktop/React-Kiosk.desktop
+chmod +x /home/pi/Desktop/React-Kiosk-UI-Only.desktop
+```
+
+Optional: UI-only launcher script permission
+
+```bash
+chmod +x /home/pi/AiCapstoneV2/frontend/deploy/raspberry-pi/react-kiosk-start-ui-only
 ```
 
 ## 6) Allow one-click start/stop without password

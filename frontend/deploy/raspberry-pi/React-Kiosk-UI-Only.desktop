@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=React Kiosk UI Only
+Comment=Start kiosk browser and web only (no edge)
+Exec=/home/pi/AiCapstoneV2/frontend/deploy/raspberry-pi/react-kiosk-start-ui-only
+Terminal=true
+Icon=utilities-terminal
+Categories=Utility;

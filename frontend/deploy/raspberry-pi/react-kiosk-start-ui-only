@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[react-kiosk-start-ui-only] starting web service only..."
+sudo systemctl start pcb-react-kiosk-web.service
+
+echo "[react-kiosk-start-ui-only] waiting for kiosk web..."
+for i in {1..90}; do
+  if curl -fsS "http://127.0.0.1:4173/" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+if ! curl -fsS "http://127.0.0.1:4173/" >/dev/null 2>&1; then
+  echo "[react-kiosk-start-ui-only] kiosk web did not become ready in time."
+  exit 1
+fi
+
+echo "[react-kiosk-start-ui-only] starting browser service..."
+sudo systemctl start pcb-react-kiosk-browser.service
+echo "[react-kiosk-start-ui-only] kiosk UI started (edge service not started)."
