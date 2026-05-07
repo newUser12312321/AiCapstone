@@ -1,7 +1,7 @@
 [Unit]
 Description=PCB React Kiosk Web App (Vite Preview)
-After=network-online.target
-Wants=network-online.target
+After=network-online.target pcb-edge.service
+Wants=network-online.target pcb-edge.service
 
 [Service]
 Type=simple

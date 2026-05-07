@@ -1,0 +1,15 @@
+[Unit]
+Description=PCB Edge FastAPI Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/AiCapstoneV2/edge
+ExecStart=/bin/bash -lc 'source /home/pi/AiCapstoneV2/edge/.venv/bin/activate && exec python main.py'
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

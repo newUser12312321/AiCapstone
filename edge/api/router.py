@@ -309,31 +309,26 @@ async def set_camera_focus(body: CameraFocusBody) -> dict[str, Any]:
 @router.post("/system/exit-kiosk", summary="키오스크 브라우저 종료 (라즈베리파이 바탕화면 복귀)")
 async def exit_kiosk_browser() -> dict[str, str]:
     """
-    키오스크 브라우저 systemd 서비스를 중지해 바탕화면으로 복귀한다.
-    sudoers NOPASSWD 권한이 없으면 systemctl 중지가 실패할 수 있으므로
-    마지막 수단으로 Chromium 프로세스를 직접 종료한다.
+    키오스크 브라우저/웹/엣지 서비스를 순서대로 중지해 바탕화면으로 복귀한다.
+    마지막에 edge 서비스를 비동기 지연 중지해 현재 요청 응답이 정상 반환되도록 한다.
     """
     try:
-        stop = subprocess.run(
-            ["sudo", "-n", "systemctl", "stop", "pcb-react-kiosk-browser.service"],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        if stop.returncode == 0:
-            return {"message": "키오스크 브라우저 서비스를 중지했습니다. 바탕화면으로 복귀합니다."}
+        for svc in ("pcb-react-kiosk-browser.service", "pcb-react-kiosk-web.service"):
+            subprocess.run(
+                ["sudo", "-n", "systemctl", "stop", svc],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
 
-        logger.warning(
-            "[system/exit-kiosk] systemctl stop 실패(returncode=%s): %s",
-            stop.returncode,
-            (stop.stderr or "").strip(),
+        subprocess.Popen(
+            [
+                "/bin/bash",
+                "-lc",
+                "sleep 1; sudo -n systemctl stop pcb-edge.service",
+            ]
         )
-        subprocess.run(["pkill", "-f", "chromium-browser"], check=False)
-        subprocess.run(["pkill", "-f", "chromium"], check=False)
-        return {
-            "message": "서비스 중지는 실패하여 브라우저 프로세스만 종료했습니다. "
-            "자동 재실행되면 sudoers 권한 설정이 필요합니다."
-        }
+        return {"message": "키오스크/엣지 서비스를 종료했습니다. 바탕화면으로 복귀합니다."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"키오스크 종료 실패: {e}") from e
 

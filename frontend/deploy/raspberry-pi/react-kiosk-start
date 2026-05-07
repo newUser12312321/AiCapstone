@@ -1,7 +1,38 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "[react-kiosk-start] starting services..."
+echo "[react-kiosk-start] starting edge service..."
+sudo systemctl start pcb-edge.service
+
+echo "[react-kiosk-start] waiting for edge API..."
+for i in {1..60}; do
+  if curl -fsS "http://127.0.0.1:8000/edge/health" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+if ! curl -fsS "http://127.0.0.1:8000/edge/health" >/dev/null 2>&1; then
+  echo "[react-kiosk-start] edge API did not become ready in time."
+  exit 1
+fi
+
+echo "[react-kiosk-start] starting web service..."
 sudo systemctl start pcb-react-kiosk-web.service
+
+echo "[react-kiosk-start] waiting for kiosk web..."
+for i in {1..90}; do
+  if curl -fsS "http://127.0.0.1:4173/" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+if ! curl -fsS "http://127.0.0.1:4173/" >/dev/null 2>&1; then
+  echo "[react-kiosk-start] kiosk web did not become ready in time."
+  exit 1
+fi
+
+echo "[react-kiosk-start] starting browser service..."
 sudo systemctl start pcb-react-kiosk-browser.service
-echo "[react-kiosk-start] done."
+echo "[react-kiosk-start] all services started."
