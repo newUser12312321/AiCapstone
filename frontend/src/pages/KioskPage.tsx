@@ -195,7 +195,7 @@ export default function KioskPage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-5 md:p-6 flex flex-col gap-4 shadow-[var(--kiosk-shadow-soft)] overflow-auto">
+        <section className="kiosk-touch-scroll rounded-3xl border border-[var(--kiosk-border)] bg-[var(--kiosk-surface)] p-5 md:p-6 flex flex-col gap-4 shadow-[var(--kiosk-shadow-soft)] overflow-auto">
           <div className="rounded-2xl border border-[var(--kiosk-border)] bg-[var(--kiosk-bg-secondary)] p-4">
             <p className="text-base text-[var(--kiosk-text-secondary)] mb-2">최신 판정</p>
             <div className={`w-full rounded-2xl px-4 py-10 text-center text-6xl md:text-7xl text-white font-extrabold ${verdictClass}`}>
