@@ -309,26 +309,25 @@ async def set_camera_focus(body: CameraFocusBody) -> dict[str, Any]:
 @router.post("/system/exit-kiosk", summary="키오스크 브라우저 종료 (라즈베리파이 바탕화면 복귀)")
 async def exit_kiosk_browser() -> dict[str, str]:
     """
-    키오스크 브라우저/웹/엣지 서비스를 순서대로 중지해 바탕화면으로 복귀한다.
-    마지막에 edge 서비스를 비동기 지연 중지해 현재 요청 응답이 정상 반환되도록 한다.
+    키오스크 브라우저 서비스만 중지해 바탕화면으로 복귀한다.
+    edge/web 서비스는 유지해 재실행 시 지연과 실패 가능성을 줄인다.
     """
     try:
-        for svc in ("pcb-react-kiosk-browser.service", "pcb-react-kiosk-web.service"):
-            subprocess.run(
-                ["sudo", "-n", "systemctl", "stop", svc],
-                check=False,
-                capture_output=True,
-                text=True,
-            )
-
-        subprocess.Popen(
-            [
-                "/bin/bash",
-                "-lc",
-                "sleep 1; sudo -n systemctl stop pcb-edge.service",
-            ]
+        stop = subprocess.run(
+            ["sudo", "-n", "systemctl", "stop", "pcb-react-kiosk-browser.service"],
+            check=False,
+            capture_output=True,
+            text=True,
         )
-        return {"message": "키오스크/엣지 서비스를 종료했습니다. 바탕화면으로 복귀합니다."}
+        if stop.returncode == 0:
+            return {"message": "키오스크 브라우저를 종료했습니다. 바탕화면으로 복귀합니다."}
+
+        logger.warning(
+            "[system/exit-kiosk] browser service stop 실패(returncode=%s): %s",
+            stop.returncode,
+            (stop.stderr or "").strip(),
+        )
+        return {"message": "브라우저 종료 요청에 실패했습니다. sudoers 및 서비스 상태를 확인하세요."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"키오스크 종료 실패: {e}") from e
 
