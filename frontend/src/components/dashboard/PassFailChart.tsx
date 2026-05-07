@@ -86,7 +86,7 @@ export default function PassFailChart() {
 
   return (
     <div className="bg-[var(--dash-surface)] rounded-2xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
-      <h2 className="text-sm font-semibold text-[var(--dash-text-secondary)] mb-4">합격 / 불합격 비율</h2>
+      <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)] mb-4">합격 / 불합격 비율</h2>
 
       <ResponsiveContainer width="100%" height={260}>
         <PieChart>
@@ -116,7 +116,7 @@ export default function PassFailChart() {
           {/* 범례 */}
           <Legend
             formatter={(value) => (
-              <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>{value}</span>
+              <span style={{ color: '#4b5563', fontSize: '0.8125rem' }}>{value}</span>
             )}
           />
         </PieChart>

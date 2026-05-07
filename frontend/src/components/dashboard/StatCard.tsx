@@ -39,7 +39,7 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
     )}>
       {/* 상단: 아이콘 + 제목 */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-[var(--dash-text-secondary)] font-medium">{title}</span>
+        <span className="text-[15px] text-[var(--dash-text-secondary)] font-semibold">{title}</span>
         <div className={clsx('w-9 h-9 rounded-full flex items-center justify-center', colors.bg)}>
           <Icon size={18} className={colors.text} />
         </div>
@@ -50,7 +50,7 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
 
       {/* 보조 설명 */}
       {caption && (
-        <p className="text-xs text-[var(--dash-text-tertiary)] mt-1.5">{caption}</p>
+        <p className="text-sm text-[var(--dash-text-tertiary)] mt-1.5">{caption}</p>
       )}
     </div>
   )

@@ -62,7 +62,7 @@ export default function DashboardPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-[var(--dash-text-primary)]">실시간 대시보드</h2>
-          <p className="text-sm text-[var(--dash-text-secondary)] mt-0.5">
+          <p className="text-[15px] text-[var(--dash-text-secondary)] mt-0.5">
             5초마다 자동 갱신 · 클라우드 통합 모니터링
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function DashboardPage() {
       {/* 3행: 실시간 이력 테이블 */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-[var(--dash-text-secondary)]">최근 검사 이력</h2>
+          <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">최근 검사 이력</h2>
           <span className="text-xs text-[var(--dash-text-tertiary)]">최근 15건</span>
         </div>
         <InspectionTable logs={recentLogs} isLoading={isLoading} />

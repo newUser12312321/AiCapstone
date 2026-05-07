@@ -77,7 +77,7 @@ export default function TrendChart() {
   return (
     <div className="bg-[var(--dash-surface)] rounded-2xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 추이</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 추이</h2>
         <span className="text-xs text-[var(--dash-text-tertiary)]">최근 24시간</span>
       </div>
 
@@ -97,14 +97,14 @@ export default function TrendChart() {
           {/* X축: 시간 레이블 */}
           <XAxis
             dataKey="label"
-            tick={{ fill: '#6b7280', fontSize: 11 }}
+            tick={{ fill: '#4b5563', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
 
           {/* Y축: 건수 */}
           <YAxis
-            tick={{ fill: '#6b7280', fontSize: 11 }}
+            tick={{ fill: '#4b5563', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
@@ -119,7 +119,7 @@ export default function TrendChart() {
           {/* 범례 */}
           <Legend
             formatter={(value) => (
-              <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>{value}</span>
+              <span style={{ color: '#4b5563', fontSize: '0.8125rem' }}>{value}</span>
             )}
           />
 
