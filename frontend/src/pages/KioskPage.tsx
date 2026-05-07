@@ -278,11 +278,20 @@ export default function KioskPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            <div className="rounded-2xl border border-[#d2d2d7] bg-[#fafafc] px-4 py-3">
-              <p className="text-xs text-[#6e6e73]">초점 모드</p>
-              <p className="text-lg font-semibold">{focusAuto ? '오토' : '수동'}</p>
-            </div>
+          <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4">
+            <p className="text-base text-[#6e6e73] mb-3 text-center">검사 실행</p>
+            <button
+              type="button"
+              onClick={() => {
+                setActionMsg(null)
+                triggerMutation.mutate()
+              }}
+              disabled={triggerMutation.isPending}
+              className="w-full rounded-full bg-[#0071e3] hover:bg-[#0077ed] disabled:opacity-50 px-6 py-6 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3"
+            >
+              {triggerMutation.isPending ? <Loader2 className="animate-spin" size={28} /> : <Camera size={28} />}
+              검사 시작
+            </button>
           </div>
 
           <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4">
@@ -305,22 +314,6 @@ export default function KioskPage() {
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="rounded-2xl border border-[#d2d2d7] bg-[#f5f5f7] p-4">
-            <p className="text-base text-[#6e6e73] mb-3 text-center">검사 실행</p>
-            <button
-              type="button"
-              onClick={() => {
-                setActionMsg(null)
-                triggerMutation.mutate()
-              }}
-              disabled={triggerMutation.isPending}
-              className="w-full rounded-full bg-[#0071e3] hover:bg-[#0077ed] disabled:opacity-50 px-6 py-6 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3"
-            >
-              {triggerMutation.isPending ? <Loader2 className="animate-spin" size={28} /> : <Camera size={28} />}
-              검사 시작
-            </button>
           </div>
 
           {actionMsg && <p className="text-sm text-[#6e6e73]">{actionMsg}</p>}
