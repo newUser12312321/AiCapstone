@@ -14,27 +14,28 @@
 
 import { useMemo, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Bell, Mail, Loader2, Search, Trash2 } from 'lucide-react'
+import { Activity, Bell, Mail, Loader2, Search, Trash2 } from 'lucide-react'
 import StatCardGroup from '@/components/dashboard/StatCard'
 import PassFailChart from '@/components/dashboard/PassFailChart'
 import TrendChart from '@/components/dashboard/TrendChart'
-import InspectionTable from '@/components/inspection/InspectionTable'
 import { deleteAllInspections } from '@/api/inspectionApi'
-import { useRecentInspections, useStats } from '@/hooks/useInspectionData'
+import { useStats } from '@/hooks/useInspectionData'
 
 export default function DashboardPage() {
   const queryClient = useQueryClient()
   const [actionMsg, setActionMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
-  /* 최근 15건 — 대시보드 하단 실시간 피드 테이블 */
-  const { data: recentLogs = [], isLoading } = useRecentInspections(15)
-  const { data: stats } = useStats()
-
-  const latestItems = useMemo(() => recentLogs.slice(0, 3), [recentLogs])
-  const rightRailItems = useMemo(() => recentLogs.slice(0, 5), [recentLogs])
+  const { data: stats, isFetching, dataUpdatedAt } = useStats()
 
   const failRateText = stats ? `${stats.failRate.toFixed(1)}%` : '--'
   const passRateText = stats ? `${(100 - stats.failRate).toFixed(1)}%` : '--'
+  const totalCountText = stats ? stats.totalCount.toLocaleString() : '--'
+  const failSeverityClass = stats && stats.failRate >= 3
+    ? 'border-[var(--dash-danger)]/35 bg-red-50'
+    : 'border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]'
+  const liveUpdatedAt = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString('ko-KR')
+    : '--:--:--'
 
   const invalidateInspections = () => {
     queryClient.invalidateQueries({ queryKey: ['inspections'] })
@@ -65,6 +66,26 @@ export default function DashboardPage() {
   return (
     <div className="p-6 overflow-y-auto h-full bg-[var(--dash-bg-secondary)]">
       <div className="max-w-[1280px] mx-auto space-y-5">
+        {/* P0: 즉시 인지 상태 바 */}
+        <div className="bg-[var(--dash-surface)] rounded-2xl border border-[var(--dash-border)] px-4 py-2.5 shadow-[var(--dash-shadow-soft)]">
+          <div className="flex flex-wrap items-center gap-2.5 text-sm">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
+              <span className={`w-2 h-2 rounded-full ${isFetching ? 'bg-[var(--dash-warning)] animate-pulse' : 'bg-[var(--dash-success)]'}`} />
+              {isFetching ? '갱신 중' : 'LIVE'}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
+              <Activity size={14} />
+              최종 갱신 {liveUpdatedAt}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
+              누적 검사 {totalCountText}건
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
+              FAIL 비율 {failRateText}
+            </span>
+          </div>
+        </div>
+
         {/* 상단 퀵바 */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
           <div className="xl:col-span-9 space-y-4">
@@ -105,7 +126,7 @@ export default function DashboardPage() {
                 <div className="absolute -bottom-24 left-40 w-64 h-64 rounded-full border border-white/30" />
               </div>
               <p className="text-[11px] uppercase tracking-[0.24em] text-white/80 mb-2">PCB INSPECTION CONTROL</p>
-              <h2 className="text-2xl font-semibold tracking-tight mb-2">라인 상태를 한눈에 모니터링</h2>
+              <h2 className="text-3xl font-semibold tracking-tight mb-2">라인 상태를 한눈에 모니터링</h2>
               <p className="text-sm text-white/85">
                 실시간 검사 흐름, 결함 추세, 최근 이력을 하나의 화면에서 확인합니다.
               </p>
@@ -115,30 +136,10 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* 레퍼런스 스타일의 가로 카드 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {latestItems.map((log) => (
-                <div
-                  key={log.id}
-                  className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-3 shadow-[var(--dash-shadow-soft)]"
-                >
-                  <p className="text-[11px] uppercase tracking-wide text-[var(--dash-text-tertiary)] mb-1">
-                    #{log.id} · {log.result}
-                  </p>
-                  <p className="text-sm font-semibold text-[var(--dash-text-primary)] truncate">
-                    {log.deviceId}
-                  </p>
-                  <p className="text-xs text-[var(--dash-text-secondary)] mt-1">
-                    추론 {log.inferenceTimeMs != null ? `${log.inferenceTimeMs}ms` : '--'} ·
-                    결함 {log.defects.length}건
-                  </p>
-                </div>
-              ))}
-              {latestItems.length === 0 && (
-                <div className="md:col-span-3 rounded-2xl border border-dashed border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-6 text-sm text-[var(--dash-text-secondary)]">
-                  최근 검사 데이터가 아직 없습니다.
-                </div>
-              )}
+            <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-4 shadow-[var(--dash-shadow-soft)]">
+              <p className="text-xs text-[var(--dash-text-tertiary)] uppercase tracking-[0.18em] mb-1">Inspection Focus</p>
+              <p className="text-base font-semibold text-[var(--dash-text-primary)]">메인 페이지는 실시간 상태/통계 전용으로 운영됩니다.</p>
+              <p className="text-sm text-[var(--dash-text-secondary)] mt-1">최근 검사 이력 확인은 좌측 메뉴의 `검사 이력` 페이지에서 확인하세요.</p>
             </div>
           </div>
 
@@ -150,17 +151,22 @@ export default function DashboardPage() {
                 <p className="text-xs text-[var(--dash-text-tertiary)] mt-0.5">오늘 검사 요약</p>
               </div>
               <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-4 py-3">
+                <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">누적 검사</p>
+                <p className="text-2xl font-bold text-[var(--dash-text-primary)]">{totalCountText}</p>
+              </div>
+              <div className={`rounded-2xl border px-4 py-3 ${failSeverityClass}`}>
                 <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">불량률</p>
                 <p className="text-2xl font-bold text-[var(--dash-text-primary)]">{failRateText}</p>
               </div>
-              <div className="space-y-2">
-                {rightRailItems.map((log) => (
-                  <div key={log.id} className="rounded-xl border border-[var(--dash-border)] px-3 py-2">
-                    <p className="text-[11px] text-[var(--dash-text-tertiary)]">#{log.id}</p>
-                    <p className="text-sm font-medium text-[var(--dash-text-primary)]">{log.result}</p>
-                    <p className="text-xs text-[var(--dash-text-secondary)] truncate">{log.deviceId}</p>
-                  </div>
-                ))}
+              <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-4 py-3">
+                <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">합격률</p>
+                <p className="text-2xl font-bold text-[var(--dash-text-primary)]">{passRateText}</p>
+              </div>
+              <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-3">
+                <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">이력 확인</p>
+                <p className="text-sm text-[var(--dash-text-secondary)]">
+                  상세 이력/좌표/결함 정보는 `검사 이력` 메뉴에서 제공합니다.
+                </p>
               </div>
             </div>
           </div>
@@ -178,10 +184,10 @@ export default function DashboardPage() {
           </p>
         )}
 
-        {/* 2행: 통계 카드 */}
+        {/* P1: KPI 요약 */}
         <StatCardGroup />
 
-        {/* 3행: 차트 */}
+        {/* P1: 추세 분석 */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
           <div className="lg:col-span-2">
             <PassFailChart />
@@ -191,14 +197,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* 4행: 검사 이력 */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">최근 검사 이력</h2>
-            <span className="text-xs text-[var(--dash-text-tertiary)]">최근 15건</span>
-          </div>
-          <InspectionTable logs={recentLogs} isLoading={isLoading} />
-        </div>
       </div>
     </div>
   )

@@ -24,8 +24,12 @@ import KioskInspectionCompletePage from '@/pages/KioskInspectionCompletePage'
 /** 아직 구현되지 않은 경로를 위한 플레이스홀더 페이지 */
 function PlaceholderPage({ title }: { title: string }) {
   return (
-    <div className="flex items-center justify-center h-full">
-      <p className="text-[var(--dash-text-secondary)] text-sm">{title} — 준비 중</p>
+    <div className="h-full p-6 bg-[var(--dash-bg-secondary)]">
+      <div className="max-w-[1280px] mx-auto h-full">
+        <div className="h-full rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] shadow-[var(--dash-shadow-soft)] flex items-center justify-center">
+          <p className="text-[var(--dash-text-secondary)] text-sm">{title} — 준비 중</p>
+        </div>
+      </div>
     </div>
   )
 }

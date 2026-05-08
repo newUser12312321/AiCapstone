@@ -122,28 +122,29 @@ export default function HistoryPage() {
   const failCount = filteredLogs.filter((l) => l.result === 'FAIL').length
 
   return (
-    <div className="p-6 space-y-5 overflow-y-auto h-full">
+    <div className="p-6 space-y-5 overflow-y-auto h-full bg-[var(--dash-bg-secondary)]">
+      <div className="max-w-[1280px] mx-auto space-y-5">
 
-      {/* 페이지 제목 */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-[var(--dash-text-primary)]">검사 이력</h2>
-          <p className="text-xs text-[var(--dash-text-secondary)] mt-0.5">전체 검사 기록 조회 및 결함 상세 확인</p>
+        {/* 페이지 제목 */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold tracking-tight text-[var(--dash-text-primary)]">검사 이력</h2>
+            <p className="text-sm text-[var(--dash-text-secondary)] mt-0.5">전체 검사 기록 조회 및 결함 상세 확인</p>
+          </div>
+
+          {/* CSV 내보내기 버튼 */}
+          <button
+            onClick={() => downloadCsv(filteredLogs)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] rounded-xl text-sm font-medium transition-colors shadow-[var(--dash-shadow-soft)]"
+          >
+            <Download size={15} />
+            CSV 내보내기
+          </button>
         </div>
 
-        {/* CSV 내보내기 버튼 */}
-        <button
-          onClick={() => downloadCsv(filteredLogs)}
-          className="flex items-center gap-2 px-3 py-2 bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] rounded-lg text-xs font-medium transition-colors"
-        >
-          <Download size={14} />
-          CSV 내보내기
-        </button>
-      </div>
-
-      {/* 필터 영역 */}
-      <div className="bg-[var(--dash-surface)] rounded-xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
-        <div className="flex flex-wrap gap-4 items-end">
+        {/* 필터 영역 */}
+        <div className="bg-[var(--dash-surface)] rounded-2xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
+          <div className="flex flex-wrap gap-4 items-end">
 
           {/* 날짜 범위 필터 */}
           <div className="flex items-center gap-2">
@@ -156,7 +157,7 @@ export default function HistoryPage() {
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
                   max={dateTo || today}
-                  className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
+                  className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
                 />
               </div>
               <span className="text-[var(--dash-text-tertiary)] text-sm mt-4">~</span>
@@ -168,7 +169,7 @@ export default function HistoryPage() {
                   onChange={(e) => setDateTo(e.target.value)}
                   min={dateFrom}
                   max={today}
-                  className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
+                  className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
                 />
               </div>
             </div>
@@ -184,31 +185,32 @@ export default function HistoryPage() {
         </div>
       </div>
 
-      {/* 필터 결과 미니 통계 바 */}
-      <div className="flex items-center gap-4 text-xs text-[var(--dash-text-secondary)]">
-        <span>
-          조회 결과: <span className="text-[var(--dash-text-primary)] font-semibold">{filteredLogs.length}건</span>
-        </span>
-        <span>
-          합격: <span className="text-[var(--dash-success)] font-semibold">{passCount}건</span>
-        </span>
-        <span>
-          불합격: <span className="text-[var(--dash-danger)] font-semibold">{failCount}건</span>
-        </span>
-        {filteredLogs.length > 0 && (
+        {/* 필터 결과 미니 통계 바 */}
+        <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--dash-text-secondary)]">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
+            조회 결과 <span className="text-[var(--dash-text-primary)] font-semibold">{filteredLogs.length}건</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
+            합격 <span className="text-[var(--dash-success)] font-semibold">{passCount}건</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
+            불합격 <span className="text-[var(--dash-danger)] font-semibold">{failCount}건</span>
+          </span>
+          {filteredLogs.length > 0 && (
           <span>
-            불량률: <span className="text-[var(--dash-warning)] font-semibold">
+            불량률 <span className="text-[var(--dash-warning)] font-semibold">
               {((failCount / filteredLogs.length) * 100).toFixed(2)}%
             </span>
           </span>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* 검사 이력 테이블 */}
-      <InspectionTable
-        logs={filteredLogs}
-        isLoading={isLoading}
-      />
+        {/* 검사 이력 테이블 */}
+        <InspectionTable
+          logs={filteredLogs}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   )
 }

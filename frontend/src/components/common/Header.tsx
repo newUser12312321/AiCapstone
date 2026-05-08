@@ -21,32 +21,32 @@ export default function Header() {
 
       {/* 서비스 로고 + 이름 */}
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-[var(--dash-accent)] rounded-full flex items-center justify-center">
+        <div className="w-9 h-9 bg-gradient-to-br from-[var(--dash-accent)] to-indigo-500 rounded-full flex items-center justify-center shadow-[var(--dash-shadow-soft)]">
           <Cpu size={16} className="text-white" />
         </div>
         <div>
-          <h1 className="text-sm font-bold text-[var(--dash-text-primary)] leading-none">PCB 비전 검사</h1>
+          <h1 className="text-sm font-bold text-[var(--dash-text-primary)] leading-none tracking-tight">PCB 비전 검사</h1>
           <p className="text-xs text-[var(--dash-text-tertiary)] mt-0.5">Edge Vision Inspection Station</p>
         </div>
       </div>
 
       {/* 오른쪽 영역: 라이브 상태 + 갱신 시각 */}
-      <div className="ml-auto flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-3">
 
         {/* 실시간 폴링 상태 인디케이터 */}
-        <div className="flex items-center gap-2 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-1.5">
+        <div className="flex items-center gap-2 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-1.5 shadow-[var(--dash-shadow-soft)]">
           <span
             className={`w-2 h-2 rounded-full ${
               isFetching ? 'bg-[var(--dash-warning)] animate-pulse' : 'bg-[var(--dash-success)]'
             }`}
           />
-          <span className="text-xs text-[var(--dash-text-secondary)]">
+          <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
             {isFetching ? '갱신 중...' : 'LIVE'}
           </span>
         </div>
 
         {/* 마지막 데이터 갱신 시각 */}
-        <div className="flex items-center gap-1.5 text-xs text-[var(--dash-text-tertiary)] rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-1.5">
+        <div className="flex items-center gap-1.5 text-xs text-[var(--dash-text-tertiary)] rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-1.5 shadow-[var(--dash-shadow-soft)]">
           <Activity size={12} />
           <span>최종 갱신: {lastUpdated}</span>
         </div>
