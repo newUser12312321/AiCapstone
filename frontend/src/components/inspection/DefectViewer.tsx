@@ -384,7 +384,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
           데이터를 불러올 수 없습니다.
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row gap-0">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-0">
 
           {/* 좌: 보정 전 / 우: 보정 후(+오버레이) — 또는 단일 이미지 */}
           <div
@@ -559,7 +559,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
           </div>
 
           {/* 우측: 검사 메타데이터 패널 */}
-          <div className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l border-[var(--dash-border)] p-4 shrink-0">
+          <div className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l border-[var(--dash-border)] p-4 shrink-0 lg:max-h-[72vh] lg:overflow-y-auto">
             <h3 className="text-xs font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider mb-3">
               검사 정보
             </h3>
