@@ -31,7 +31,7 @@ function CustomTooltip({
   const total = payload.reduce((sum, p) => sum + (p.value ?? 0), 0)
 
   return (
-    <div className="bg-[var(--dash-surface)] backdrop-blur-md border border-[var(--dash-border)] rounded-lg px-3 py-2 text-xs shadow-[var(--dash-shadow-soft)]">
+    <div className="glass-panel-subtle rounded-lg px-3 py-2 text-xs">
       <p className="text-[var(--dash-text-tertiary)] mb-1.5">{label}</p>
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
@@ -58,7 +58,7 @@ export default function TrendChart() {
   /* 로딩 스켈레톤 */
   if (isLoading) {
     return (
-      <div className="bg-[var(--dash-surface)] rounded-2xl p-5 border border-[var(--dash-border)] h-72 animate-pulse">
+      <div className="glass-panel rounded-[22px] p-5 h-72 animate-pulse">
         <div className="h-4 w-36 bg-[var(--dash-bg-secondary)] rounded mb-4" />
         <div className="h-full bg-[var(--dash-bg-secondary)] rounded" />
       </div>
@@ -68,14 +68,14 @@ export default function TrendChart() {
   /* 데이터 없음 안내 */
   if (!trendData.length) {
     return (
-      <div className="bg-[var(--dash-surface)] rounded-2xl p-5 border border-[var(--dash-border)] flex items-center justify-center h-72">
+      <div className="glass-panel rounded-[22px] p-5 flex items-center justify-center h-72">
         <p className="text-sm text-[var(--dash-text-secondary)]">최근 24시간 검사 데이터가 없습니다.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-2xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
+    <div className="glass-panel rounded-[22px] p-5">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 추이</h2>
         <span className="text-xs text-[var(--dash-text-tertiary)]">최근 24시간</span>

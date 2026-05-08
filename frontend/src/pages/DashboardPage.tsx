@@ -77,26 +77,22 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-4 h-full bg-[var(--dash-bg-secondary)] overflow-hidden">
-      <div className="max-w-[1280px] h-full mx-auto flex flex-col gap-3">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 flex-1 min-h-0">
+    <div className="p-5 h-full bg-transparent overflow-hidden">
+      <div className="max-w-[1320px] h-full mx-auto flex flex-col gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 flex-1 min-h-0">
           {/* 좌측 메인 운영 보드 */}
-          <div className="xl:col-span-8 space-y-3 min-h-0">
-            <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-5">
+          <div className="xl:col-span-8 space-y-4 min-h-0">
+            <div className="glass-panel rounded-[26px] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--dash-text-tertiary)]">Line Operation</p>
-                  <h2 className="text-2xl font-semibold tracking-tight text-[var(--dash-text-primary)] mt-1">
+                  <h2 className="text-2xl font-semibold tracking-tight text-[var(--dash-text-primary)]">
                     검사 운영 상태 대시보드
                   </h2>
-                  <p className="text-sm text-[var(--dash-text-secondary)] mt-1">
-                    실시간 상태/품질/속도/이상 징후를 한 화면에서 확인합니다.
-                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Link
                     to="/history"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)]"
+                    className="glass-panel-subtle inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)]"
                   >
                     검사 이력
                     <ArrowRight size={15} />
@@ -104,20 +100,20 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mt-3">
-                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-4 py-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                <div className="glass-panel-subtle rounded-2xl px-4 py-3.5">
                   <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">현재 라인 상태</p>
                   <p className={`text-xl font-bold ${statusTone}`}>
                     {stats && stats.failRate >= 3 ? '주의 필요' : '정상 운전'}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-4 py-3">
+                <div className="glass-panel-subtle rounded-2xl px-4 py-3.5">
                   <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">평균 추론 시간</p>
                   <p className="text-xl font-bold text-[var(--dash-text-primary)]">
                     {avgInferenceMs != null ? `${avgInferenceMs} ms` : '--'}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-4 py-3">
+                <div className="glass-panel-subtle rounded-2xl px-4 py-3.5">
                   <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">평균 총 처리 시간</p>
                   <p className="text-xl font-bold text-[var(--dash-text-primary)]">
                     {avgTotalMs != null ? `${avgTotalMs} ms` : '--'}
@@ -126,7 +122,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
               <div className="lg:col-span-2">
                 <PassFailChart />
               </div>
@@ -140,20 +136,20 @@ export default function DashboardPage() {
           </div>
 
           {/* 우측 운영 요약 레일 */}
-          <div className="xl:col-span-4 space-y-3 min-h-0 overflow-y-auto pr-1">
-            <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
+          <div className="xl:col-span-4 space-y-4 min-h-0 overflow-y-auto pr-1">
+            <div className="glass-panel rounded-[24px] p-[18px]">
               <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">최근 이상 징후 (30건 기준)</h3>
               {isRecentLoading ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">로딩 중…</p>
               ) : recentFailLogs.length === 0 ? (
-                <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-3 py-3 text-sm text-[var(--dash-success)] flex items-center gap-2">
+                <div className="glass-panel-subtle rounded-xl px-3 py-3 text-sm text-[var(--dash-success)] flex items-center gap-2">
                   <CheckCircle2 size={15} />
                   최근 구간에서 FAIL 이력이 없습니다.
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
                   {recentFailLogs.slice(0, 6).map((log) => (
-                    <div key={log.id} className="rounded-xl border border-[var(--dash-border)] px-3 py-2.5">
+                    <div key={log.id} className="glass-panel-subtle rounded-xl px-3 py-2.5">
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-sm font-medium text-[var(--dash-text-primary)]">#{log.id} · {log.deviceId}</p>
                         <span className="text-xs text-[var(--dash-text-tertiary)]">
@@ -173,14 +169,14 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
+            <div className="glass-panel rounded-[24px] p-[18px]">
               <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">결함 Hotspot</h3>
               {topDefects.length === 0 ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">최근 FAIL 데이터가 없어 집계할 수 없습니다.</p>
               ) : (
                 <div className="space-y-2">
                   {topDefects.map(([label, count]) => (
-                    <div key={label} className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-3 py-2 flex items-center justify-between">
+                    <div key={label} className="glass-panel-subtle rounded-xl px-3 py-2 flex items-center justify-between">
                       <span className="text-sm text-[var(--dash-text-secondary)] truncate">{label}</span>
                       <span className="text-sm font-semibold text-[var(--dash-text-primary)]">{count}건</span>
                     </div>
@@ -189,7 +185,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
+            <div className="glass-panel rounded-[24px] p-[18px]">
               <div className="flex items-start gap-2">
                 <AlertTriangle size={16} className="text-[var(--dash-warning)] mt-0.5" />
                 <div>
@@ -203,7 +199,7 @@ export default function DashboardPage() {
                 type="button"
                 onClick={handleDeleteHistory}
                 disabled={deleteMutation.isPending}
-                className="mt-4 inline-flex items-center gap-2 px-3.5 h-10 rounded-xl text-sm font-medium bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] border border-transparent text-white disabled:opacity-50 transition-colors"
+                className="mt-4 inline-flex items-center gap-2 px-3.5 h-10 rounded-xl text-sm font-medium bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] border border-transparent text-white disabled:opacity-50 transition-all shadow-[var(--dash-glow)]"
               >
                 {deleteMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                 이력 전체 삭제

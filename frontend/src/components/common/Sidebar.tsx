@@ -39,7 +39,7 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-56 bg-[var(--dash-bg-primary)] border-r border-[var(--dash-border)] flex flex-col py-4 shrink-0">
+    <aside className="w-60 bg-[var(--dash-surface-strong)]/45 border-r border-[var(--dash-border)] backdrop-blur-md flex flex-col py-4 shrink-0">
 
       {/* 네비게이션 메뉴 */}
       <nav className="flex flex-col gap-1.5 px-3">
@@ -50,12 +50,12 @@ export default function Sidebar() {
             end={end}
             className={({ isActive }) =>
               clsx(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
                 isActive
                   /* 활성 메뉴: 인디고 배경 + 흰 텍스트 */
-                  ? 'bg-gradient-to-r from-[var(--dash-accent)] to-indigo-500 text-white shadow-[var(--dash-shadow-soft)]'
+                  ? 'bg-gradient-to-r from-[var(--dash-accent)]/95 to-indigo-500 text-white shadow-[var(--dash-glow)]'
                   /* 비활성 메뉴: 회색 텍스트, 호버 시 배경 */
-                  : 'text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)] hover:text-[var(--dash-text-primary)]'
+                  : 'text-[var(--dash-text-secondary)] hover:bg-white/10 hover:text-[var(--dash-text-primary)]'
               )
             }
           >
@@ -64,12 +64,6 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
-      {/* 하단 디바이스 정보 */}
-      <div className="mt-auto mx-3 px-3 py-3 border border-[var(--dash-border)] rounded-xl bg-[var(--dash-surface)] shadow-[var(--dash-shadow-soft)]">
-        <p className="text-xs text-[var(--dash-text-tertiary)] font-mono">RPI5-LINE-A</p>
-        <p className="text-xs text-[var(--dash-text-tertiary)]">Spring Boot :8080</p>
-      </div>
     </aside>
   )
 }

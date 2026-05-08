@@ -17,7 +17,7 @@ export default function Header() {
     : '--:--:--'
 
   return (
-    <header className="h-16 bg-[var(--dash-bg-primary)] border-b border-[var(--dash-border)] flex items-center px-6 shrink-0">
+    <header className="h-16 bg-[var(--dash-surface-strong)]/60 border-b border-[var(--dash-border)] backdrop-blur-md flex items-center px-6 shrink-0">
 
       {/* 서비스 로고 + 이름 */}
       <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export default function Header() {
       <div className="ml-auto flex items-center gap-3">
 
         {/* 실시간 폴링 상태 인디케이터 */}
-        <div className="flex items-center gap-2 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-1.5 shadow-[var(--dash-shadow-soft)]">
+        <div className="glass-panel-subtle flex items-center gap-2 rounded-full px-3 py-1.5">
           <span
             className={`w-2 h-2 rounded-full ${
               isFetching ? 'bg-[var(--dash-warning)] animate-pulse' : 'bg-[var(--dash-success)]'
@@ -45,7 +45,7 @@ export default function Header() {
         </div>
 
         {/* 마지막 데이터 갱신 시각 */}
-        <div className="flex items-center gap-1.5 text-xs text-[var(--dash-text-tertiary)] rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-1.5 shadow-[var(--dash-shadow-soft)]">
+        <div className="glass-panel-subtle flex items-center gap-1.5 text-xs text-[var(--dash-text-tertiary)] rounded-full px-3 py-1.5">
           <Activity size={12} />
           <span>최종 갱신: {lastUpdated}</span>
         </div>

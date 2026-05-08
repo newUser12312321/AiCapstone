@@ -34,7 +34,7 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
 
   return (
     <div className={clsx(
-      'bg-[var(--dash-surface)] backdrop-blur-md rounded-2xl p-5 border shadow-[var(--dash-shadow-soft)] min-h-[140px]',
+      'glass-panel rounded-[22px] p-5 min-h-[142px]',
       colors.border
     )}>
       {/* 상단: 아이콘 + 제목 */}
@@ -60,7 +60,7 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
 
 function StatCardSkeleton() {
   return (
-    <div className="bg-[var(--dash-surface)] rounded-xl p-5 border border-[var(--dash-border)] animate-pulse">
+    <div className="glass-panel rounded-xl p-5 animate-pulse">
       <div className="flex items-center justify-between mb-3">
         <div className="h-4 w-20 bg-[var(--dash-bg-secondary)] rounded" />
         <div className="w-9 h-9 bg-[var(--dash-bg-secondary)] rounded-lg" />

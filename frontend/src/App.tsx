@@ -48,8 +48,8 @@ export default function App() {
 
   return (
     /* 전체 화면을 채우는 flex 컨테이너 */
-    <div className="dashboard-theme h-screen bg-[var(--dash-bg-secondary)] text-[var(--dash-text-primary)] p-4 md:p-6 overflow-hidden">
-      <div className="h-full w-full max-w-[1600px] mx-auto rounded-[28px] border border-[var(--dash-border)] bg-[var(--dash-bg-primary)] overflow-hidden">
+    <div className="dashboard-theme h-screen text-[var(--dash-text-primary)] p-4 md:p-6 overflow-hidden">
+      <div className="glass-panel h-full w-full max-w-[1600px] mx-auto rounded-[30px] overflow-hidden shadow-[var(--dash-glow)]">
         {/* 상단 고정 헤더 */}
         <Header />
 
@@ -60,7 +60,7 @@ export default function App() {
           <Sidebar />
 
           {/* 우측 페이지 콘텐츠 (스크롤 가능) */}
-          <main className="flex-1 overflow-hidden bg-[var(--dash-bg-primary)]">
+          <main className="flex-1 overflow-hidden bg-transparent">
             <Routes>
               {/* 기본 경로: 대시보드 */}
               <Route path="/"         element={<DashboardPage />} />
