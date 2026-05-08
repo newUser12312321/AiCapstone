@@ -20,18 +20,12 @@ export default function DashboardPage() {
   const [actionMsg, setActionMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   const { data: recentLogs = [], isLoading: isRecentLoading } = useRecentInspections(30)
-  const { data: stats, isFetching, dataUpdatedAt } = useStats()
+  const { data: stats } = useStats()
 
-  const failRateText = stats ? `${stats.failRate.toFixed(1)}%` : '--'
-  const totalCountText = stats ? stats.totalCount.toLocaleString() : '--'
   const recentFailLogs = useMemo(
     () => recentLogs.filter((log) => log.result === 'FAIL'),
     [recentLogs]
   )
-  const recentFailRate = useMemo(() => {
-    if (!recentLogs.length) return null
-    return (recentFailLogs.length / recentLogs.length) * 100
-  }, [recentLogs, recentFailLogs.length])
   const avgInferenceMs = useMemo(() => {
     const valid = recentLogs.map((l) => l.inferenceTimeMs).filter((v): v is number => typeof v === 'number')
     if (!valid.length) return null
