@@ -25,8 +25,7 @@ export default function Header() {
           <Cpu size={16} className="text-white" />
         </div>
         <div>
-          <h1 className="text-sm font-bold text-[var(--dash-text-primary)] leading-none tracking-tight">PCB 비전 검사</h1>
-          <p className="text-xs text-[var(--dash-text-tertiary)] mt-0.5">Edge Vision Inspection Station</p>
+          <h1 className="text-sm font-bold text-[var(--dash-text-primary)] leading-none tracking-tight">라즈베리파이 기반 PCB 비전 검사 시스템</h1>
         </div>
       </div>
 

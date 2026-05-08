@@ -14,8 +14,8 @@ import {
 import { useTrendData } from '@/hooks/useInspectionData'
 
 /* 색상 상수 */
-const PASS_COLOR = '#16a34a'
-const FAIL_COLOR = '#dc2626'
+const PASS_COLOR = '#34d399'
+const FAIL_COLOR = '#fb7185'
 
 // ── 커스텀 툴팁 ───────────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ function CustomTooltip({
   const total = payload.reduce((sum, p) => sum + (p.value ?? 0), 0)
 
   return (
-    <div className="bg-[var(--dash-surface)] border border-[var(--dash-border)] rounded-lg px-3 py-2 text-xs shadow-[var(--dash-shadow-soft)]">
+    <div className="bg-[var(--dash-surface)] backdrop-blur-md border border-[var(--dash-border)] rounded-lg px-3 py-2 text-xs shadow-[var(--dash-shadow-soft)]">
       <p className="text-[var(--dash-text-tertiary)] mb-1.5">{label}</p>
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export default function TrendChart() {
   }
 
   return (
-    <div className="bg-[var(--dash-surface)] rounded-2xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
+    <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-2xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 추이</h2>
         <span className="text-xs text-[var(--dash-text-tertiary)]">최근 24시간</span>
@@ -90,21 +90,21 @@ export default function TrendChart() {
           {/* 배경 그리드 */}
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="#e5e7eb"
+            stroke="rgba(152,160,200,0.22)"
             vertical={false}
           />
 
           {/* X축: 시간 레이블 */}
           <XAxis
             dataKey="label"
-            tick={{ fill: '#4b5563', fontSize: 12 }}
+            tick={{ fill: '#c7cdef', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
 
           {/* Y축: 건수 */}
           <YAxis
-            tick={{ fill: '#4b5563', fontSize: 12 }}
+            tick={{ fill: '#c7cdef', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
@@ -113,13 +113,13 @@ export default function TrendChart() {
           {/* 호버 툴팁 */}
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ fill: 'rgba(235,106,77,0.08)' }}
+            cursor={{ fill: 'rgba(139,92,246,0.16)' }}
           />
 
           {/* 범례 */}
           <Legend
             formatter={(value) => (
-              <span style={{ color: '#4b5563', fontSize: '0.8125rem' }}>{value}</span>
+              <span style={{ color: '#c7cdef', fontSize: '0.8125rem' }}>{value}</span>
             )}
           />
 

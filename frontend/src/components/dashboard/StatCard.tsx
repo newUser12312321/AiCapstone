@@ -23,10 +23,10 @@ interface StatCardProps {
 }
 
 const THEME_MAP: Record<StatCardProps['theme'], { bg: string; text: string; border: string }> = {
-  indigo: { bg: 'bg-blue-50', text: 'text-[var(--dash-accent)]', border: 'border-blue-100' },
-  green:  { bg: 'bg-green-50', text: 'text-[var(--dash-success)]', border: 'border-green-100'  },
-  red:    { bg: 'bg-red-50', text: 'text-[var(--dash-danger)]', border: 'border-red-100'    },
-  yellow: { bg: 'bg-[var(--dash-warning)]/10', text: 'text-[var(--dash-warning)]', border: 'border-[var(--dash-warning)]/25' },
+  indigo: { bg: 'bg-[var(--dash-accent)]/18', text: 'text-[var(--dash-accent)]', border: 'border-[var(--dash-accent)]/30' },
+  green:  { bg: 'bg-[var(--dash-success)]/16', text: 'text-[var(--dash-success)]', border: 'border-[var(--dash-success)]/28'  },
+  red:    { bg: 'bg-[var(--dash-danger)]/16', text: 'text-[var(--dash-danger)]', border: 'border-[var(--dash-danger)]/28'    },
+  yellow: { bg: 'bg-[var(--dash-warning)]/14', text: 'text-[var(--dash-warning)]', border: 'border-[var(--dash-warning)]/26' },
 }
 
 function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
@@ -34,7 +34,7 @@ function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
 
   return (
     <div className={clsx(
-      'bg-[var(--dash-surface)] rounded-2xl p-5 border shadow-[var(--dash-shadow-soft)] min-h-[140px]',
+      'bg-[var(--dash-surface)] backdrop-blur-md rounded-2xl p-5 border shadow-[var(--dash-shadow-soft)] min-h-[140px]',
       colors.border
     )}>
       {/* 상단: 아이콘 + 제목 */}

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 /* Tailwind CSS 세 가지 레이어를 전역으로 주입 */
 @tailwind base;
 @tailwind components;
@@ -31,22 +33,27 @@
 
 /* Dashboard 2026 tokens */
 .dashboard-theme {
-  --dash-bg-primary: #f8f8ff;
-  --dash-bg-secondary: #eef0ff;
-  --dash-surface: #ffffff;
-  --dash-border: #d9ddf7;
-  --dash-text-primary: #111827;
-  --dash-text-secondary: #1f2937;
-  --dash-text-tertiary: #374151;
-  --dash-accent: #6d5efc;
-  --dash-accent-hover: #5b4df2;
-  --dash-success: #16a34a;
-  --dash-danger: #dc2626;
-  --dash-warning: #f59e0b;
-  --dash-info: #4f46e5;
-  --dash-shadow-soft: 0 1px 2px rgba(30, 27, 75, 0.06), 0 12px 30px rgba(91, 77, 242, 0.08);
-  --dash-overlay-bg: #0f172a;
-  --dash-overlay-soft: #1e293b;
+  --dash-bg-primary: #090b13;
+  --dash-bg-secondary: #06070e;
+  --dash-surface: rgba(18, 21, 35, 0.82);
+  --dash-border: rgba(143, 155, 220, 0.22);
+  --dash-text-primary: #f3f6ff;
+  --dash-text-secondary: #c7cdef;
+  --dash-text-tertiary: #98a0c8;
+  --dash-accent: #8b5cf6;
+  --dash-accent-hover: #7c4cf0;
+  --dash-success: #34d399;
+  --dash-danger: #fb7185;
+  --dash-warning: #fbbf24;
+  --dash-info: #a78bfa;
+  --dash-shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(139, 92, 246, 0.1);
+  --dash-overlay-bg: #070910;
+  --dash-overlay-soft: #111528;
+}
+
+.dashboard-theme,
+.dashboard-theme * {
+  font-family: 'Inter', 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* Right-side kiosk panel: swipe-to-scroll without visible bar */

@@ -1,15 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  Activity,
   AlertTriangle,
   ArrowRight,
   CheckCircle2,
-  Clock3,
-  Cpu,
   Loader2,
   Trash2,
-  XCircle,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import StatCardGroup from '@/components/dashboard/StatCard'
@@ -27,14 +23,7 @@ export default function DashboardPage() {
   const { data: stats, isFetching, dataUpdatedAt } = useStats()
 
   const failRateText = stats ? `${stats.failRate.toFixed(1)}%` : '--'
-  const passRateText = stats ? `${(100 - stats.failRate).toFixed(1)}%` : '--'
   const totalCountText = stats ? stats.totalCount.toLocaleString() : '--'
-  const failSeverityClass = stats && stats.failRate >= 3
-    ? 'border-[var(--dash-danger)]/35 bg-red-50'
-    : 'border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]'
-  const liveUpdatedAt = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString('ko-KR')
-    : '--:--:--'
   const recentFailLogs = useMemo(
     () => recentLogs.filter((log) => log.result === 'FAIL'),
     [recentLogs]
@@ -94,37 +83,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 overflow-y-auto h-full bg-[var(--dash-bg-secondary)]">
-      <div className="max-w-[1280px] mx-auto space-y-5">
-        {/* P0: 즉시 인지 상태 바 */}
-        <div className="bg-[var(--dash-surface)] rounded-2xl border border-[var(--dash-border)] px-4 py-2.5 shadow-[var(--dash-shadow-soft)]">
-          <div className="flex flex-wrap items-center gap-2.5 text-sm">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
-              <span className={`w-2 h-2 rounded-full ${isFetching ? 'bg-[var(--dash-warning)] animate-pulse' : 'bg-[var(--dash-success)]'}`} />
-              {isFetching ? '갱신 중' : 'LIVE'}
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
-              <Activity size={14} />
-              최종 갱신 {liveUpdatedAt}
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
-              누적 검사 {totalCountText}건
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
-              FAIL 비율 {failRateText}
-            </span>
-            {recentFailRate != null && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] text-[var(--dash-text-secondary)]">
-                최근 30건 FAIL {recentFailRate.toFixed(1)}%
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
+    <div className="p-4 h-full bg-[var(--dash-bg-secondary)] overflow-hidden">
+      <div className="max-w-[1280px] h-full mx-auto flex flex-col gap-3">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 flex-1 min-h-0">
           {/* 좌측 메인 운영 보드 */}
-          <div className="xl:col-span-8 space-y-4">
-            <div className="bg-[var(--dash-surface)] rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-5">
+          <div className="xl:col-span-8 space-y-3 min-h-0">
+            <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--dash-text-tertiary)]">Line Operation</p>
@@ -146,20 +110,20 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-4 py-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mt-3">
+                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-4 py-3">
                   <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">현재 라인 상태</p>
                   <p className={`text-xl font-bold ${statusTone}`}>
                     {stats && stats.failRate >= 3 ? '주의 필요' : '정상 운전'}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-4 py-3">
+                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-4 py-3">
                   <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">평균 추론 시간</p>
                   <p className="text-xl font-bold text-[var(--dash-text-primary)]">
                     {avgInferenceMs != null ? `${avgInferenceMs} ms` : '--'}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-4 py-3">
+                <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-4 py-3">
                   <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">평균 총 처리 시간</p>
                   <p className="text-xl font-bold text-[var(--dash-text-primary)]">
                     {avgTotalMs != null ? `${avgTotalMs} ms` : '--'}
@@ -168,7 +132,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
               <div className="lg:col-span-2">
                 <PassFailChart />
               </div>
@@ -182,54 +146,18 @@ export default function DashboardPage() {
           </div>
 
           {/* 우측 운영 요약 레일 */}
-          <div className="xl:col-span-4 space-y-4">
-            <div className="bg-[var(--dash-surface)] rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
-              <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">운영 스냅샷</h3>
-              <div className="space-y-2.5">
-                <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[var(--dash-text-secondary)]">
-                    <Cpu size={14} />
-                    <span className="text-sm">누적 검사</span>
-                  </div>
-                  <span className="text-base font-semibold text-[var(--dash-text-primary)]">{totalCountText}</span>
-                </div>
-                <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[var(--dash-text-secondary)]">
-                    <CheckCircle2 size={14} className="text-[var(--dash-success)]" />
-                    <span className="text-sm">합격률</span>
-                  </div>
-                  <span className="text-base font-semibold text-[var(--dash-text-primary)]">{passRateText}</span>
-                </div>
-                <div className={`rounded-xl border px-3 py-2.5 flex items-center justify-between ${failSeverityClass}`}>
-                  <div className="flex items-center gap-2 text-[var(--dash-text-secondary)]">
-                    <XCircle size={14} className="text-[var(--dash-danger)]" />
-                    <span className="text-sm">불량률</span>
-                  </div>
-                  <span className="text-base font-semibold text-[var(--dash-text-primary)]">{failRateText}</span>
-                </div>
-                <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[var(--dash-text-secondary)]">
-                    <Clock3 size={14} />
-                    <span className="text-sm">평균 총 처리</span>
-                  </div>
-                  <span className="text-base font-semibold text-[var(--dash-text-primary)]">
-                    {avgTotalMs != null ? `${avgTotalMs} ms` : '--'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-[var(--dash-surface)] rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
+          <div className="xl:col-span-4 space-y-3 min-h-0 overflow-y-auto pr-1">
+            <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
               <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">최근 이상 징후 (30건 기준)</h3>
               {isRecentLoading ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">로딩 중…</p>
               ) : recentFailLogs.length === 0 ? (
-                <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-3 text-sm text-[var(--dash-success)] flex items-center gap-2">
+                <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-3 py-3 text-sm text-[var(--dash-success)] flex items-center gap-2">
                   <CheckCircle2 size={15} />
                   최근 구간에서 FAIL 이력이 없습니다.
                 </div>
               ) : (
-                <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1">
+                <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
                   {recentFailLogs.slice(0, 6).map((log) => (
                     <div key={log.id} className="rounded-xl border border-[var(--dash-border)] px-3 py-2.5">
                       <div className="flex items-center justify-between gap-2">
@@ -251,14 +179,14 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="bg-[var(--dash-surface)] rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
+            <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
               <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">결함 Hotspot</h3>
               {topDefects.length === 0 ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">최근 FAIL 데이터가 없어 집계할 수 없습니다.</p>
               ) : (
                 <div className="space-y-2">
                   {topDefects.map(([label, count]) => (
-                    <div key={label} className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2 flex items-center justify-between">
+                    <div key={label} className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80 px-3 py-2 flex items-center justify-between">
                       <span className="text-sm text-[var(--dash-text-secondary)] truncate">{label}</span>
                       <span className="text-sm font-semibold text-[var(--dash-text-primary)]">{count}건</span>
                     </div>
@@ -267,7 +195,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="bg-[var(--dash-surface)] rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
+            <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-3xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
               <div className="flex items-start gap-2">
                 <AlertTriangle size={16} className="text-[var(--dash-warning)] mt-0.5" />
                 <div>

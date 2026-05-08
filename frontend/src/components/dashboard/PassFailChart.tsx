@@ -13,8 +13,8 @@ import { useStats } from '@/hooks/useInspectionData'
 import type { PieDataPoint } from '@/types/inspection'
 
 /* 합격/불합격 색상 */
-const PASS_COLOR = '#16a34a'
-const FAIL_COLOR = '#dc2626'
+const PASS_COLOR = '#34d399'
+const FAIL_COLOR = '#fb7185'
 
 // ── 커스텀 중앙 레이블 ────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ function CenterLabel({
         textAnchor="middle"
         dominantBaseline="central"
         className="fill-white font-bold text-2xl"
-        style={{ fontSize: '1.5rem', fontWeight: 700, fill: '#111827' }}
+        style={{ fontSize: '1.5rem', fontWeight: 700, fill: '#f3f6ff' }}
       >
         {failRate.toFixed(1)}%
       </text>
@@ -43,7 +43,7 @@ function CenterLabel({
       <text
         x={cx} y={cy + 18}
         textAnchor="middle"
-        style={{ fontSize: '0.75rem', fill: '#6b7280' }}
+        style={{ fontSize: '0.75rem', fill: '#98a0c8' }}
       >
         불량률
       </text>
@@ -57,7 +57,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { name
   if (!active || !payload?.length) return null
   const { name, value } = payload[0]
   return (
-    <div className="bg-[var(--dash-surface)] border border-[var(--dash-border)] rounded-lg px-3 py-2 text-xs shadow-[var(--dash-shadow-soft)]">
+    <div className="bg-[var(--dash-surface)] backdrop-blur-md border border-[var(--dash-border)] rounded-lg px-3 py-2 text-xs shadow-[var(--dash-shadow-soft)]">
       <span className="text-[var(--dash-text-secondary)]">{name}: </span>
       <span className="text-[var(--dash-text-primary)] font-bold">{value.toLocaleString()}건</span>
     </div>
@@ -85,7 +85,7 @@ export default function PassFailChart() {
   ]
 
   return (
-    <div className="bg-[var(--dash-surface)] rounded-2xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
+    <div className="bg-[var(--dash-surface)] backdrop-blur-md rounded-2xl p-5 border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)]">
       <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)] mb-4">합격 / 불합격 비율</h2>
 
       <ResponsiveContainer width="100%" height={260}>
@@ -116,7 +116,7 @@ export default function PassFailChart() {
           {/* 범례 */}
           <Legend
             formatter={(value) => (
-              <span style={{ color: '#4b5563', fontSize: '0.8125rem' }}>{value}</span>
+              <span style={{ color: '#c7cdef', fontSize: '0.8125rem' }}>{value}</span>
             )}
           />
         </PieChart>
