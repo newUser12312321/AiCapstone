@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 _EDGE_ROOT = Path(__file__).resolve().parent.parent
 _REPO_ROOT = _EDGE_ROOT.parent
+_BUNDLED_KO_FONT = _EDGE_ROOT / "fonts" / "NanumGothic-Regular.ttf"
 
 # frontend/src/types/inspection.ts DEFECT_LABEL 과 동기화
 _CLASS_LABEL_KO: dict[str, str] = {
@@ -77,19 +78,38 @@ def _pil_font(size_px: int):
     from PIL import ImageFont
 
     size_px = max(11, min(size_px, 30))
-    # 일반 굵기 우선 — 가독성·톤 다운 (Bold보다 단정)
-    for fp in (
-        r"C:\Windows\Fonts\segoeui.ttf",
+    # 한글 미포함 폰트(예: DejaVu)로 폴백되면 라벨이 □로 깨짐 → 번들 나눔고딕 우선.
+    candidates: list[Path | str] = [
+        _BUNDLED_KO_FONT,
         r"C:\Windows\Fonts\malgun.ttf",
-        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+        r"C:\Windows\Fonts\malgunsl.ttf",
+        r"C:\Windows\Fonts\segoeui.ttf",
         "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-    ):
-        try:
-            return ImageFont.truetype(fp, size_px)
-        except OSError:
+        "/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto-cjk/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
+    ]
+    for fp in candidates:
+        p = Path(fp)
+        if not p.is_file():
             continue
-    return ImageFont.load_default()
+        try:
+            # .ttc 는 컬렉션 — index 0으로 로드 (환경에 따라 조정 필요 시 추가 후보 시도)
+            if p.suffix.lower() == ".ttc":
+                return ImageFont.truetype(str(p), size_px, index=0)
+            return ImageFont.truetype(str(p), size_px)
+        except (OSError, ValueError):
+            continue
+
+    logger.warning(
+        "[board-ref] 한글 라벨용 폰트를 찾지 못했습니다. edge/fonts/NanumGothic-Regular.ttf 배치를 확인하세요."
+    )
+    try:
+        return ImageFont.truetype(str(_BUNDLED_KO_FONT), size_px)
+    except OSError:
+        return ImageFont.load_default()
 
 
 def _label_font_size_px(h: int, w: int) -> int:
