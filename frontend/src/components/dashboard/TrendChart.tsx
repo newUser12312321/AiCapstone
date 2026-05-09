@@ -58,9 +58,9 @@ export default function TrendChart() {
   /* 로딩 스켈레톤 */
   if (isLoading) {
     return (
-      <div className="glass-panel rounded-[22px] p-5 h-72 animate-pulse">
-        <div className="h-4 w-36 bg-[var(--dash-bg-secondary)] rounded mb-4" />
-        <div className="h-full bg-[var(--dash-bg-secondary)] rounded" />
+      <div className="glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-[22px] p-5">
+        <div className="mb-4 h-4 w-36 shrink-0 rounded bg-[var(--dash-bg-secondary)]" />
+        <div className="min-h-0 flex-1 rounded bg-[var(--dash-bg-secondary)]" />
       </div>
     )
   }
@@ -68,20 +68,21 @@ export default function TrendChart() {
   /* 데이터 없음 안내 */
   if (!trendData.length) {
     return (
-      <div className="glass-panel rounded-[22px] p-5 flex items-center justify-center h-72">
+      <div className="glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[22px] p-5">
         <p className="text-sm text-[var(--dash-text-secondary)]">최근 24시간 검사 데이터가 없습니다.</p>
       </div>
     )
   }
 
   return (
-    <div className="glass-panel rounded-[22px] p-5">
-      <div className="flex items-center justify-between mb-4">
+    <div className="glass-panel flex h-full min-h-[240px] flex-col rounded-[22px] p-5">
+      <div className="mb-4 flex shrink-0 items-center justify-between">
         <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 추이</h2>
         <span className="text-xs text-[var(--dash-text-tertiary)]">최근 24시간</span>
       </div>
 
-      <ResponsiveContainer width="100%" height={240}>
+      <div className="min-h-0 w-full flex-1">
+        <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={trendData}
           margin={{ top: 4, right: 8, left: -16, bottom: 0 }}
@@ -129,7 +130,8 @@ export default function TrendChart() {
           {/* FAIL 막대 (스택 상단) — 상단 모서리만 둥글게 */}
           <Bar dataKey="fail" name="FAIL" stackId="stack" fill={FAIL_COLOR} radius={[3, 3, 0, 0]} />
         </BarChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }

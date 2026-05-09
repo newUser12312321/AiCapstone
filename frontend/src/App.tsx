@@ -56,7 +56,7 @@ export default function App() {
           <Sidebar />
 
           {/* 우측 페이지 콘텐츠 (스크롤 가능) */}
-          <main className="flex-1 overflow-hidden bg-transparent">
+          <main className="min-h-0 flex-1 overflow-hidden bg-transparent">
             <Routes>
               {/* 기본 경로: 대시보드 */}
               <Route path="/"         element={<DashboardPage />} />

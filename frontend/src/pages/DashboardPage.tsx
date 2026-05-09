@@ -49,12 +49,12 @@ export default function DashboardPage() {
   const statusTone = stats && stats.failRate >= 3 ? 'text-[var(--dash-danger)]' : 'text-[var(--dash-success)]'
 
   return (
-    <div className="p-5 h-full bg-transparent overflow-hidden">
-      <div className="max-w-[1320px] h-full mx-auto flex flex-col gap-4">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 flex-1 min-h-0">
-          {/* 좌측 메인 운영 보드 */}
-          <div className="xl:col-span-8 space-y-4 min-h-0">
-            <div className="glass-panel rounded-[26px] p-6">
+    <div className="flex h-full min-h-0 flex-col bg-transparent px-5 pt-5 pb-4">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1320px] flex-1 flex-col">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-stretch">
+          {/* 좌측 메인 운영 보드 — 하단 여백을 차트 영역이 흡수 */}
+          <div className="flex h-full min-h-0 flex-col gap-4 xl:col-span-8">
+            <div className="glass-panel shrink-0 rounded-[26px] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-2xl font-semibold tracking-tight text-[var(--dash-text-primary)]">
@@ -102,23 +102,27 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-              <div className="lg:col-span-2">
-                <PassFailChart />
+            <div className="flex min-h-0 flex-1 flex-col gap-4">
+              <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-5 lg:items-stretch">
+                <div className="flex h-full min-h-0 flex-col lg:col-span-2 lg:min-h-[260px]">
+                  <PassFailChart />
+                </div>
+                <div className="flex h-full min-h-0 flex-col lg:col-span-3 lg:min-h-[260px]">
+                  <TrendChart />
+                </div>
               </div>
-              <div className="lg:col-span-3">
-                <TrendChart />
+
+              {/* P1: KPI 요약 */}
+              <div className="shrink-0">
+                <StatCardGroup />
               </div>
             </div>
-
-            {/* P1: KPI 요약 */}
-            <StatCardGroup />
           </div>
 
-          {/* 우측 운영 요약 레일 */}
-          <div className="xl:col-span-4 space-y-4 min-h-0 overflow-y-auto pr-1">
-            <div className="glass-panel rounded-[24px] p-[18px]">
-              <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">
+          {/* 우측 운영 요약 레일 — 좌측과 동일 높이로 채움 */}
+          <div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1 xl:col-span-4">
+            <div className="glass-panel flex min-h-0 flex-1 flex-col rounded-[24px] p-[18px]">
+              <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">
                 최근 이상 징후 ({settings.recentFeedLimit}건 기준)
               </h3>
               {isRecentLoading ? (
@@ -129,7 +133,7 @@ export default function DashboardPage() {
                   최근 구간에서 FAIL 이력이 없습니다.
                 </div>
               ) : (
-                <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                   {recentFailLogs.slice(0, 6).map((log) => {
                     const { date, time } = formatSplitDateTime(log.inspectedAt)
                     return (
@@ -157,7 +161,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="glass-panel rounded-[24px] p-[18px]">
+            <div className="glass-panel shrink-0 rounded-[24px] p-[18px]">
               <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">결함 Hotspot</h3>
               {topDefects.length === 0 ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">최근 FAIL 데이터가 없어 집계할 수 없습니다.</p>
@@ -173,7 +177,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="glass-panel rounded-[24px] p-[18px]">
+            <div className="glass-panel shrink-0 rounded-[24px] p-[18px]">
               <div className="flex items-start gap-2">
                 <AlertTriangle size={16} className="text-[var(--dash-warning)] mt-0.5" />
                 <div>

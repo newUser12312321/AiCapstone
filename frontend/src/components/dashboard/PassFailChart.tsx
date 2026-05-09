@@ -83,8 +83,11 @@ export default function PassFailChart() {
   /* 로딩 스켈레톤 */
   if (isLoading || !stats) {
     return (
-    <div className="glass-panel rounded-[22px] p-5 flex items-center justify-center h-72 animate-pulse">
-        <div className="w-48 h-48 rounded-full bg-[var(--dash-bg-secondary)]" />
+      <div className="glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-[22px] p-5">
+        <div className="mb-4 h-4 w-36 shrink-0 rounded bg-[var(--dash-bg-secondary)]" />
+        <div className="flex flex-1 items-center justify-center">
+          <div className="h-48 w-48 rounded-full bg-[var(--dash-bg-secondary)]" />
+        </div>
       </div>
     )
   }
@@ -96,54 +99,52 @@ export default function PassFailChart() {
   ]
 
   return (
-    <div className="glass-panel rounded-[22px] p-5">
-      <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)] mb-4">합격 / 불합격 비율</h2>
+    <div className="glass-panel flex h-full min-h-[240px] flex-col rounded-[22px] p-5">
+      <h2 className="mb-4 shrink-0 text-[15px] font-semibold text-[var(--dash-text-secondary)]">
+        합격 / 불합격 비율
+      </h2>
 
-      <ResponsiveContainer width="100%" height={260}>
-        <PieChart>
-          <Pie
-            data={pieData}
-            cx="50%"
-            cy="50%"
-            /* innerRadius > 0 → 도넛(Donut) 형태 */
-            innerRadius={72}
-            outerRadius={100}
-            paddingAngle={3}
-            dataKey="value"
-            /* 중앙 레이블: 커스텀 SVG 컴포넌트 */
-            label={({ cx, cy }) => (
-              <CenterLabel
-                cx={cx}
-                cy={cy}
-                failRate={stats.failRate}
-                decimalPlaces={settings.decimalPlaces}
-              />
-            )}
-            labelLine={false}
-          >
-            {pieData.map((entry) => (
-              <Cell key={entry.name} fill={entry.fill} stroke="transparent" />
-            ))}
-          </Pie>
-
-          {/* 마우스 호버 툴팁 */}
-          <Tooltip content={<CustomTooltip />} />
-
-          {/* 범례 */}
-          <Legend
-            formatter={(value) => (
-              <span
-                style={{
-                  color: 'var(--dash-text-secondary)',
-                  fontSize: '0.8125rem',
-                }}
-              >
-                {value}
-              </span>
-            )}
-          />
-        </PieChart>
-      </ResponsiveContainer>
+      <div className="min-h-0 w-full flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={pieData}
+              cx="50%"
+              cy="50%"
+              innerRadius={72}
+              outerRadius={100}
+              paddingAngle={3}
+              dataKey="value"
+              label={({ cx, cy }) => (
+                <CenterLabel
+                  cx={cx}
+                  cy={cy}
+                  failRate={stats.failRate}
+                  decimalPlaces={settings.decimalPlaces}
+                />
+              )}
+              labelLine={false}
+            >
+              {pieData.map((entry) => (
+                <Cell key={entry.name} fill={entry.fill} stroke="transparent" />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+            <Legend
+              formatter={(value) => (
+                <span
+                  style={{
+                    color: 'var(--dash-text-secondary)',
+                    fontSize: '0.8125rem',
+                  }}
+                >
+                  {value}
+                </span>
+              )}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }

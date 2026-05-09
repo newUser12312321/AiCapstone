@@ -39,18 +39,18 @@ _CLASS_LABEL_KO: dict[str, str] = {
     "gn-948x": "GN-948X",
 }
 
-# BGR — 기판 위에서 잘 보이도록 채도·명도 높은 팔레트
+# BGR — 박스 선용: 과도하게 형광스럽지 않게 정리된 팔레트
 _PALETTE_BGR = [
-    (0, 255, 255),
-    (0, 180, 255),
-    (255, 80, 220),
-    (0, 255, 128),
-    (255, 200, 0),
-    (255, 96, 60),
-    (180, 255, 255),
-    (255, 255, 80),
-    (120, 220, 255),
-    (255, 128, 255),
+    (255, 200, 120),
+    (180, 230, 255),
+    (140, 210, 255),
+    (100, 220, 180),
+    (255, 170, 140),
+    (220, 190, 255),
+    (255, 230, 140),
+    (170, 210, 255),
+    (255, 160, 200),
+    (200, 255, 220),
 ]
 
 _BOX_OUTLINE_BGR = (0, 0, 0)  # 바깥 검정 테두리로 대비
@@ -76,12 +76,13 @@ def _color_bgr(defect_type: str) -> tuple[int, int, int]:
 def _pil_font(size_px: int):
     from PIL import ImageFont
 
-    size_px = max(18, min(size_px, 52))
+    size_px = max(11, min(size_px, 30))
+    # 일반 굵기 우선 — 가독성·톤 다운 (Bold보다 단정)
     for fp in (
+        r"C:\Windows\Fonts\segoeui.ttf",
         r"C:\Windows\Fonts\malgun.ttf",
-        "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     ):
         try:
@@ -92,8 +93,24 @@ def _pil_font(size_px: int):
 
 
 def _label_font_size_px(h: int, w: int) -> int:
-    """크롭 후에도 읽기 쉽도록 짧은 변 기준 스케일."""
-    return int(np.clip(min(h, w) * 0.038, 22, 46))
+    """라벨은 박스 대비 과하지 않게 작게 유지."""
+    return int(np.clip(min(h, w) * 0.022, 13, 22))
+
+
+def _label_strip_rgb(color_bgr: tuple[int, int, int]) -> tuple[int, int, int]:
+    """클래스색을 살짝만 반영한 왼쪽 강조선(RGB)."""
+    b, g, r = color_bgr
+    return (
+        int(np.clip(r * 0.55 + 100, 90, 255)),
+        int(np.clip(g * 0.55 + 95, 85, 255)),
+        int(np.clip(b * 0.55 + 95, 85, 255)),
+    )
+
+
+_LABEL_BG_RGB = (30, 34, 44)
+_LABEL_BORDER_RGB = (65, 72, 96)
+_LABEL_TEXT_RGB = (238, 241, 248)
+_LABEL_STROKE_RGB = (16, 18, 26)
 
 
 def _crop_to_board_content(
@@ -103,7 +120,7 @@ def _crop_to_board_content(
     margin_ratio: float = 0.065,
     min_margin_px: int = 42,
     max_margin_px: int = 130,
-    extra_top_for_labels_px: int = 88,
+    extra_top_for_labels_px: int = 56,
 ) -> np.ndarray:
     """
     검출 박스들의 외접 사각형 + 라벨이 올라갈 위쪽 여유 + 비율 기반 마진으로 크롭.
@@ -153,14 +170,15 @@ def _draw_labels_pil(
     vis_bgr: np.ndarray,
     items: list[tuple[int, int, str, tuple[int, int, int]]],
 ) -> np.ndarray:
-    """박스가 그려진 BGR 이미지 위에 한글 라벨 — 큰 글자·검정 스트로크·어두운 배너."""
+    """박스 위 한글 라벨 — 작은 글자·차분한 패널·통일된 밝은 글자색."""
     try:
         from PIL import Image, ImageDraw
 
         h_img, w_img = vis_bgr.shape[:2]
         fs = _label_font_size_px(h_img, w_img)
-        pad = max(6, fs // 5)
-        stroke_w = max(2, fs // 12)
+        pad = max(3, fs // 6)
+        stroke_w = max(1, fs // 16)
+        strip_w = max(2, fs // 10)
 
         img_rgb = cv2.cvtColor(vis_bgr, cv2.COLOR_BGR2RGB)
         pil = Image.fromarray(img_rgb)
@@ -168,7 +186,6 @@ def _draw_labels_pil(
         font = _pil_font(fs)
 
         for x, y_base, text, color_bgr in items:
-            rgb = (int(color_bgr[2]), int(color_bgr[1]), int(color_bgr[0]))
             bbox = draw.textbbox((0, 0), text, font=font, stroke_width=stroke_w)
             tw = bbox[2] - bbox[0]
             th = bbox[3] - bbox[1]
@@ -176,22 +193,28 @@ def _draw_labels_pil(
             if ty_text < 0:
                 ty_text = min(y_base + 8, max(0, h_img - th - pad * 2 - stroke_w * 2))
 
+            inner_pad = strip_w + pad + stroke_w
             bx0 = max(0, x)
             by0 = max(0, ty_text)
-            bx1 = min(w_img - 1, x + tw + pad * 2 + stroke_w * 4)
-            by1 = min(h_img - 1, ty_text + th + pad * 2 + stroke_w * 4)
+            bx1 = min(w_img - 1, bx0 + inner_pad + tw + pad + stroke_w * 2)
+            by1 = min(h_img - 1, ty_text + th + pad * 2 + stroke_w * 2)
 
-            draw.rectangle([bx0, by0, bx1, by1], fill=(22, 22, 22), outline=(255, 255, 255), width=2)
+            strip_rgb = _label_strip_rgb(color_bgr)
+            draw.rectangle([bx0, by0, bx1, by1], fill=_LABEL_BG_RGB, outline=_LABEL_BORDER_RGB, width=1)
+            draw.rectangle(
+                [bx0, by0, bx0 + strip_w, by1],
+                fill=strip_rgb,
+            )
 
-            tx = bx0 + pad + stroke_w
+            tx = bx0 + strip_w + pad + stroke_w
             ty_draw = by0 + pad + stroke_w
             draw.text(
                 (tx, ty_draw),
                 text,
                 font=font,
-                fill=rgb,
+                fill=_LABEL_TEXT_RGB,
                 stroke_width=stroke_w,
-                stroke_fill=(0, 0, 0),
+                stroke_fill=_LABEL_STROKE_RGB,
             )
 
         return cv2.cvtColor(np.array(pil), cv2.COLOR_RGB2BGR)

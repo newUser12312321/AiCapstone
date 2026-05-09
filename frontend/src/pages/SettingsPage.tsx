@@ -1,8 +1,8 @@
 /**
- * 대시보드 설정 — 연결 정보, 폴링·표시 옵션, 데이터 관리
+ * 대시보드 설정 — 폴링·표시 옵션, 데이터 관리
  */
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
@@ -16,9 +16,10 @@ import {
   RefreshCw,
   Trash2,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import clsx from 'clsx'
-import { deleteAllInspections, getEffectiveApiBaseUrl } from '@/api/inspectionApi'
+import { deleteAllInspections } from '@/api/inspectionApi'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import {
   POLLING_INTERVAL_OPTIONS,
@@ -31,7 +32,7 @@ function SectionTitle({
   title,
   description,
 }: {
-  icon: typeof Globe
+  icon: LucideIcon
   title: string
   description?: string
 }) {
@@ -52,16 +53,6 @@ export default function SettingsPage() {
   const queryClient = useQueryClient()
   const { settings, setSettings, resetSettings } = useDashboardSettings()
   const [actionMsg, setActionMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
-
-  const apiBase = getEffectiveApiBaseUrl()
-
-  const viteEnvRows = useMemo(() => {
-    const env = import.meta.env as Record<string, unknown>
-    return Object.keys(env)
-      .filter((k) => k.startsWith('VITE_'))
-      .sort()
-      .map((k) => ({ key: k, value: env[k] === undefined ? '' : String(env[k]) }))
-  }, [])
 
   const deleteMutation = useMutation({
     mutationFn: deleteAllInspections,
@@ -98,61 +89,6 @@ export default function SettingsPage() {
           </Link>
           <h1 className="text-xl font-semibold text-[var(--dash-text-primary)]">설정</h1>
         </div>
-
-        {/* 연결·환경 */}
-        <section className="glass-panel rounded-[22px] p-5">
-          <SectionTitle
-            icon={Globe}
-            title="연결·환경 정보"
-            description="데이터가 오지 않을 때 브라우저가 어떤 API 베이스와 빌드 변수를 쓰는지 확인합니다."
-          />
-          <div className="space-y-3 text-sm">
-            <div className="glass-panel-subtle rounded-xl px-3 py-2.5 flex flex-wrap gap-2 items-baseline justify-between">
-              <span className="text-[var(--dash-text-tertiary)]">REST API 베이스</span>
-              <code className="text-[13px] font-mono text-[var(--dash-accent)] break-all">
-                {apiBase}
-              </code>
-            </div>
-            <p className="text-xs text-[var(--dash-text-tertiary)]">
-              VITE_API_BASE_URL을 지정하지 않으면 Vite 프록시 기준 상대 경로{' '}
-              <code className="font-mono">/api</code>가 사용됩니다.
-            </p>
-            <div className="rounded-xl border border-[var(--dash-border)] overflow-hidden">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="bg-[var(--dash-bg-secondary)] text-left">
-                    <th className="px-3 py-2 font-semibold text-[var(--dash-text-tertiary)]">
-                      import.meta.env (VITE_*)
-                    </th>
-                    <th className="px-3 py-2 font-semibold text-[var(--dash-text-tertiary)]">
-                      값
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[var(--dash-border)]">
-                  {viteEnvRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={2} className="px-3 py-4 text-[var(--dash-text-secondary)]">
-                        정의된 VITE_* 변수가 없습니다.
-                      </td>
-                    </tr>
-                  ) : (
-                    viteEnvRows.map((row) => (
-                      <tr key={row.key} className="bg-[var(--dash-surface)]">
-                        <td className="px-3 py-2 font-mono text-[var(--dash-text-secondary)] align-top">
-                          {row.key}
-                        </td>
-                        <td className="px-3 py-2 font-mono text-[var(--dash-text-primary)] break-all">
-                          {row.value || '—'}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
 
         {/* 대시보드 동작 */}
         <section className="glass-panel rounded-[22px] p-5">
