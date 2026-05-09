@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   BOARD_REFERENCES,
+  BOARD_REFERENCE_CALIBRATION_URL,
   boardOverlayUrl,
   toCountRows,
 } from '@/config/boardReference'
@@ -15,13 +16,13 @@ export default function BoardReferencePage() {
 
   useEffect(() => {
     let cancelled = false
-    fetch('/edge/board-reference/calibration.json')
+    fetch(BOARD_REFERENCE_CALIBRATION_URL)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((j: FiducialCalibration) => {
         if (!cancelled) setCalib(j)
       })
       .catch(() => {
-        /* 엣지 미기동 시 src/config 폴백 유지 */
+        /* public/board-reference 없거나 네트워크 실패 시 src/config 폴백 */
       })
     return () => {
       cancelled = true
@@ -116,8 +117,10 @@ export default function BoardReferencePage() {
               정상 라벨링 기준 이미지 (YOLO 레이아웃)
             </h2>
             <p className="text-xs text-[var(--dash-text-tertiary)] mb-3">
-              해당 기판 전용 가중치로 검출한 클래스만 테두리·라벨 표시합니다. 신뢰도 %는 표시하지 않습니다. 엣지 서버(
-              <code className="text-[var(--dash-text-secondary)]">/edge/board-reference/overlay.jpg</code>)가 실행 중이어야 합니다.
+              빌드에 포함된 사전 렌더 이미지입니다(YOLO 클래스 테두리·한글 라벨, 신뢰도 % 없음). 라즈베리파이
+              없이도 표시됩니다. 오버레이를 갱신하려면 저장소에서{' '}
+              <code className="text-[var(--dash-text-secondary)]">edge/tools/export_board_reference_assets.py</code>{' '}
+              를 실행한 뒤 프론트를 다시 빌드하세요.
             </p>
             {!imageError ? (
               <img
@@ -128,7 +131,11 @@ export default function BoardReferencePage() {
               />
             ) : (
               <div className="h-72 rounded-xl border border-dashed border-[var(--dash-border)] flex flex-col items-center justify-center text-sm text-[var(--dash-text-secondary)] px-4 text-center gap-2">
-                <span>오버레이 이미지를 불러오지 못했습니다. 라즈베리파이 엣지 FastAPI가 켜져 있는지·가중치·기준 이미지 경로를 확인하세요.</span>
+                <span>
+                  오버레이 이미지를 불러오지 못했습니다. Docker 이미지 빌드 시{' '}
+                  <code className="text-[var(--dash-text-secondary)]">public/board-reference/</code> 가 포함됐는지,
+                  배포 경로(Vite base)가 맞는지 확인하세요.
+                </span>
                 <code className="text-xs break-all opacity-80">{overlaySrc}</code>
               </div>
             )}
