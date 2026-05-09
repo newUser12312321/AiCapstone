@@ -9,6 +9,7 @@ import {
   PieChart, Pie, Cell,
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
+import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useStats } from '@/hooks/useInspectionData'
 import type { PieDataPoint } from '@/types/inspection'
 
@@ -23,27 +24,36 @@ const FAIL_COLOR = '#fb7185'
  * Recharts의 label prop으로 주입된다.
  */
 function CenterLabel({
-  cx, cy, failRate,
+  cx,
+  cy,
+  failRate,
+  decimalPlaces,
 }: {
-  cx: number; cy: number; failRate: number
+  cx: number
+  cy: number
+  failRate: number
+  decimalPlaces: number
 }) {
   return (
     <g>
-      {/* 불량률 수치 */}
       <text
-        x={cx} y={cy - 8}
+        x={cx}
+        y={cy - 8}
         textAnchor="middle"
         dominantBaseline="central"
-        className="fill-white font-bold text-2xl"
-        style={{ fontSize: '1.5rem', fontWeight: 700, fill: '#f3f6ff' }}
+        style={{
+          fontSize: '1.5rem',
+          fontWeight: 700,
+          fill: 'var(--dash-text-primary)',
+        }}
       >
-        {failRate.toFixed(1)}%
+        {failRate.toFixed(decimalPlaces)}%
       </text>
-      {/* 레이블 */}
       <text
-        x={cx} y={cy + 18}
+        x={cx}
+        y={cy + 18}
         textAnchor="middle"
-        style={{ fontSize: '0.75rem', fill: '#98a0c8' }}
+        style={{ fontSize: '0.75rem', fill: 'var(--dash-text-tertiary)' }}
       >
         불량률
       </text>
@@ -67,6 +77,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { name
 // ── 메인 컴포넌트 ─────────────────────────────────────────────────────────────
 
 export default function PassFailChart() {
+  const { settings } = useDashboardSettings()
   const { data: stats, isLoading } = useStats()
 
   /* 로딩 스켈레톤 */
@@ -101,7 +112,12 @@ export default function PassFailChart() {
             dataKey="value"
             /* 중앙 레이블: 커스텀 SVG 컴포넌트 */
             label={({ cx, cy }) => (
-              <CenterLabel cx={cx} cy={cy} failRate={stats.failRate} />
+              <CenterLabel
+                cx={cx}
+                cy={cy}
+                failRate={stats.failRate}
+                decimalPlaces={settings.decimalPlaces}
+              />
             )}
             labelLine={false}
           >
@@ -116,7 +132,14 @@ export default function PassFailChart() {
           {/* 범례 */}
           <Legend
             formatter={(value) => (
-              <span style={{ color: '#c7cdef', fontSize: '0.8125rem' }}>{value}</span>
+              <span
+                style={{
+                  color: 'var(--dash-text-secondary)',
+                  fontSize: '0.8125rem',
+                }}
+              >
+                {value}
+              </span>
             )}
           />
         </PieChart>

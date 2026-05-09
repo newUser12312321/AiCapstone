@@ -16,6 +16,7 @@ import { ChevronRight, AlertCircle } from 'lucide-react'
 import clsx from 'clsx'
 import type { InspectionLog } from '@/types/inspection'
 import { defectDisplayName, DEFECT_COLOR } from '@/types/inspection'
+import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import DefectViewer from './DefectViewer'
 
 // ── 보조 컴포넌트 ─────────────────────────────────────────────────────────────
@@ -80,15 +81,6 @@ function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
   )
 }
 
-/** 날짜/시각 포맷 유틸 */
-function formatDateTime(iso: string): { date: string; time: string } {
-  const d = new Date(iso)
-  return {
-    date: d.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' }),
-    time: d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-  }
-}
-
 // ── 스켈레톤 ─────────────────────────────────────────────────────────────────
 
 /** 실크 OCR 요약 한 컬럼 */
@@ -151,6 +143,7 @@ export default function InspectionTable({
   isLoading = false,
   resultFilter,
 }: InspectionTableProps) {
+  const { formatSplitDateTime } = useDashboardSettings()
   /* 클릭된 검사 ID — DefectViewer에 전달 */
   const [selectedId, setSelectedId] = useState<number | undefined>()
 
@@ -190,7 +183,7 @@ export default function InspectionTable({
               </tr>
             ) : (
               filtered.map((log) => {
-                const { date, time } = formatDateTime(log.inspectedAt)
+                const { date, time } = formatSplitDateTime(log.inspectedAt)
                 return (
                   <Fragment key={log.id}>
                     <tr
@@ -209,7 +202,9 @@ export default function InspectionTable({
                       {/* 시각 */}
                       <td className="px-4 py-3">
                         <p className="text-[var(--dash-text-secondary)] text-[13px]">{date}</p>
-                        <p className="text-[var(--dash-text-tertiary)] text-xs font-mono">{time}</p>
+                        {time ? (
+                          <p className="text-[var(--dash-text-tertiary)] text-xs font-mono">{time}</p>
+                        ) : null}
                       </td>
 
                       {/* 실크 OCR */}

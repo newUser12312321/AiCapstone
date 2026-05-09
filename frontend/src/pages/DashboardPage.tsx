@@ -1,25 +1,23 @@
-import { useMemo, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import {
   AlertTriangle,
   ArrowRight,
   CheckCircle2,
-  Loader2,
-  Trash2,
+  Settings,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import StatCardGroup from '@/components/dashboard/StatCard'
 import PassFailChart from '@/components/dashboard/PassFailChart'
 import TrendChart from '@/components/dashboard/TrendChart'
-import { deleteAllInspections } from '@/api/inspectionApi'
+import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useRecentInspections, useStats } from '@/hooks/useInspectionData'
 import { defectDisplayName } from '@/types/inspection'
 
 export default function DashboardPage() {
-  const queryClient = useQueryClient()
-  const [actionMsg, setActionMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
-
-  const { data: recentLogs = [], isLoading: isRecentLoading } = useRecentInspections(30)
+  const { settings, formatSplitDateTime } = useDashboardSettings()
+  const { data: recentLogs = [], isLoading: isRecentLoading } = useRecentInspections(
+    settings.recentFeedLimit
+  )
   const { data: stats } = useStats()
 
   const recentFailLogs = useMemo(
@@ -50,32 +48,6 @@ export default function DashboardPage() {
   }, [recentFailLogs])
   const statusTone = stats && stats.failRate >= 3 ? 'text-[var(--dash-danger)]' : 'text-[var(--dash-success)]'
 
-  const invalidateInspections = () => {
-    queryClient.invalidateQueries({ queryKey: ['inspections'] })
-  }
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteAllInspections,
-    onSuccess: () => {
-      setActionMsg({ type: 'ok', text: '검사 이력이 모두 삭제되었습니다.' })
-      invalidateInspections()
-    },
-    onError: (e: Error) => {
-      setActionMsg({ type: 'err', text: e.message || '삭제 실패' })
-    },
-  })
-
-  const handleDeleteHistory = () => {
-    if (
-      !window.confirm(
-        '저장된 검사 이력과 결함 기록을 모두 삭제합니다. 계속할까요?'
-      )
-    ) {
-      return
-    }
-    deleteMutation.mutate()
-  }
-
   return (
     <div className="p-5 h-full bg-transparent overflow-hidden">
       <div className="max-w-[1320px] h-full mx-auto flex flex-col gap-4">
@@ -96,6 +68,14 @@ export default function DashboardPage() {
                   >
                     검사 이력
                     <ArrowRight size={15} />
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="glass-panel-subtle inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)]"
+                    title="설정"
+                  >
+                    <Settings size={16} />
+                    설정
                   </Link>
                 </div>
               </div>
@@ -138,7 +118,9 @@ export default function DashboardPage() {
           {/* 우측 운영 요약 레일 */}
           <div className="xl:col-span-4 space-y-4 min-h-0 overflow-y-auto pr-1">
             <div className="glass-panel rounded-[24px] p-[18px]">
-              <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">최근 이상 징후 (30건 기준)</h3>
+              <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">
+                최근 이상 징후 ({settings.recentFeedLimit}건 기준)
+              </h3>
               {isRecentLoading ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">로딩 중…</p>
               ) : recentFailLogs.length === 0 ? (
@@ -148,23 +130,29 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                  {recentFailLogs.slice(0, 6).map((log) => (
-                    <div key={log.id} className="glass-panel-subtle rounded-xl px-3 py-2.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm font-medium text-[var(--dash-text-primary)]">#{log.id} · {log.deviceId}</p>
-                        <span className="text-xs text-[var(--dash-text-tertiary)]">
-                          {new Date(log.inspectedAt).toLocaleTimeString('ko-KR', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit',
-                          })}
-                        </span>
+                  {recentFailLogs.slice(0, 6).map((log) => {
+                    const { date, time } = formatSplitDateTime(log.inspectedAt)
+                    return (
+                      <div key={log.id} className="glass-panel-subtle rounded-xl px-3 py-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-medium text-[var(--dash-text-primary)]">#{log.id} · {log.deviceId}</p>
+                          <span className="text-xs text-[var(--dash-text-tertiary)] text-right">
+                            {time ? (
+                              <>
+                                <span className="block">{date}</span>
+                                <span className="font-mono">{time}</span>
+                              </>
+                            ) : (
+                              <span className="font-mono">{date}</span>
+                            )}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[var(--dash-danger)] mt-1 truncate">
+                          {log.defects.length > 0 ? defectDisplayName(log.defects[0].defectType, log.defects[0].detail) : 'FAIL'}
+                        </p>
                       </div>
-                      <p className="text-xs text-[var(--dash-danger)] mt-1 truncate">
-                        {log.defects.length > 0 ? defectDisplayName(log.defects[0].defectType, log.defects[0].detail) : 'FAIL'}
-                      </p>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -191,34 +179,20 @@ export default function DashboardPage() {
                 <div>
                   <p className="text-sm font-semibold text-[var(--dash-text-primary)]">운영 안내</p>
                   <p className="text-xs text-[var(--dash-text-secondary)] mt-1">
-                    상세 좌표/원인 분석은 `검사 이력` 메뉴에서 확인하세요.
+                    상세 좌표·원인 분석은 `검사 이력` 메뉴에서 확인하세요. 저장된 이력 일괄 삭제는{' '}
+                    <Link
+                      to="/settings"
+                      className="text-[var(--dash-accent)] hover:underline font-medium"
+                    >
+                      설정 → 데이터 관리
+                    </Link>
+                    에서 수행할 수 있습니다.
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleDeleteHistory}
-                disabled={deleteMutation.isPending}
-                className="mt-4 inline-flex items-center gap-2 px-3.5 h-10 rounded-xl text-sm font-medium bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] border border-transparent text-white disabled:opacity-50 transition-all shadow-[var(--dash-glow)]"
-              >
-                {deleteMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
-                이력 전체 삭제
-              </button>
             </div>
           </div>
         </div>
-
-        {actionMsg && (
-          <p
-            className={
-              actionMsg.type === 'ok'
-                ? 'text-xs text-[var(--dash-success)]'
-                : 'text-xs text-[var(--dash-danger)]'
-            }
-          >
-            {actionMsg.text}
-          </p>
-        )}
 
       </div>
     </div>

@@ -108,7 +108,6 @@ export default function BoardReferencePage() {
               </div>
             )}
           </div>
-          <p className="text-xs text-[var(--dash-text-tertiary)]">{calib.notes}</p>
         </section>
 
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
@@ -116,12 +115,6 @@ export default function BoardReferencePage() {
             <h2 className="text-base text-[var(--dash-text-secondary)] font-semibold mb-3">
               정상 라벨링 기준 이미지 (YOLO 레이아웃)
             </h2>
-            <p className="text-xs text-[var(--dash-text-tertiary)] mb-3">
-              빌드에 포함된 사전 렌더 이미지입니다(YOLO 클래스 테두리·한글 라벨, 신뢰도 % 없음). 라즈베리파이
-              없이도 표시됩니다. 오버레이를 갱신하려면 저장소에서{' '}
-              <code className="text-[var(--dash-text-secondary)]">edge/tools/export_board_reference_assets.py</code>{' '}
-              를 실행한 뒤 프론트를 다시 빌드하세요.
-            </p>
             {!imageError ? (
               <img
                 src={overlaySrc}

@@ -14,6 +14,7 @@ import { useState, useMemo } from 'react'
 import { Search, Filter, Download } from 'lucide-react'
 import clsx from 'clsx'
 import InspectionTable from '@/components/inspection/InspectionTable'
+import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useAllInspections } from '@/hooks/useInspectionData'
 import type { InspectionResultType } from '@/types/inspection'
 
@@ -59,39 +60,10 @@ function FilterButton({ label, value, current, count, onClick }: FilterButtonPro
   )
 }
 
-// ── CSV 다운로드 유틸 ─────────────────────────────────────────────────────────
-
-function downloadCsv(data: ReturnType<typeof useAllInspections>['data']) {
-  if (!data?.length) return
-
-  /* CSV 헤더 */
-  const header = ['ID', '시각', '디바이스', '결과', '오차(°)', '추론(ms)', '총처리(ms)', '결함수']
-  const rows = data.map((l) => [
-    l.id,
-    new Date(l.inspectedAt).toLocaleString('ko-KR'),
-    l.deviceId,
-    l.result,
-    l.angleErrorDeg?.toFixed(2) ?? '',
-    l.inferenceTimeMs ?? '',
-    l.totalTimeMs ?? '',
-    l.defects.length,
-  ])
-
-  const csv = [header, ...rows].map((r) => r.join(',')).join('\n')
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
-  const url  = URL.createObjectURL(blob)
-
-  /* 가상 <a> 태그로 다운로드 트리거 */
-  const link = document.createElement('a')
-  link.href = url
-  link.download = `inspection_history_${new Date().toISOString().slice(0, 10)}.csv`
-  link.click()
-  URL.revokeObjectURL(url)
-}
-
 // ── 메인 컴포넌트 ─────────────────────────────────────────────────────────────
 
 export default function HistoryPage() {
+  const { formatFullDateTime, formatRatePercent } = useDashboardSettings()
   const { data: allLogs = [], isLoading } = useAllInspections()
 
   /* 결과 필터 상태 */
@@ -117,6 +89,32 @@ export default function HistoryPage() {
     })
   }, [allLogs, resultFilter, dateFrom, dateTo])
 
+  const downloadCsv = () => {
+    if (!filteredLogs.length) return
+
+    const header = ['ID', '시각', '디바이스', '결과', '오차(°)', '추론(ms)', '총처리(ms)', '결함수']
+    const rows = filteredLogs.map((l) => [
+      l.id,
+      formatFullDateTime(l.inspectedAt),
+      l.deviceId,
+      l.result,
+      l.angleErrorDeg?.toFixed(2) ?? '',
+      l.inferenceTimeMs ?? '',
+      l.totalTimeMs ?? '',
+      l.defects.length,
+    ])
+
+    const csv = [header, ...rows].map((r) => r.join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `inspection_history_${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   /* 필터 결과 미니 통계 */
   const passCount = filteredLogs.filter((l) => l.result === 'PASS').length
   const failCount = filteredLogs.filter((l) => l.result === 'FAIL').length
@@ -134,7 +132,7 @@ export default function HistoryPage() {
 
           {/* CSV 내보내기 버튼 */}
           <button
-            onClick={() => downloadCsv(filteredLogs)}
+            onClick={downloadCsv}
             className="flex items-center gap-2 px-4 py-2.5 bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] rounded-xl text-sm font-medium transition-colors shadow-[var(--dash-shadow-soft)]"
           >
             <Download size={15} />
@@ -199,7 +197,7 @@ export default function HistoryPage() {
           {filteredLogs.length > 0 && (
           <span>
             불량률 <span className="text-[var(--dash-warning)] font-semibold">
-              {((failCount / filteredLogs.length) * 100).toFixed(2)}%
+              {formatRatePercent((failCount / filteredLogs.length) * 100)}%
             </span>
           </span>
           )}

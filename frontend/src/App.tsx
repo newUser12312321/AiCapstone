@@ -12,30 +12,21 @@
  * └─────────────────────────────────────────────────────────────────────────┘
  */
 
+import clsx from 'clsx'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Header from '@/components/common/Header'
 import Sidebar from '@/components/common/Sidebar'
+import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import DashboardPage from '@/pages/DashboardPage'
 import HistoryPage from '@/pages/HistoryPage'
 import BoardReferencePage from '@/pages/BoardReferencePage'
+import SettingsPage from '@/pages/SettingsPage'
 import KioskPage from '@/pages/KioskPage'
 import KioskInspectionCompletePage from '@/pages/KioskInspectionCompletePage'
 
-/** 아직 구현되지 않은 경로를 위한 플레이스홀더 페이지 */
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <div className="h-full p-6 bg-[var(--dash-bg-secondary)]">
-      <div className="max-w-[1280px] mx-auto h-full">
-        <div className="h-full rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] shadow-[var(--dash-shadow-soft)] flex items-center justify-center">
-          <p className="text-[var(--dash-text-secondary)] text-sm">{title} — 준비 중</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function App() {
   const location = useLocation()
+  const { settings } = useDashboardSettings()
 
   if (location.pathname.startsWith('/kiosk')) {
     return (
@@ -48,7 +39,12 @@ export default function App() {
 
   return (
     /* 전체 화면을 채우는 flex 컨테이너 */
-    <div className="dashboard-theme h-screen text-[var(--dash-text-primary)] p-4 md:p-6 overflow-hidden">
+    <div
+      className={clsx(
+        'dashboard-theme h-screen text-[var(--dash-text-primary)] p-4 md:p-6 overflow-hidden',
+        settings.colorScheme === 'light' && 'dashboard-theme--light'
+      )}
+    >
       <div className="glass-panel h-full w-full max-w-[1600px] mx-auto rounded-[30px] overflow-hidden shadow-[var(--dash-glow)]">
         {/* 상단 고정 헤더 */}
         <Header />
@@ -71,8 +67,7 @@ export default function App() {
               {/* 보드 기준(정상 이미지/기대 개수) */}
               <Route path="/board-reference" element={<BoardReferencePage />} />
 
-              {/* 설정 (플레이스홀더) */}
-              <Route path="/settings" element={<PlaceholderPage title="설정" />} />
+              <Route path="/settings" element={<SettingsPage />} />
 
               {/* 정의되지 않은 경로는 루트로 리다이렉트 */}
               <Route path="*"         element={<Navigate to="/" replace />} />

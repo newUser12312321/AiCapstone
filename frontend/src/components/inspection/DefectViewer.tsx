@@ -4,6 +4,7 @@
 
 import { useRef, useState, useEffect, type ReactNode } from 'react'
 import { X, ImageOff, AlertCircle } from 'lucide-react'
+import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useInspectionById } from '@/hooks/useInspectionData'
 import type { InspectionLog } from '@/types/inspection'
 import { DEFECT_COLOR, defectDisplayName } from '@/types/inspection'
@@ -295,6 +296,7 @@ function PanelBadge({ children }: { children: ReactNode }) {
 }
 
 export default function DefectViewer({ inspectionId, onClose, inline = false }: DefectViewerProps) {
+  const { formatFullDateTime } = useDashboardSettings()
   const { data: log, isLoading } = useInspectionById(inspectionId)
   const deskewSrc = resolveImageSrc(log?.imagePath ?? null)
   const rawStored = deriveRawImagePathFromStored(log?.imagePath ?? null)
@@ -567,7 +569,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
             <dl className="space-y-2.5 text-xs">
               <MetaRow label="검사 ID"     value={`#${log.id}`}              />
               <MetaRow label="디바이스"    value={log.deviceId}              />
-              <MetaRow label="검사 시각"   value={new Date(log.inspectedAt).toLocaleString('ko-KR')} />
+              <MetaRow label="검사 시각"   value={formatFullDateTime(log.inspectedAt)} />
               <MetaRow
                 label="시리즈명 (실크)"
                 value={log.silkSeriesName?.trim() || '—'}

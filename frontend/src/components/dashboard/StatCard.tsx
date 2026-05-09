@@ -8,6 +8,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { CheckCircle, XCircle, Activity, AlertTriangle } from 'lucide-react'
 import clsx from 'clsx'
+import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useStats } from '@/hooks/useInspectionData'
 
 // ── 개별 카드 컴포넌트 ────────────────────────────────────────────────────────
@@ -78,6 +79,7 @@ function StatCardSkeleton() {
  * 데이터 패칭은 useStats()에 위임하여 컴포넌트 코드를 단순하게 유지한다.
  */
 export default function StatCardGroup() {
+  const { formatRatePercent } = useDashboardSettings()
   const { data: stats, isLoading, isError } = useStats()
 
   /* 로딩 중: 스켈레톤 4개 표시 */
@@ -112,18 +114,18 @@ export default function StatCardGroup() {
         value={stats.passCount.toLocaleString()}
         icon={CheckCircle}
         theme="green"
-        caption={`전체의 ${(100 - stats.failRate).toFixed(1)}%`}
+        caption={`전체의 ${formatRatePercent(100 - stats.failRate)}%`}
       />
       <StatCard
         title="불합격 (FAIL)"
         value={stats.failCount.toLocaleString()}
         icon={XCircle}
         theme="red"
-        caption={`전체의 ${stats.failRate.toFixed(1)}%`}
+        caption={`전체의 ${formatRatePercent(stats.failRate)}%`}
       />
       <StatCard
         title="불량률"
-        value={`${stats.failRate.toFixed(2)}%`}
+        value={`${formatRatePercent(stats.failRate)}%`}
         icon={AlertTriangle}
         /* 불량률 3% 이상이면 빨간색, 미만이면 노란색 */
         theme={stats.failRate >= 3 ? 'red' : 'yellow'}

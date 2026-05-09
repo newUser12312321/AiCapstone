@@ -6,15 +6,23 @@
  */
 
 import { Activity, Cpu } from 'lucide-react'
+import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useStats } from '@/hooks/useInspectionData'
 
 export default function Header() {
+  const { formatSplitDateTime } = useDashboardSettings()
   const { isFetching, dataUpdatedAt } = useStats()
 
   /* dataUpdatedAt: 마지막으로 서버에서 데이터를 받은 Unix 타임스탬프(ms) */
-  const lastUpdated = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString('ko-KR')
-    : '--:--:--'
+  const lastUpdated =
+    dataUpdatedAt != null
+      ? (() => {
+          const { date, time } = formatSplitDateTime(
+            new Date(dataUpdatedAt).toISOString()
+          )
+          return time ? `${date} ${time}` : date
+        })()
+      : '--'
 
   return (
     <header className="h-16 bg-[var(--dash-surface-strong)]/60 border-b border-[var(--dash-border)] backdrop-blur-md flex items-center px-6 shrink-0">

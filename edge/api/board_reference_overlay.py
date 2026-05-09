@@ -80,6 +80,59 @@ def _pil_font():
     return ImageFont.load_default()
 
 
+def _crop_to_board_content(
+    vis_bgr: np.ndarray,
+    detections: list[Any],
+    *,
+    margin_ratio: float = 0.065,
+    min_margin_px: int = 42,
+    max_margin_px: int = 130,
+    extra_top_for_labels_px: int = 52,
+) -> np.ndarray:
+    """
+    검출 박스들의 외접 사각형 + 라벨이 올라갈 위쪽 여유 + 비율 기반 마진으로 크롭.
+    배경(검은 테두리)을 줄여 대시보드에서 기판이 크게 보이게 한다.
+    """
+    h, w = vis_bgr.shape[:2]
+    if not detections:
+        return vis_bgr
+
+    xs1: list[int] = []
+    ys1: list[int] = []
+    xs2: list[int] = []
+    ys2: list[int] = []
+    for det in detections:
+        b = det.bbox
+        x1 = int(round(float(b.x)))
+        y1 = int(round(float(b.y)))
+        x2 = int(round(float(b.x + b.width)))
+        y2 = int(round(float(b.y + b.height)))
+        xs1.append(x1)
+        ys1.append(max(0, y1 - extra_top_for_labels_px))
+        xs2.append(x2)
+        ys2.append(y2)
+
+    ux1, uy1 = min(xs1), min(ys1)
+    ux2, uy2 = max(xs2), max(ys2)
+    bw, bh = max(1, ux2 - ux1), max(1, uy2 - uy1)
+    m = int(np.clip(margin_ratio * float(max(bw, bh)), min_margin_px, max_margin_px))
+
+    cx1 = max(0, ux1 - m)
+    cy1 = max(0, uy1 - m)
+    cx2 = min(w, ux2 + m)
+    cy2 = min(h, uy2 + m)
+
+    # 거의 전 프레임이면(배경이 매우 얇음) 원본 유지
+    cropped_ratio = ((cx2 - cx1) * (cy2 - cy1)) / float(max(1, w * h))
+    if cropped_ratio > 0.97:
+        return vis_bgr
+
+    if cx2 <= cx1 + 8 or cy2 <= cy1 + 8:
+        return vis_bgr
+
+    return vis_bgr[cy1:cy2, cx1:cx2]
+
+
 def _draw_labels_pil(
     vis_bgr: np.ndarray,
     items: list[tuple[int, int, str, tuple[int, int, int]]],
@@ -168,6 +221,7 @@ def render_board_reference_overlay_jpeg(board_key: str, *, conf: float = 0.15) -
         label_items.append((x1, ty, label, color))
 
     vis = _draw_labels_pil(vis, label_items)
+    vis = _crop_to_board_content(vis, detections)
 
     ok, encoded = cv2.imencode(".jpg", vis, [int(cv2.IMWRITE_JPEG_QUALITY), 92])
     if not ok:

@@ -12,13 +12,18 @@ import type { InspectionLog, InspectionStats } from '@/types/inspection'
 // ── Axios 인스턴스 생성 ───────────────────────────────────────────────────────
 const apiBaseUrlFromEnv = import.meta.env.VITE_API_BASE_URL?.trim()
 
+/** 브라우저에서 실제로 쓰는 REST API 베이스 (설정 화면·디버깅용) */
+export function getEffectiveApiBaseUrl(): string {
+  return apiBaseUrlFromEnv || '/api'
+}
+
 const apiClient = axios.create({
   /*
    * 기본은 Vite 프록시(/api).
    * 라즈베리파이 키오스크에서 프록시 타깃 설정이 어려우면
    * VITE_API_BASE_URL(예: http://192.168.0.10:8080/api)로 직접 지정할 수 있다.
    */
-  baseURL: apiBaseUrlFromEnv || '/api',
+  baseURL: getEffectiveApiBaseUrl(),
   /* Pi 키오스크 → 클라우드 VM 왕복 시 10초 부족으로 폴링 실패하는 경우가 있어 여유를 둠 */
   timeout: 45_000,
   headers: {

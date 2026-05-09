@@ -80,6 +80,44 @@
     );
 }
 
+/* 라이트 모드 — 동일 CSS 변수 슬롯만 밝게 덮어씀 */
+.dashboard-theme.dashboard-theme--light {
+  --dash-bg-deep: #e8eaf5;
+  --dash-bg-primary: #f1f3fb;
+  --dash-bg-secondary: #e5e8f4;
+  --dash-surface: rgba(255, 255, 255, 0.72);
+  --dash-surface-strong: rgba(255, 255, 255, 0.92);
+  --dash-border: rgba(99, 102, 241, 0.22);
+  --dash-border-soft: rgba(79, 70, 229, 0.12);
+  --dash-text-primary: #111827;
+  --dash-text-secondary: #4b5563;
+  --dash-text-tertiary: #6b7280;
+  --dash-accent: #7c3aed;
+  --dash-accent-hover: #6d28d9;
+  --dash-success: #059669;
+  --dash-danger: #e11d48;
+  --dash-warning: #d97706;
+  --dash-info: #7c3aed;
+  --dash-shadow-soft: 0 18px 36px rgba(15, 23, 42, 0.08), 0 8px 16px rgba(79, 70, 229, 0.06);
+  --dash-shadow-card: 0 14px 28px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --dash-glow: 0 0 24px rgba(124, 58, 237, 0.12), 0 0 48px rgba(99, 102, 241, 0.08);
+  --dash-overlay-bg: #f8fafc;
+  --dash-overlay-soft: #eef2ff;
+  background-color: var(--dash-bg-deep);
+  background-image:
+    radial-gradient(58rem 42rem at 92% 8%, rgba(167, 139, 250, 0.35) 0%, rgba(196, 181, 253, 0.12) 45%, transparent 70%),
+    radial-gradient(52rem 40rem at -4% 104%, rgba(129, 140, 248, 0.28) 0%, rgba(165, 180, 252, 0.1) 48%, transparent 72%),
+    linear-gradient(168deg, #eef0fb 0%, #f8f9ff 52%, #eceefe 100%);
+}
+
+.dashboard-theme.dashboard-theme--light::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+.dashboard-theme.dashboard-theme--light::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+}
+
 .glass-panel {
   position: relative;
   isolation: isolate;

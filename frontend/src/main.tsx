@@ -23,6 +23,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import App from './App'
 import './index.css'
+import { DashboardSettingsProvider } from '@/context/DashboardSettingsContext'
 
 /* React Query 전역 클라이언트 설정 */
 const queryClient = new QueryClient({
@@ -42,7 +43,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       {/* React Query 전역 캐시 컨텍스트 */}
       <QueryClientProvider client={queryClient}>
-        <App />
+        <DashboardSettingsProvider>
+          <App />
+        </DashboardSettingsProvider>
         {/* 개발 환경에서만 쿼리 디버그 패널 표시 */}
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
