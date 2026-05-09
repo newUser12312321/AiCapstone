@@ -5,7 +5,8 @@
  * useStats()의 isLoading/isFetching 상태로 실시간 갱신 여부를 시각화한다.
  */
 
-import { Activity, Cpu } from 'lucide-react'
+import { Activity } from 'lucide-react'
+import raspberryPiIcon from '@/assets/raspberry-pi-icon.webp'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useStats } from '@/hooks/useInspectionData'
 
@@ -29,8 +30,18 @@ export default function Header() {
 
       {/* 시스템 브랜드 */}
       <div className="flex items-center gap-3.5 min-w-0">
-        <div className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-[var(--dash-accent)] via-violet-600 to-indigo-600 flex items-center justify-center shadow-[0_8px_28px_rgba(139,92,246,0.35)] ring-1 ring-white/15">
-          <Cpu size={18} className="text-white drop-shadow-sm" />
+        <div
+          className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center overflow-hidden bg-white p-1.5 shadow-[0_8px_28px_rgba(139,92,246,0.35)] ring-1 ring-white/15"
+          aria-hidden
+        >
+          <img
+            src={raspberryPiIcon}
+            alt=""
+            width={28}
+            height={28}
+            className="h-7 w-7 object-contain select-none"
+            draggable={false}
+          />
         </div>
         <div className="min-w-0 py-0.5">
           <h1

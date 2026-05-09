@@ -1,10 +1,5 @@
 import { useMemo } from 'react'
-import {
-  AlertTriangle,
-  ArrowRight,
-  CheckCircle2,
-  Settings,
-} from 'lucide-react'
+import { ArrowRight, CheckCircle2, Settings } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import StatCardGroup from '@/components/dashboard/StatCard'
 import PassFailChart from '@/components/dashboard/PassFailChart'
@@ -121,7 +116,7 @@ export default function DashboardPage() {
 
           {/* 우측 운영 요약 레일 — 좌측과 동일 높이로 채움 */}
           <div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1 xl:col-span-4">
-            <div className="glass-panel flex min-h-0 flex-1 flex-col rounded-[24px] p-[18px]">
+            <div className="glass-panel flex min-h-0 flex-[2] flex-col rounded-[24px] p-[18px]">
               <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">
                 최근 이상 징후 ({settings.recentFeedLimit}건 기준)
               </h3>
@@ -161,12 +156,12 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="glass-panel shrink-0 rounded-[24px] p-[18px]">
-              <h3 className="text-base font-semibold text-[var(--dash-text-primary)] mb-3">결함 Hotspot</h3>
+            <div className="glass-panel flex min-h-0 flex-1 flex-col rounded-[24px] p-[18px]">
+              <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">최근 결함 내역</h3>
               {topDefects.length === 0 ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">최근 FAIL 데이터가 없어 집계할 수 없습니다.</p>
               ) : (
-                <div className="space-y-2">
+                <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                   {topDefects.map(([label, count]) => (
                     <div key={label} className="glass-panel-subtle rounded-xl px-3 py-2 flex items-center justify-between">
                       <span className="text-sm text-[var(--dash-text-secondary)] truncate">{label}</span>
@@ -175,25 +170,6 @@ export default function DashboardPage() {
                   ))}
                 </div>
               )}
-            </div>
-
-            <div className="glass-panel shrink-0 rounded-[24px] p-[18px]">
-              <div className="flex items-start gap-2">
-                <AlertTriangle size={16} className="text-[var(--dash-warning)] mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-[var(--dash-text-primary)]">운영 안내</p>
-                  <p className="text-xs text-[var(--dash-text-secondary)] mt-1">
-                    상세 좌표·원인 분석은 `검사 이력` 메뉴에서 확인하세요. 저장된 이력 일괄 삭제는{' '}
-                    <Link
-                      to="/settings"
-                      className="text-[var(--dash-accent)] hover:underline font-medium"
-                    >
-                      설정 → 데이터 관리
-                    </Link>
-                    에서 수행할 수 있습니다.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

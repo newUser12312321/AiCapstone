@@ -21,15 +21,15 @@ import DefectViewer from './DefectViewer'
 
 // ── 보조 컴포넌트 ─────────────────────────────────────────────────────────────
 
-/** PASS / FAIL 결과 뱃지 */
+/** PASS / FAIL 결과 뱃지 — 다크·라이트 테마 모두에서 채도 있는 대비 */
 function ResultBadge({ result }: { result: 'PASS' | 'FAIL' }) {
   return (
     <span
       className={clsx(
-        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold',
+        'inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold tracking-wide',
         result === 'PASS'
-          ? 'bg-green-50 text-[var(--dash-success)] ring-1 ring-green-100'
-          : 'bg-red-50 text-[var(--dash-danger)] ring-1 ring-red-100'
+          ? 'bg-[var(--dash-success)]/24 text-[var(--dash-success)] border-2 border-[var(--dash-success)]/70'
+          : 'bg-[var(--dash-danger)]/26 text-[var(--dash-danger)] border-2 border-[var(--dash-danger)]/70'
       )}
     >
       {result}
