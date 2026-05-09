@@ -1,0 +1,27 @@
+{
+  "description": "피듀셜 두 점 간 거리(px)와 실측(mm)으로부터 산출한 화면 스케일. 좌표정합 전·YOLO+서브픽셀 중심 기준 (tools/fiducial_distance_stats.py).",
+  "derived_from": {
+    "images_gt125a": "C:/Projects/AiCapstoneV2/GT125A",
+    "images_gn948x": "C:/Projects/AiCapstoneV2/gn948x",
+    "weights_gt125a": "weights/GT_125A_bestV2.pt",
+    "weights_gn948x": "weights/gn948x_best.pt",
+    "reference_resolution_px": "1920x1080"
+  },
+  "boards": {
+    "GT_125A": {
+      "truth_fiducial_spacing_mm": 140.0,
+      "mean_spacing_px": 1221.0868,
+      "px_per_mm": 8.722049,
+      "mm_per_px": 0.114652
+    },
+    "GN_948X": {
+      "truth_fiducial_spacing_mm": 117.0,
+      "mean_spacing_px": 1018.9299,
+      "px_per_mm": 8.708803,
+      "mm_per_px": 0.114826
+    }
+  },
+  "default_px_per_mm": 8.715426,
+  "default_mm_per_px": 0.114739,
+  "notes": "default_* 는 GT125A·GN_948X 의 px/mm·mm/px 산술평균. 기판별 값은 boards.* 를 우선 사용."
+}

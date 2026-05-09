@@ -20,10 +20,14 @@ from typing import Any, Optional
 
 import cv2
 
-from fastapi import APIRouter, BackgroundTasks, File, HTTPException, Response, UploadFile
+from fastapi import APIRouter, BackgroundTasks, File, HTTPException, Query, Response, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+from api.board_reference_overlay import (
+    load_fiducial_calibration_json,
+    render_board_reference_overlay_jpeg,
+)
 from api.sender import create_dummy_packet, ServerSender
 from api.retry_queue import LocalRetryQueue
 from config.settings import settings
@@ -591,3 +595,39 @@ async def _auto_inspect_loop() -> None:
 
         if _auto_running:
             await asyncio.sleep(_auto_interval)
+
+
+# ── 대시보드「기판 기준 정보」: YOLO 레이아웃 오버레이·픽셀 스케일 JSON ───────
+
+@router.get("/board-reference/calibration.json", summary="피듀셜 기준 px/mm 설정")
+async def board_reference_calibration() -> Any:
+    try:
+        return load_fiducial_calibration_json()
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=404,
+            detail="config/fiducial_scale_calibration.json 을 찾을 수 없습니다.",
+        )
+
+
+@router.get("/board-reference/overlay.jpg", summary="기판별 기준 이미지 검출 오버레이 JPEG")
+async def board_reference_overlay_jpeg(
+    board: str = Query(..., description="GT_125A 또는 GN_948X"),
+) -> Response:
+    try:
+        raw = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda b=board: render_board_reference_overlay_jpeg(b),
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    except Exception as e:
+        logger.exception("[board-ref] 오버레이 생성 실패")
+        raise HTTPException(status_code=500, detail=str(e)) from e
+    return Response(
+        content=raw,
+        media_type="image/jpeg",
+        headers={"Cache-Control": "no-store, max-age=0"},
+    )

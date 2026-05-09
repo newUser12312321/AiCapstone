@@ -129,6 +129,8 @@ export const DEFECT_LABEL: Record<string, string> = {
   smd_array_block:      'SMD 어레이',
   ic_chip:              'IC',
   edge_connector_zone:  '에지 커넥터',
+  connector:            '커넥터',
+  group_connector:      '그룹 커넥터',
   silk_screen_print_defect: '실크인쇄불량',
 }
 
@@ -152,6 +154,8 @@ export const DEFECT_COLOR: Record<string, string> = {
   smd_array_block:      '#a78bfa',  // violet-400
   ic_chip:              '#fbbf24',  // amber-400
   edge_connector_zone:  '#f472b6',  // pink-400
+  connector:            '#38bdf8',  // sky-400
+  group_connector:      '#c084fc',  // purple-400
   silk_screen_print_defect: '#fb923c',
 }
 
