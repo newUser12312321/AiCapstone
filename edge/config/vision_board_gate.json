@@ -1,7 +1,5 @@
 {
   "required_substrings": [
-    "G-SERIES",
-    "GT-125A",
     "CREVIS"
   ],
   "required_regexes": [
@@ -9,26 +7,25 @@
   ],
   "normalize_before_substrings": true,
   "substring_display_names": {
-    "G-SERIES": "시리즈명",
-    "GT-125A": "기판명",
     "CREVIS": "제조사"
   },
   "regex_display_names": ["제조일자"],
   "silk_field_extract": {
-    "series_substrings": ["G-SERIES"],
-    "board_regex": "(GT-\\d+[A-Z]+)",
+    "series_substrings": ["G-SERIES", "GN-948X", "EGW-04", "GL-9272"],
+    "board_regex": "((?:GT-\\d+[A-Z]+)|(?:GN-948X(?:\\(SUB\\))?)|(?:EGW-04)|(?:GL-9272))",
     "manufacturer_substrings": ["CREVIS"],
-    "manufacture_date_regex": "\\d{4}\\.\\d{2}\\.\\d{2}"
+    "manufacture_date_regex": "\\d{4}[./-]\\d{2}[./-]\\d{2}"
   },
   "board_route_substrings": {
     "G_SERIES": [
-      "GT-125A",
       "GT-125A",
       "G-SERIES"
     ],
     "GN_948X": [
       "GN-948X",
-      "gn-948x"
+      "GN-948X(SUB)",
+      "gn-948x",
+      "gn-948x(sub)"
     ],
     "EGW_04": [
       "EGW-04",

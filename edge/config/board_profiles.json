@@ -19,7 +19,12 @@
     ],
     "model_path": "weights/gn948x_best.pt",
     "confidence_threshold": 0.5,
-    "expected_counts": {}
+    "expected_counts": {
+      "mount_hole": 4,
+      "fiducial": 2,
+      "connector": 2,
+      "group_connector": 2
+    }
   },
   "EGW_04": {
     "identifier_classes": [
