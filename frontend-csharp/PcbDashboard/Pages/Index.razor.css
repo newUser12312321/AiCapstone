@@ -1,9 +1,0 @@
-.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
-.card { background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 10px; }
-.card strong { font-size: 24px; }
-.pass { color: #22c55e; }
-.fail { color: #ef4444; }
-
-table { width: 100%; border-collapse: collapse; background: #111827; border-radius: 10px; overflow: hidden; }
-th, td { border-bottom: 1px solid #1f2937; padding: 8px; text-align: left; }
-button { min-height: 40px; border-radius: 8px; border: none; padding: 6px 10px; background: #2563eb; color: #fff; }

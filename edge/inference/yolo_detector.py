@@ -323,17 +323,26 @@ class YoloDetector:
         logger.info("[YOLO] 탐지 수: %d건 (필터: %s)", len(detections), target_class or "전체")
         return detections, elapsed_ms
 
-    def detect_fiducials(self, image: np.ndarray) -> tuple[list[DetectionItem], int]:
+    def detect_fiducials(
+        self,
+        image: np.ndarray,
+        conf_override: Optional[float] = None,
+    ) -> tuple[list[DetectionItem], int]:
         """
         Stage 1 전용: 이미지 전체에서 피듀셜 마크만 탐지한다.
 
         Returns:
             (피듀셜 마크 목록, 추론 ms)
         """
+        conf_value = (
+            settings.effective_fiducial_confidence()
+            if conf_override is None
+            else float(conf_override)
+        )
         fiducials, ms = self.detect(
             image,
             target_class="FIDUCIAL",
-            conf=settings.effective_fiducial_confidence(),
+            conf=conf_value,
         )
         refined_count = 0
         for i, det in enumerate(fiducials):
@@ -355,7 +364,11 @@ class YoloDetector:
             logger.info("[YOLO] 피듀셜 서브픽셀 보정: %d/%d", refined_count, len(fiducials))
         return fiducials, ms
 
-    def detect_defects(self, roi: np.ndarray) -> tuple[list[DetectionItem], int]:
+    def detect_defects(
+        self,
+        roi: np.ndarray,
+        conf_override: Optional[float] = None,
+    ) -> tuple[list[DetectionItem], int]:
         """
         Stage 2 전용: ROI 크롭 이미지에서 결함(단선, 까짐)을 탐지한다.
 
@@ -366,10 +379,15 @@ class YoloDetector:
             (결함 목록, 추론 ms)
         """
         # 결함 클래스 중 하나라도 탐지되면 반환 (target_class=None → 전체)
+        conf_value = (
+            settings.effective_defect_confidence()
+            if conf_override is None
+            else float(conf_override)
+        )
         defects, ms = self.detect(
             roi,
             target_class=None,
-            conf=settings.effective_defect_confidence(),
+            conf=conf_value,
         )
         logger.info(
             "[YOLO] Stage2 임계값 통과(피듀셜 제거 전) 클래스별: %s",

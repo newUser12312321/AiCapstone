@@ -1,0 +1,2330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <task>
+      <id>6</id>
+      <name>PCB_V5</name>
+      <size>103</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2026-05-09 06:55:38.063342+00:00</created>
+      <updated>2026-05-09 07:25:24.392140+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>102</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>6</id>
+          <start>0</start>
+          <stop>102</stop>
+          <url>http://localhost:8080/api/tasks/6/dataset/export/api/jobs/6</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>user1</username>
+        <email>user@user.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>mount_hole</name>
+          <color>#33ddff</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>fiducial</name>
+          <color>#fa3253</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>connector</name>
+          <color>#fa3253</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>group_connector</name>
+          <color>#34d1b7</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </task>
+    <dumped>2026-05-09 07:25:45.679975+00:00</dumped>
+  </meta>
+  <image id="0" name="2026-05-06_11-21-06.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="418.83" ytl="805.66" xbr="470.42" ybr="857.25" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="419.40" ytl="895.43" xbr="469.85" ybr="941.29" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="496.79" ytl="438.78" xbr="931.31" ybr="585.53" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1339.50" ytl="891.66" xbr="1389.95" ybr="937.52" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1017.30" ytl="475.46" xbr="1176.70" ybr="554.57" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1336.06" ytl="275.98" xbr="1386.51" ybr="321.84" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="499.68" ytl="799.94" xbr="934.20" ybr="946.69" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1336.63" ytl="357.96" xbr="1388.23" ybr="409.56" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="421.71" ytl="280.92" xbr="472.16" ybr="326.78" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1017.89" ytl="838.34" xbr="1177.29" ybr="917.45" z_order="0">
+    </box>
+  </image>
+  <image id="1" name="2026-05-06_11-21-23.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="421.71" ytl="280.92" xbr="472.16" ybr="326.78" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1021.97" ytl="475.93" xbr="1181.37" ybr="555.03" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="420.57" ytl="895.44" xbr="471.01" ybr="941.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1017.89" ytl="838.34" xbr="1177.29" ybr="917.45" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1336.62" ytl="360.25" xbr="1388.21" ybr="411.84" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1339.50" ytl="891.66" xbr="1389.95" ybr="937.52" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="497.39" ytl="437.64" xbr="931.91" ybr="584.39" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="499.68" ytl="799.94" xbr="934.20" ybr="946.69" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="418.28" ytl="806.24" xbr="469.87" ybr="857.83" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1336.06" ytl="275.98" xbr="1386.51" ybr="321.84" z_order="0">
+    </box>
+  </image>
+  <image id="2" name="2026-05-06_11-21-27.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1021.97" ytl="475.93" xbr="1181.37" ybr="555.03" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="497.39" ytl="437.64" xbr="931.91" ybr="584.39" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1339.50" ytl="891.66" xbr="1389.95" ybr="937.52" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="419.42" ytl="280.92" xbr="469.87" ybr="326.78" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1336.06" ytl="275.98" xbr="1386.51" ybr="321.84" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="499.68" ytl="799.94" xbr="934.20" ybr="946.69" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1336.62" ytl="360.25" xbr="1388.21" ybr="411.84" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="420.57" ytl="895.44" xbr="471.01" ybr="941.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1017.89" ytl="838.34" xbr="1177.29" ybr="917.45" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="418.28" ytl="806.24" xbr="469.87" ybr="857.83" z_order="0">
+    </box>
+  </image>
+  <image id="3" name="2026-05-06_11-21-31.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="419.42" ytl="280.92" xbr="469.87" ybr="326.78" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1336.06" ytl="275.98" xbr="1386.51" ybr="321.84" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="420.57" ytl="895.44" xbr="471.01" ybr="941.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="418.28" ytl="806.24" xbr="469.87" ybr="857.83" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1339.50" ytl="891.66" xbr="1389.95" ybr="937.52" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1019.78" ytl="475.93" xbr="1179.18" ybr="555.03" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="497.39" ytl="437.64" xbr="931.91" ybr="584.39" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1336.62" ytl="360.25" xbr="1388.21" ybr="411.84" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="499.68" ytl="799.94" xbr="934.20" ybr="946.69" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1017.89" ytl="838.34" xbr="1177.29" ybr="917.45" z_order="0">
+    </box>
+  </image>
+  <image id="4" name="2026-05-06_11-21-35.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="497.39" ytl="437.64" xbr="931.91" ybr="584.39" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="418.28" ytl="806.24" xbr="469.87" ybr="857.83" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1336.06" ytl="275.98" xbr="1386.51" ybr="321.84" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="420.57" ytl="895.44" xbr="471.01" ybr="941.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1339.50" ytl="891.66" xbr="1389.95" ybr="937.52" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="499.68" ytl="799.94" xbr="934.20" ybr="946.69" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="419.42" ytl="280.92" xbr="469.87" ybr="326.78" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1337.77" ytl="359.10" xbr="1389.36" ybr="410.69" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1019.78" ytl="475.93" xbr="1179.18" ybr="555.03" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1017.89" ytl="838.34" xbr="1177.29" ybr="917.45" z_order="0">
+    </box>
+  </image>
+  <image id="5" name="2026-05-06_11-21-42.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="982.57" ytl="343.50" xbr="1141.97" ybr="422.60" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="460.70" ytl="294.33" xbr="895.22" ybr="441.08" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1294.78" ytl="762.10" xbr="1345.23" ybr="807.96" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="375.86" ytl="657.19" xbr="427.45" ybr="708.78" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1303.37" ytl="232.99" xbr="1354.96" ybr="284.58" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="451.52" ytl="654.33" xbr="886.04" ybr="801.08" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="375.85" ytl="745.25" xbr="426.30" ybr="791.11" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1305.10" ytl="149.86" xbr="1355.55" ybr="195.72" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="134.17" xbr="444.64" ybr="180.03" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="974.32" ytl="705.35" xbr="1133.72" ybr="784.46" z_order="0">
+    </box>
+  </image>
+  <image id="6" name="2026-05-06_11-21-45.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="462.99" ytl="297.76" xbr="897.51" ybr="444.52" rotation="1.40" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="981.47" ytl="341.31" xbr="1140.87" ybr="420.42" rotation="1.00" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="451.52" ytl="657.77" xbr="886.05" ybr="804.52" rotation="1.40" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1303.37" ytl="232.99" xbr="1354.96" ybr="284.58" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="134.17" xbr="444.64" ybr="180.03" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="974.32" ytl="705.35" xbr="1133.72" ybr="784.46" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1305.10" ytl="149.86" xbr="1355.55" ybr="195.72" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1294.78" ytl="762.10" xbr="1345.23" ybr="807.96" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="375.86" ytl="657.19" xbr="427.45" ybr="708.78" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="375.85" ytl="745.25" xbr="426.30" ybr="791.11" z_order="0">
+    </box>
+  </image>
+  <image id="7" name="2026-05-06_11-21-49.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="375.86" ytl="657.19" xbr="427.45" ybr="708.78" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1294.78" ytl="762.10" xbr="1345.23" ybr="807.96" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="982.57" ytl="343.50" xbr="1141.97" ybr="422.60" rotation="1.00" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1303.37" ytl="232.99" xbr="1354.96" ybr="284.58" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="375.85" ytl="745.25" xbr="426.30" ybr="791.11" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1305.10" ytl="149.86" xbr="1355.55" ybr="195.72" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="974.32" ytl="705.35" xbr="1133.72" ybr="784.46" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="451.52" ytl="657.77" xbr="886.05" ybr="804.52" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="135.31" xbr="444.64" ybr="181.17" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="462.99" ytl="297.76" xbr="897.51" ybr="444.52" rotation="1.40" z_order="0">
+    </box>
+  </image>
+  <image id="8" name="2026-05-06_11-21-52.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="451.52" ytl="657.77" xbr="886.05" ybr="804.52" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="375.85" ytl="745.25" xbr="426.30" ybr="791.11" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1294.78" ytl="762.10" xbr="1345.23" ybr="807.96" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="375.86" ytl="657.19" xbr="427.45" ybr="708.78" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="982.57" ytl="343.50" xbr="1141.97" ybr="422.60" rotation="1.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="393.05" ytl="135.31" xbr="443.50" ybr="181.17" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1303.37" ytl="232.99" xbr="1354.96" ybr="284.58" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1305.10" ytl="149.86" xbr="1355.55" ybr="195.72" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="974.32" ytl="705.35" xbr="1133.72" ybr="784.46" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="462.99" ytl="297.76" xbr="897.51" ybr="444.52" rotation="1.40" z_order="0">
+    </box>
+  </image>
+  <image id="9" name="2026-05-06_11-21-56.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="375.86" ytl="657.19" xbr="427.45" ybr="708.78" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="974.32" ytl="705.35" xbr="1133.72" ybr="784.46" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="375.85" ytl="745.25" xbr="426.30" ybr="791.11" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="451.52" ytl="657.77" xbr="886.05" ybr="804.52" rotation="1.40" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1303.37" ytl="232.99" xbr="1354.96" ybr="284.58" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="982.57" ytl="343.50" xbr="1141.97" ybr="422.60" rotation="1.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="393.05" ytl="135.31" xbr="443.50" ybr="181.17" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="462.99" ytl="297.76" xbr="897.51" ybr="444.52" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1294.78" ytl="762.10" xbr="1345.23" ybr="807.96" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1305.10" ytl="149.86" xbr="1355.55" ybr="195.72" z_order="0">
+    </box>
+  </image>
+  <image id="10" name="2026-05-06_11-22-06.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="861.85" xbr="950.25" ybr="1008.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1038.38" ytl="539.41" xbr="1197.79" ybr="618.51" rotation="359.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="343.97" xbr="489.36" ybr="389.83" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="516.88" ytl="502.99" xbr="951.40" ybr="649.74" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="440.06" ytl="955.06" xbr="490.50" ybr="1000.92" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1357.26" ytl="422.16" xbr="1408.85" ybr="473.75" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1355.55" ytl="341.33" xbr="1406.00" ybr="387.19" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1037.38" ytl="901.40" xbr="1196.78" ybr="980.51" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1357.84" ytl="954.71" xbr="1408.29" ybr="1000.57" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="436.62" ytl="869.29" xbr="488.21" ybr="920.89" z_order="0">
+    </box>
+  </image>
+  <image id="11" name="2026-05-06_11-22-10.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="863.00" xbr="950.25" ybr="1009.75" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="501.84" xbr="950.25" ybr="648.59" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1039.48" ytl="539.41" xbr="1198.88" ybr="618.51" rotation="359.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="343.97" xbr="489.36" ybr="389.83" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1038.52" ytl="904.84" xbr="1197.93" ybr="983.95" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1357.26" ytl="422.16" xbr="1408.85" ybr="473.75" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="436.62" ytl="869.29" xbr="488.21" ybr="920.89" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1357.84" ytl="954.71" xbr="1408.29" ybr="1000.57" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="440.06" ytl="955.06" xbr="490.50" ybr="1000.92" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1356.70" ytl="336.74" xbr="1407.14" ybr="382.60" z_order="0">
+    </box>
+  </image>
+  <image id="12" name="2026-05-06_11-22-14.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1038.52" ytl="904.84" xbr="1197.93" ybr="983.95" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="436.62" ytl="869.29" xbr="488.21" ybr="920.89" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1356.70" ytl="336.74" xbr="1407.14" ybr="382.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1039.48" ytl="539.41" xbr="1198.88" ybr="618.51" rotation="359.00" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1357.26" ytl="422.16" xbr="1408.85" ybr="473.75" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1357.84" ytl="954.71" xbr="1408.29" ybr="1000.57" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="501.84" xbr="950.25" ybr="648.59" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="343.97" xbr="489.36" ybr="389.83" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="863.00" xbr="950.25" ybr="1009.75" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="440.06" ytl="955.06" xbr="490.50" ybr="1000.92" z_order="0">
+    </box>
+  </image>
+  <image id="13" name="2026-05-06_11-22-17.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1039.48" ytl="539.41" xbr="1198.88" ybr="618.51" rotation="359.00" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="436.62" ytl="869.29" xbr="488.21" ybr="920.89" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="343.97" xbr="489.36" ybr="389.83" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1356.70" ytl="336.74" xbr="1407.14" ybr="382.60" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1357.26" ytl="422.16" xbr="1408.85" ybr="473.75" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="501.84" xbr="950.25" ybr="648.59" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1038.52" ytl="904.84" xbr="1197.93" ybr="983.95" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1357.84" ytl="954.71" xbr="1408.29" ybr="1000.57" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="440.06" ytl="955.06" xbr="490.50" ybr="1000.92" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="863.00" xbr="950.25" ybr="1009.75" z_order="0">
+    </box>
+  </image>
+  <image id="14" name="2026-05-06_11-22-21.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="863.00" xbr="950.25" ybr="1009.75" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1357.84" ytl="954.71" xbr="1408.29" ybr="1000.57" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="440.06" ytl="955.06" xbr="490.50" ybr="1000.92" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="501.84" xbr="950.25" ybr="648.59" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="343.97" xbr="489.36" ybr="389.83" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1357.26" ytl="422.16" xbr="1408.85" ybr="473.75" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1356.70" ytl="336.74" xbr="1407.14" ybr="382.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1038.52" ytl="904.84" xbr="1197.93" ybr="983.95" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1039.48" ytl="539.41" xbr="1198.88" ybr="618.51" rotation="359.00" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="436.62" ytl="869.29" xbr="488.21" ybr="920.89" z_order="0">
+    </box>
+  </image>
+  <image id="15" name="2026-05-06_11-22-25.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1039.48" ytl="539.41" xbr="1198.88" ybr="618.51" rotation="359.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="343.97" xbr="489.36" ybr="389.83" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1357.84" ytl="954.71" xbr="1408.29" ybr="1000.57" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1356.70" ytl="336.74" xbr="1407.14" ybr="382.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="440.06" ytl="955.06" xbr="490.50" ybr="1000.92" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="501.84" xbr="950.25" ybr="648.59" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1038.52" ytl="904.84" xbr="1197.93" ybr="983.95" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1357.26" ytl="422.16" xbr="1408.85" ybr="473.75" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="436.62" ytl="869.29" xbr="488.21" ybr="920.89" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="515.73" ytl="863.00" xbr="950.25" ybr="1009.75" z_order="0">
+    </box>
+  </image>
+  <image id="16" name="2026-05-06_11-22-30.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="432.03" ytl="442.23" xbr="866.56" ybr="588.98" rotation="349.60" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="503.12" ytl="795.35" xbr="937.64" ybr="942.10" rotation="350.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="325.41" ytl="339.39" xbr="375.85" ybr="385.25" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1236.88" ytl="241.01" xbr="1288.47" ybr="292.60" rotation="349.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1219.12" ytl="160.18" xbr="1269.56" ybr="206.04" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1016.74" ytl="763.82" xbr="1176.14" ybr="842.93" rotation="348.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="949.73" ytl="406.97" xbr="1109.13" ybr="486.08" rotation="349.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="940.15" xbr="489.36" ybr="986.01" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="419.42" ytl="853.24" xbr="471.01" ybr="904.84" rotation="350.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1341.79" ytl="765.54" xbr="1392.24" ybr="811.40" z_order="0">
+    </box>
+  </image>
+  <image id="17" name="2026-05-06_11-22-34.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="325.41" ytl="339.39" xbr="375.85" ybr="385.25" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1219.12" ytl="160.18" xbr="1269.56" ybr="206.04" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1341.79" ytl="765.54" xbr="1392.24" ybr="811.40" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="421.72" ytl="853.24" xbr="473.31" ybr="904.84" rotation="350.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1235.73" ytl="241.01" xbr="1287.32" ybr="292.60" rotation="349.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="945.36" ytl="410.26" xbr="1104.76" ybr="489.37" rotation="349.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="940.15" xbr="489.36" ybr="986.01" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="503.12" ytl="794.21" xbr="937.64" ybr="940.96" rotation="350.00" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1019.03" ytl="759.23" xbr="1178.43" ybr="838.34" rotation="348.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="434.33" ytl="439.93" xbr="868.85" ybr="586.68" rotation="349.60" z_order="0">
+    </box>
+  </image>
+  <image id="18" name="2026-05-06_11-22-37.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="503.12" ytl="794.21" xbr="937.64" ybr="940.96" rotation="350.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="940.15" xbr="489.36" ybr="986.01" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1235.73" ytl="241.01" xbr="1287.32" ybr="292.60" rotation="349.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="434.33" ytl="443.37" xbr="868.85" ybr="590.12" rotation="349.60" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="420.57" ytl="852.10" xbr="472.16" ybr="903.69" rotation="350.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1341.79" ytl="765.54" xbr="1392.24" ybr="811.40" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1019.03" ytl="759.23" xbr="1178.43" ybr="838.34" rotation="348.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1219.12" ytl="160.18" xbr="1269.56" ybr="206.04" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="946.45" ytl="408.07" xbr="1105.85" ybr="487.18" rotation="349.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="325.41" ytl="339.39" xbr="375.85" ybr="385.25" z_order="0">
+    </box>
+  </image>
+  <image id="19" name="2026-05-06_11-22-41.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1019.03" ytl="759.23" xbr="1178.43" ybr="838.34" rotation="348.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="434.33" ytl="442.22" xbr="868.85" ybr="588.98" rotation="349.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="438.91" ytl="940.15" xbr="489.36" ybr="986.01" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1341.79" ytl="765.54" xbr="1392.24" ybr="811.40" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="946.45" ytl="408.07" xbr="1105.85" ybr="487.18" rotation="349.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1219.12" ytl="160.18" xbr="1269.56" ybr="206.04" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1235.73" ytl="241.01" xbr="1287.32" ybr="292.60" rotation="349.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="420.57" ytl="852.10" xbr="472.16" ybr="903.69" rotation="350.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="503.12" ytl="794.21" xbr="937.64" ybr="940.96" rotation="350.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="325.41" ytl="339.39" xbr="375.85" ybr="385.25" z_order="0">
+    </box>
+  </image>
+  <image id="20" name="2026-05-06_11-22-48.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="803.50" ytl="655.48" xbr="1238.02" ybr="802.23" rotation="359.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="719.81" ytl="661.78" xbr="771.40" ybr="713.37" rotation="0.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="753.27" xbr="771.39" ybr="799.13" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1645.61" ytl="746.05" xbr="1696.06" ybr="791.91" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1647.91" ytl="128.08" xbr="1698.35" ybr="173.94" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1647.32" ytl="214.64" xbr="1698.91" ybr="266.24" rotation="358.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="137.61" xbr="771.39" ybr="183.47" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="801.21" ytl="294.33" xbr="1235.73" ybr="441.08" rotation="359.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1324.00" ytl="696.18" xbr="1483.40" ybr="775.28" rotation="359.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1322.95" ytl="333.65" xbr="1482.35" ybr="412.75" rotation="358.40" z_order="0">
+    </box>
+  </image>
+  <image id="21" name="2026-05-06_11-22-52.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1646.17" ytl="213.50" xbr="1697.77" ybr="265.09" rotation="358.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1645.61" ytl="746.05" xbr="1696.06" ybr="791.91" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="802.35" ytl="297.77" xbr="1236.88" ybr="444.52" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="137.61" xbr="771.39" ybr="183.47" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="719.81" ytl="664.07" xbr="771.40" ybr="715.66" rotation="0.50" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1325.15" ytl="696.18" xbr="1484.55" ybr="775.28" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="802.35" ytl="657.77" xbr="1236.87" ybr="804.52" rotation="359.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1647.91" ytl="128.08" xbr="1698.35" ybr="173.94" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1324.04" ytl="332.55" xbr="1483.44" ybr="411.66" rotation="359.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="753.27" xbr="771.39" ybr="799.13" z_order="0">
+    </box>
+  </image>
+  <image id="22" name="2026-05-06_11-22-55.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="802.35" ytl="657.77" xbr="1236.87" ybr="804.52" rotation="359.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1325.15" ytl="696.18" xbr="1484.55" ybr="775.28" rotation="359.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1646.17" ytl="213.50" xbr="1697.77" ybr="265.09" rotation="358.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="753.27" xbr="771.39" ybr="799.13" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="719.81" ytl="664.07" xbr="771.40" ybr="715.66" rotation="0.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="802.35" ytl="294.33" xbr="1236.88" ybr="441.08" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="137.61" xbr="771.39" ybr="183.47" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1645.61" ytl="746.05" xbr="1696.06" ybr="791.91" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1322.95" ytl="335.83" xbr="1482.35" ybr="414.94" rotation="359.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1647.91" ytl="128.08" xbr="1698.35" ybr="173.94" z_order="0">
+    </box>
+  </image>
+  <image id="23" name="2026-05-06_11-22-59.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1322.95" ytl="335.83" xbr="1482.35" ybr="414.94" rotation="359.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="802.35" ytl="657.77" xbr="1236.87" ybr="804.52" rotation="359.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="137.61" xbr="771.39" ybr="183.47" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1325.15" ytl="696.18" xbr="1484.55" ybr="775.28" rotation="359.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="719.81" ytl="664.07" xbr="771.40" ybr="715.66" rotation="0.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="802.35" ytl="294.33" xbr="1236.88" ybr="441.08" rotation="0.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1646.17" ytl="213.50" xbr="1697.77" ybr="265.09" rotation="358.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1647.91" ytl="128.08" xbr="1698.35" ybr="173.94" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1645.61" ytl="746.05" xbr="1696.06" ybr="791.91" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="753.27" xbr="771.39" ybr="799.13" z_order="0">
+    </box>
+  </image>
+  <image id="24" name="2026-05-06_11-23-03.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="137.61" xbr="771.39" ybr="183.47" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="802.35" ytl="294.33" xbr="1236.88" ybr="441.08" rotation="0.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1646.17" ytl="213.50" xbr="1697.77" ybr="265.09" rotation="358.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1322.95" ytl="335.83" xbr="1482.35" ybr="414.94" rotation="359.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="720.95" ytl="753.27" xbr="771.39" ybr="799.13" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1647.91" ytl="128.08" xbr="1698.35" ybr="173.94" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="802.35" ytl="657.77" xbr="1236.87" ybr="804.52" rotation="359.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1325.15" ytl="696.18" xbr="1484.55" ybr="775.28" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1645.61" ytl="746.05" xbr="1696.06" ybr="791.91" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="719.81" ytl="664.07" xbr="771.40" ybr="715.66" rotation="0.50" z_order="0">
+    </box>
+  </image>
+  <image id="25" name="2026-05-06_11-23-10.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="911.43" ytl="574.43" xbr="1070.83" ybr="653.54" rotation="359.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="319.67" ytl="374.93" xbr="370.12" ybr="420.79" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="911.26" ytl="936.94" xbr="1070.66" ybr="1016.05" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1227.14" ytl="990.26" xbr="1277.59" ybr="1036.12" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1233.44" ytl="458.85" xbr="1285.03" ybr="510.44" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1234.02" ytl="376.87" xbr="1284.47" ybr="422.73" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="394.20" ytl="892.80" xbr="828.72" ybr="1039.55" rotation="0.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="391.91" ytl="532.80" xbr="826.43" ybr="679.55" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="315.09" ytl="983.72" xbr="365.53" ybr="1029.58" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="313.95" ytl="895.66" xbr="365.54" ybr="947.26" rotation="0.50" z_order="0">
+    </box>
+  </image>
+  <image id="26" name="2026-05-06_11-23-14.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1233.44" ytl="459.99" xbr="1285.03" ybr="511.58" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1234.02" ytl="376.87" xbr="1284.47" ybr="422.73" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="319.67" ytl="374.93" xbr="370.12" ybr="420.79" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="313.95" ytl="895.66" xbr="365.54" ybr="947.26" rotation="0.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="315.09" ytl="983.72" xbr="365.53" ybr="1029.58" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="913.62" ytl="573.33" xbr="1073.02" ybr="652.44" rotation="359.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="391.91" ytl="532.80" xbr="826.43" ybr="679.55" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1227.14" ytl="990.26" xbr="1277.59" ybr="1036.12" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="907.82" ytl="935.79" xbr="1067.22" ybr="1014.90" rotation="359.90" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="388.47" ytl="892.80" xbr="822.99" ybr="1039.56" rotation="0.70" z_order="0">
+    </box>
+  </image>
+  <image id="27" name="2026-05-06_11-23-18.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="913.62" ytl="573.33" xbr="1073.02" ybr="652.44" rotation="359.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="389.61" ytl="892.80" xbr="824.14" ybr="1039.56" rotation="0.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1227.14" ytl="990.26" xbr="1277.59" ybr="1036.12" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="907.82" ytl="935.79" xbr="1067.22" ybr="1014.90" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="319.67" ytl="373.78" xbr="370.12" ybr="419.64" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1234.02" ytl="376.87" xbr="1284.47" ybr="422.73" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1233.44" ytl="459.99" xbr="1285.03" ybr="511.58" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="315.09" ytl="983.72" xbr="365.53" ybr="1029.58" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="313.95" ytl="895.66" xbr="365.54" ybr="947.26" rotation="0.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="391.91" ytl="532.80" xbr="826.43" ybr="679.55" rotation="0.30" z_order="0">
+    </box>
+  </image>
+  <image id="28" name="2026-05-06_11-23-22.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1233.44" ytl="459.99" xbr="1285.03" ybr="511.58" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="315.09" ytl="983.72" xbr="365.53" ybr="1029.58" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="913.62" ytl="573.33" xbr="1073.02" ybr="652.44" rotation="359.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1234.02" ytl="376.87" xbr="1284.47" ybr="422.73" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="391.91" ytl="532.80" xbr="826.43" ybr="679.55" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="389.61" ytl="892.80" xbr="824.14" ybr="1039.56" rotation="0.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="907.82" ytl="935.79" xbr="1067.22" ybr="1014.90" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="319.67" ytl="373.78" xbr="370.12" ybr="419.64" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1227.14" ytl="990.26" xbr="1277.59" ybr="1036.12" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="313.95" ytl="895.66" xbr="365.54" ybr="947.26" rotation="0.50" z_order="0">
+    </box>
+  </image>
+  <image id="29" name="2026-05-06_11-23-25.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="391.91" ytl="532.80" xbr="826.43" ybr="679.55" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1227.14" ytl="990.26" xbr="1277.59" ybr="1036.12" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="319.67" ytl="373.78" xbr="370.12" ybr="419.64" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1233.44" ytl="459.99" xbr="1285.03" ybr="511.58" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="913.62" ytl="573.33" xbr="1073.02" ybr="652.44" rotation="359.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="313.95" ytl="895.66" xbr="365.54" ybr="947.26" rotation="0.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="315.09" ytl="983.72" xbr="365.53" ybr="1029.58" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1234.02" ytl="376.87" xbr="1284.47" ybr="422.73" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="389.61" ytl="892.80" xbr="824.14" ybr="1039.56" rotation="0.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="907.82" ytl="935.79" xbr="1067.22" ybr="1014.90" rotation="359.90" z_order="0">
+    </box>
+  </image>
+  <image id="30" name="2026-05-06_11-23-33.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="738.59" xbr="444.65" ybr="790.18" rotation="0.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="730.00" xbr="904.39" ybr="876.76" rotation="359.80" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="473.31" ytl="371.14" xbr="907.83" ybr="517.89" rotation="359.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="213.27" xbr="444.64" ybr="259.13" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+  </image>
+  <image id="31" name="2026-05-06_11-23-36.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="369.99" xbr="904.39" ybr="516.75" rotation="359.60" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="738.59" xbr="444.65" ybr="790.18" rotation="0.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="471.02" ytl="731.15" xbr="905.54" ybr="877.90" rotation="359.80" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="213.27" xbr="444.64" ybr="259.13" z_order="0">
+    </box>
+  </image>
+  <image id="32" name="2026-05-06_11-23-40.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="471.02" ytl="731.15" xbr="905.54" ybr="877.90" rotation="359.80" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="213.27" xbr="444.64" ybr="259.13" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="737.45" xbr="444.65" ybr="789.04" rotation="0.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="369.99" xbr="904.39" ybr="516.75" rotation="359.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+  </image>
+  <image id="33" name="2026-05-06_11-23-44.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="737.45" xbr="444.65" ybr="789.04" rotation="0.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="214.42" xbr="444.64" ybr="260.28" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="369.99" xbr="904.39" ybr="516.75" rotation="359.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="471.02" ytl="731.15" xbr="905.54" ybr="877.90" rotation="359.80" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+  </image>
+  <image id="34" name="2026-05-06_11-23-47.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="369.99" xbr="904.39" ybr="516.75" rotation="359.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="737.45" xbr="444.65" ybr="789.04" rotation="0.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="214.42" xbr="444.64" ybr="260.28" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="471.02" ytl="731.15" xbr="905.54" ybr="877.90" rotation="359.80" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+  </image>
+  <image id="35" name="2026-05-06_11-23-51.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="214.42" xbr="444.64" ybr="260.28" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="737.45" xbr="444.65" ybr="789.04" rotation="0.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="471.02" ytl="731.15" xbr="905.54" ybr="877.90" rotation="359.80" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="369.99" xbr="904.39" ybr="516.75" rotation="359.60" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+  </image>
+  <image id="36" name="2026-05-06_11-23-54.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="471.02" ytl="731.15" xbr="905.54" ybr="877.90" rotation="359.80" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="214.42" xbr="444.64" ybr="260.28" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="737.45" xbr="444.65" ybr="789.04" rotation="0.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="369.99" xbr="904.39" ybr="516.75" rotation="359.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+  </image>
+  <image id="37" name="2026-05-06_11-23-58.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="737.45" xbr="444.65" ybr="789.04" rotation="0.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="471.02" ytl="731.15" xbr="905.54" ybr="877.90" rotation="359.80" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="369.99" xbr="904.39" ybr="516.75" rotation="359.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="214.42" xbr="444.64" ybr="260.28" z_order="0">
+    </box>
+  </image>
+  <image id="38" name="2026-05-06_11-24-01.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="1307.40" ytl="203.75" xbr="1357.84" ybr="249.61" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1307.96" ytl="286.87" xbr="1359.55" ybr="338.46" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="394.20" ytl="214.42" xbr="444.64" ybr="260.28" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="405.88" xbr="1149.63" ybr="484.99" rotation="359.50" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="991.52" ytl="769.55" xbr="1150.92" ybr="848.66" rotation="359.90" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="471.02" ytl="731.15" xbr="905.54" ybr="877.90" rotation="359.80" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="825.50" xbr="445.79" ybr="871.36" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="469.87" ytl="369.99" xbr="904.39" ybr="516.75" rotation="359.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1314.28" ytl="818.28" xbr="1364.72" ybr="864.14" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="393.05" ytl="737.45" xbr="444.65" ybr="789.04" rotation="0.50" z_order="0">
+    </box>
+  </image>
+  <image id="39" name="2026-05-06_11-24-08.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="554.71" ytl="451.39" xbr="989.23" ybr="598.14" rotation="346.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1478.22" ytl="725.42" xbr="1528.67" ybr="771.28" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="590.25" ytl="960.79" xbr="640.69" ybr="1006.65" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="432.03" ytl="366.90" xbr="482.48" ybr="412.76" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1065.75" ytl="390.56" xbr="1225.15" ybr="469.67" rotation="345.80" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1317.71" ytl="134.96" xbr="1368.16" ybr="180.82" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="566.17" ytl="875.03" xbr="617.77" ybr="926.62" rotation="347.00" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1158.91" ytl="742.03" xbr="1318.31" ybr="821.14" rotation="345.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1341.21" ytl="213.50" xbr="1392.80" ybr="265.09" rotation="345.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="649.87" ytl="801.09" xbr="1084.39" ybr="947.84" rotation="346.00" z_order="0">
+    </box>
+  </image>
+  <image id="40" name="2026-05-06_11-24-12.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="432.03" ytl="366.90" xbr="482.48" ybr="412.76" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="552.41" ytl="449.10" xbr="986.94" ybr="595.85" rotation="346.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1317.71" ytl="134.96" xbr="1368.16" ybr="180.82" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1065.75" ytl="393.84" xbr="1225.15" ybr="472.95" rotation="345.80" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1157.76" ytl="743.18" xbr="1317.16" ybr="822.29" rotation="345.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1340.06" ytl="212.35" xbr="1391.65" ybr="263.94" rotation="345.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="590.25" ytl="960.79" xbr="640.69" ybr="1006.65" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="566.17" ytl="875.03" xbr="617.77" ybr="926.62" rotation="347.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1478.22" ytl="725.42" xbr="1528.67" ybr="771.28" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="646.43" ytl="797.65" xbr="1080.95" ybr="944.40" rotation="346.00" z_order="0">
+    </box>
+  </image>
+  <image id="41" name="2026-05-06_11-24-15.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1341.21" ytl="213.50" xbr="1392.80" ybr="265.09" rotation="345.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="566.17" ytl="875.03" xbr="617.77" ybr="926.62" rotation="347.00" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="553.56" ytl="445.66" xbr="988.09" ybr="592.42" rotation="346.40" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="646.43" ytl="797.65" xbr="1080.95" ybr="944.40" rotation="346.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="590.25" ytl="960.79" xbr="640.69" ybr="1006.65" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1161.20" ytl="745.48" xbr="1320.60" ybr="824.59" rotation="345.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1065.75" ytl="393.84" xbr="1225.15" ybr="472.95" rotation="345.80" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1478.22" ytl="725.42" xbr="1528.67" ybr="771.28" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="432.03" ytl="366.90" xbr="482.48" ybr="412.76" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1317.71" ytl="134.96" xbr="1368.16" ybr="180.82" z_order="0">
+    </box>
+  </image>
+  <image id="42" name="2026-05-06_11-24-18.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="566.17" ytl="875.03" xbr="617.77" ybr="926.62" rotation="347.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="590.25" ytl="960.79" xbr="640.69" ybr="1006.65" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1317.71" ytl="134.96" xbr="1368.16" ybr="180.82" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1341.21" ytl="213.50" xbr="1392.80" ybr="265.09" rotation="345.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1161.20" ytl="745.48" xbr="1320.60" ybr="824.59" rotation="345.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="553.56" ytl="445.66" xbr="988.09" ybr="592.42" rotation="346.40" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="646.43" ytl="797.65" xbr="1080.95" ybr="944.40" rotation="346.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="432.03" ytl="366.90" xbr="482.48" ybr="412.76" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1065.75" ytl="393.84" xbr="1225.15" ybr="472.95" rotation="345.80" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1478.22" ytl="725.42" xbr="1528.67" ybr="771.28" z_order="0">
+    </box>
+  </image>
+  <image id="43" name="2026-05-06_11-24-22.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1065.75" ytl="393.84" xbr="1225.15" ybr="472.95" rotation="345.80" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1160.05" ytl="743.19" xbr="1319.45" ybr="822.29" rotation="345.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="590.25" ytl="960.79" xbr="640.69" ybr="1006.65" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="646.43" ytl="797.65" xbr="1080.95" ybr="944.40" rotation="346.00" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="553.56" ytl="445.66" xbr="988.09" ybr="592.42" rotation="346.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="432.03" ytl="366.90" xbr="482.48" ybr="412.76" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1478.22" ytl="725.42" xbr="1528.67" ybr="771.28" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="566.17" ytl="875.03" xbr="617.77" ybr="926.62" rotation="347.00" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1341.21" ytl="213.50" xbr="1392.80" ybr="265.09" rotation="345.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1317.71" ytl="134.96" xbr="1368.16" ybr="180.82" z_order="0">
+    </box>
+  </image>
+  <image id="44" name="2026-05-06_11-24-30.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="341.46" ytl="897.96" xbr="393.05" ybr="949.55" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="421.71" ytl="535.09" xbr="856.24" ybr="681.84" rotation="359.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1259.24" ytl="372.28" xbr="1309.69" ybr="418.14" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1258.10" ytl="987.96" xbr="1308.54" ybr="1033.82" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="343.75" ytl="987.16" xbr="394.20" ybr="1033.02" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="415.98" ytl="893.95" xbr="850.51" ybr="1040.70" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="942.21" ytl="938.09" xbr="1101.61" ybr="1017.20" rotation="358.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="939.88" ytl="573.33" xbr="1099.29" ybr="652.44" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="343.75" ytl="374.93" xbr="394.20" ybr="420.79" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1258.66" ytl="456.55" xbr="1310.25" ybr="508.15" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="45" name="2026-05-06_11-24-34.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="343.75" ytl="987.16" xbr="394.20" ybr="1033.02" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="419.42" ytl="533.94" xbr="853.95" ybr="680.70" rotation="359.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="940.98" ytl="574.43" xbr="1100.38" ybr="653.54" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="343.75" ytl="374.93" xbr="394.20" ybr="420.79" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="417.13" ytl="897.39" xbr="851.65" ybr="1044.14" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1259.24" ytl="372.28" xbr="1309.69" ybr="418.14" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="341.46" ytl="900.25" xbr="393.05" ybr="951.84" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1258.10" ytl="987.96" xbr="1308.54" ybr="1033.82" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="939.92" ytl="936.94" xbr="1099.32" ybr="1016.05" rotation="358.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1258.66" ytl="457.70" xbr="1310.25" ybr="509.29" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="46" name="2026-05-06_11-24-37.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="940.98" ytl="574.43" xbr="1100.38" ybr="653.54" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="421.71" ytl="532.80" xbr="856.24" ybr="679.55" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1259.24" ytl="372.28" xbr="1309.69" ybr="418.14" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="417.13" ytl="897.39" xbr="851.65" ybr="1044.14" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="939.92" ytl="936.94" xbr="1099.32" ybr="1016.05" rotation="358.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="343.75" ytl="987.16" xbr="394.20" ybr="1033.02" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1258.10" ytl="987.96" xbr="1308.54" ybr="1033.82" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="347.19" ytl="374.93" xbr="397.64" ybr="420.79" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1258.66" ytl="457.70" xbr="1310.25" ybr="509.29" rotation="0.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="341.46" ytl="900.25" xbr="393.05" ybr="951.84" rotation="0.30" z_order="0">
+    </box>
+  </image>
+  <image id="47" name="2026-05-06_11-24-42.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1258.66" ytl="457.70" xbr="1310.25" ybr="509.29" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="417.13" ytl="897.39" xbr="851.65" ybr="1044.14" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1259.24" ytl="372.28" xbr="1309.69" ybr="418.14" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="347.19" ytl="374.93" xbr="397.64" ybr="420.79" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="343.75" ytl="987.16" xbr="394.20" ybr="1033.02" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="341.46" ytl="900.25" xbr="393.05" ybr="951.84" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1258.10" ytl="987.96" xbr="1308.54" ybr="1033.82" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="940.98" ytl="574.43" xbr="1100.38" ybr="653.54" rotation="359.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="939.92" ytl="936.94" xbr="1099.32" ybr="1016.05" rotation="358.90" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="421.71" ytl="535.09" xbr="856.24" ybr="681.84" rotation="359.90" z_order="0">
+    </box>
+  </image>
+  <image id="48" name="2026-05-06_11-24-48.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1188.72" ytl="190.57" xbr="1240.31" ybr="242.16" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="868.74" ytl="299.72" xbr="1028.14" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="861.96" ytl="665.23" xbr="1021.36" ybr="744.33" rotation="1.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="282.99" ytl="108.94" xbr="333.43" ybr="154.80" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="351.78" ytl="262.22" xbr="786.30" ybr="408.98" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1188.16" ytl="107.44" xbr="1238.61" ybr="153.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="269.23" ytl="623.94" xbr="320.82" ybr="675.53" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="269.23" ytl="713.15" xbr="319.67" ybr="759.01" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1184.72" ytl="720.83" xbr="1235.17" ybr="766.69" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="346.05" ytl="622.23" xbr="780.57" ybr="768.98" rotation="0.10" z_order="0">
+    </box>
+  </image>
+  <image id="49" name="2026-05-06_11-24-51.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="347.19" ytl="619.94" xbr="781.72" ybr="766.69" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="864.25" ytl="665.23" xbr="1023.65" ybr="744.33" rotation="1.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="269.23" ytl="623.94" xbr="320.82" ybr="675.53" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1188.16" ytl="107.44" xbr="1238.61" ybr="153.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1188.72" ytl="190.57" xbr="1240.31" ybr="242.16" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="282.99" ytl="108.94" xbr="333.43" ybr="154.80" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="868.74" ytl="299.72" xbr="1028.14" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="351.78" ytl="262.22" xbr="786.30" ybr="408.98" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="269.23" ytl="713.15" xbr="319.67" ybr="759.01" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1184.72" ytl="720.83" xbr="1235.17" ybr="766.69" z_order="0">
+    </box>
+  </image>
+  <image id="50" name="2026-05-06_11-24-55.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="282.99" ytl="108.94" xbr="333.43" ybr="154.80" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1184.72" ytl="720.83" xbr="1235.17" ybr="766.69" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1188.16" ytl="107.44" xbr="1238.61" ybr="153.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1188.72" ytl="190.57" xbr="1240.31" ybr="242.16" rotation="0.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="269.23" ytl="623.94" xbr="320.82" ybr="675.53" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="269.23" ytl="713.15" xbr="319.67" ybr="759.01" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="868.74" ytl="299.72" xbr="1028.14" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="350.63" ytl="261.08" xbr="785.16" ybr="407.83" rotation="359.90" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="347.19" ytl="619.94" xbr="781.72" ybr="766.69" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="864.25" ytl="665.23" xbr="1023.65" ybr="744.33" rotation="1.10" z_order="0">
+    </box>
+  </image>
+  <image id="51" name="2026-05-06_11-24-58.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="1184.72" ytl="720.83" xbr="1235.17" ybr="766.69" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="350.63" ytl="261.08" xbr="785.16" ybr="407.83" rotation="359.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="864.25" ytl="665.23" xbr="1023.65" ybr="744.33" rotation="1.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1188.16" ytl="107.44" xbr="1238.61" ybr="153.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="282.99" ytl="108.94" xbr="333.43" ybr="154.80" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="347.19" ytl="619.94" xbr="781.72" ybr="766.69" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="868.74" ytl="299.72" xbr="1028.14" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="269.23" ytl="713.15" xbr="319.67" ybr="759.01" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1188.72" ytl="190.57" xbr="1240.31" ybr="242.16" rotation="0.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="269.23" ytl="623.94" xbr="320.82" ybr="675.53" rotation="0.30" z_order="0">
+    </box>
+  </image>
+  <image id="52" name="2026-05-06_11-25-02.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="868.74" ytl="299.72" xbr="1028.14" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1188.72" ytl="190.57" xbr="1240.31" ybr="242.16" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="864.25" ytl="665.23" xbr="1023.65" ybr="744.33" rotation="1.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1188.16" ytl="107.44" xbr="1238.61" ybr="153.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="269.23" ytl="623.94" xbr="320.82" ybr="675.53" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="269.23" ytl="713.15" xbr="319.67" ybr="759.01" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="350.63" ytl="261.08" xbr="785.16" ybr="407.83" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="282.99" ytl="108.94" xbr="333.43" ybr="154.80" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="347.19" ytl="619.94" xbr="781.72" ybr="766.69" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1184.72" ytl="720.83" xbr="1235.17" ybr="766.69" z_order="0">
+    </box>
+  </image>
+  <image id="53" name="2026-05-06_11-25-10.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1627.83" ytl="181.40" xbr="1679.42" ybr="232.99" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="105.50" xbr="754.20" ybr="151.36" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1304.34" ytl="299.72" xbr="1463.74" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="717.73" xbr="754.20" ybr="763.59" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1623.83" ytl="713.95" xbr="1674.28" ybr="759.81" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="786.30" ytl="622.23" xbr="1220.82" ybr="768.98" rotation="0.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="702.61" ytl="628.53" xbr="754.20" ybr="680.12" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1630.71" ytl="95.98" xbr="1681.15" ybr="141.84" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="784.01" ytl="259.93" xbr="1218.53" ybr="406.68" rotation="359.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1305.65" ytl="661.79" xbr="1465.05" ybr="740.89" z_order="0">
+    </box>
+  </image>
+  <image id="54" name="2026-05-06_11-25-14.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1305.65" ytl="660.63" xbr="1465.05" ybr="739.73" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="784.01" ytl="259.93" xbr="1218.53" ybr="406.68" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1623.83" ytl="713.95" xbr="1674.28" ybr="759.81" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1630.71" ytl="95.98" xbr="1681.15" ybr="141.84" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="717.73" xbr="754.20" ybr="763.59" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1304.34" ytl="299.72" xbr="1463.74" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="781.72" ytl="622.23" xbr="1216.24" ybr="768.98" rotation="0.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="702.61" ytl="628.53" xbr="754.20" ybr="680.12" rotation="0.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1627.83" ytl="181.40" xbr="1679.42" ybr="232.99" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="105.50" xbr="754.20" ybr="151.36" z_order="0">
+    </box>
+  </image>
+  <image id="55" name="2026-05-06_11-25-17.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1305.65" ytl="660.63" xbr="1465.05" ybr="739.73" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1623.83" ytl="713.95" xbr="1674.28" ybr="759.81" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1630.71" ytl="95.98" xbr="1681.15" ybr="141.84" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="702.61" ytl="628.53" xbr="754.20" ybr="680.12" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="784.01" ytl="259.93" xbr="1218.53" ybr="406.68" rotation="359.90" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="781.72" ytl="622.23" xbr="1216.24" ybr="768.98" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="105.50" xbr="754.20" ybr="151.36" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1304.34" ytl="299.72" xbr="1463.74" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="717.73" xbr="754.20" ybr="763.59" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1627.83" ytl="181.40" xbr="1679.42" ybr="232.99" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="56" name="2026-05-06_11-25-21.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="717.73" xbr="754.20" ybr="763.59" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1627.83" ytl="181.40" xbr="1679.42" ybr="232.99" rotation="0.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="702.61" ytl="628.53" xbr="754.20" ybr="680.12" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="105.50" xbr="754.20" ybr="151.36" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1624.98" ytl="713.95" xbr="1675.42" ybr="759.81" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1630.71" ytl="95.98" xbr="1681.15" ybr="141.84" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="782.86" ytl="261.08" xbr="1217.38" ybr="407.83" rotation="359.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1304.34" ytl="299.72" xbr="1463.74" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1305.65" ytl="660.63" xbr="1465.05" ybr="739.73" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="786.30" ytl="619.94" xbr="1220.82" ybr="766.69" rotation="0.10" z_order="0">
+    </box>
+  </image>
+  <image id="57" name="2026-05-06_11-25-25.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="717.73" xbr="754.20" ybr="763.59" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="782.86" ytl="261.08" xbr="1217.38" ybr="407.83" rotation="359.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="702.61" ytl="628.53" xbr="754.20" ybr="680.12" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1624.98" ytl="713.95" xbr="1675.42" ybr="759.81" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1630.71" ytl="95.98" xbr="1681.15" ybr="141.84" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1304.34" ytl="299.72" xbr="1463.74" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="786.30" ytl="619.94" xbr="1220.82" ybr="766.69" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="105.50" xbr="754.20" ybr="151.36" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1627.83" ytl="181.40" xbr="1679.42" ybr="232.99" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1305.65" ytl="660.63" xbr="1465.05" ybr="739.73" z_order="0">
+    </box>
+  </image>
+  <image id="58" name="2026-05-06_11-25-28.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="782.86" ytl="261.08" xbr="1217.38" ybr="407.83" rotation="359.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1304.34" ytl="299.72" xbr="1463.74" ybr="378.83" rotation="359.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="702.61" ytl="628.53" xbr="754.20" ybr="680.12" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="717.73" xbr="754.20" ybr="763.59" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="703.75" ytl="105.50" xbr="754.20" ybr="151.36" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1627.83" ytl="181.40" xbr="1679.42" ybr="232.99" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="786.30" ytl="619.94" xbr="1220.82" ybr="766.69" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1630.71" ytl="95.98" xbr="1681.15" ybr="141.84" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1624.98" ytl="713.95" xbr="1675.42" ybr="759.81" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1305.65" ytl="660.63" xbr="1465.05" ybr="739.73" z_order="0">
+    </box>
+  </image>
+  <image id="59" name="2026-05-06_11-25-34.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="864.26" ytl="891.66" xbr="1298.79" ybr="1038.41" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1384.24" ytl="563.49" xbr="1543.64" ybr="642.59" rotation="359.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1387.06" ytl="924.32" xbr="1546.46" ybr="1003.43" rotation="359.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1705.23" ytl="357.38" xbr="1755.68" ybr="403.24" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1705.79" ytl="441.65" xbr="1757.38" ybr="493.24" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="784.01" ytl="986.01" xbr="834.45" ybr="1031.87" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="860.82" ytl="527.06" xbr="1295.35" ybr="673.82" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="778.27" ytl="372.64" xbr="828.72" ybr="418.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="782.86" ytl="900.25" xbr="834.45" ybr="951.84" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1712.11" ytl="973.06" xbr="1762.56" ybr="1018.92" z_order="0">
+    </box>
+  </image>
+  <image id="60" name="2026-05-06_11-25-38.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="1383.14" ytl="562.39" xbr="1542.54" ybr="641.50" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1705.23" ytl="357.38" xbr="1755.68" ybr="403.24" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1387.06" ytl="926.61" xbr="1546.46" ybr="1005.72" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="784.01" ytl="986.01" xbr="834.45" ybr="1031.87" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="778.27" ytl="372.64" xbr="828.72" ybr="418.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="782.86" ytl="900.25" xbr="834.45" ybr="951.84" rotation="0.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1705.79" ytl="441.65" xbr="1757.38" ybr="493.24" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="863.12" ytl="891.66" xbr="1297.64" ybr="1038.41" rotation="0.10" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="860.82" ytl="527.06" xbr="1295.35" ybr="673.82" rotation="359.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1712.11" ytl="973.06" xbr="1762.56" ybr="1018.92" z_order="0">
+    </box>
+  </image>
+  <image id="61" name="2026-05-06_11-25-42.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="860.82" ytl="528.21" xbr="1295.35" ybr="674.96" rotation="359.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1712.11" ytl="973.06" xbr="1762.56" ybr="1018.92" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1383.14" ytl="562.39" xbr="1542.54" ybr="641.50" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="784.01" ytl="987.16" xbr="834.45" ybr="1033.02" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="863.12" ytl="891.66" xbr="1297.64" ybr="1038.41" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1705.23" ytl="357.38" xbr="1755.68" ybr="403.24" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1706.94" ytl="441.65" xbr="1758.53" ybr="493.24" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="778.27" ytl="372.64" xbr="828.72" ybr="418.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="782.86" ytl="900.25" xbr="834.45" ybr="951.84" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1388.20" ytl="926.61" xbr="1547.60" ybr="1005.72" z_order="0">
+    </box>
+  </image>
+  <image id="62" name="2026-05-06_11-25-46.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="858.53" ytl="529.36" xbr="1293.05" ybr="676.11" rotation="359.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1712.11" ytl="973.06" xbr="1762.56" ybr="1018.92" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="784.01" ytl="987.16" xbr="834.45" ybr="1033.02" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="778.27" ytl="372.64" xbr="828.72" ybr="418.50" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1383.14" ytl="562.39" xbr="1542.54" ybr="641.50" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="863.12" ytl="891.66" xbr="1297.64" ybr="1038.41" rotation="0.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="782.86" ytl="900.25" xbr="834.45" ybr="951.84" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1388.20" ytl="926.61" xbr="1547.60" ybr="1005.72" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1705.23" ytl="357.38" xbr="1755.68" ybr="403.24" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1706.94" ytl="441.65" xbr="1758.53" ybr="493.24" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="63" name="2026-05-06_11-25-54.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="363.46" xbr="153.43" ybr="409.32" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="167.19" ytl="874.46" xbr="601.72" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="683.78" ytl="554.73" xbr="843.18" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="959.64" xbr="153.43" ybr="1005.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="970.77" xbr="1054.02" ybr="1016.63" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+  </image>
+  <image id="64" name="2026-05-06_11-25-57.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="104.13" ytl="959.64" xbr="154.58" ybr="1005.50" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="683.78" ytl="554.73" xbr="843.18" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="871.02" xbr="605.16" ybr="1017.77" rotation="0.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="970.77" xbr="1054.02" ybr="1016.63" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="65" name="2026-05-06_11-26-00.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="684.87" ytl="554.73" xbr="844.27" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="970.77" xbr="1054.02" ybr="1016.63" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="874.46" xbr="605.16" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="959.64" xbr="153.43" ybr="1005.50" z_order="0">
+    </box>
+  </image>
+  <image id="66" name="2026-05-06_11-26-04.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="874.46" xbr="605.16" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="959.64" xbr="153.43" ybr="1005.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="684.87" ytl="554.73" xbr="844.27" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="970.77" xbr="1054.02" ybr="1016.63" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="67" name="2026-05-06_11-26-08.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="959.64" xbr="153.43" ybr="1005.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="874.46" xbr="605.16" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="684.87" ytl="554.73" xbr="844.27" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="971.91" xbr="1054.02" ybr="1017.77" z_order="0">
+    </box>
+  </image>
+  <image id="68" name="2026-05-06_11-26-11.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="874.46" xbr="605.16" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="959.64" xbr="153.43" ybr="1005.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="684.87" ytl="554.73" xbr="844.27" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="971.91" xbr="1054.02" ybr="1017.77" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+  </image>
+  <image id="69" name="2026-05-06_11-26-15.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="971.91" xbr="1054.02" ybr="1017.77" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="684.87" ytl="554.73" xbr="844.27" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="959.64" xbr="153.43" ybr="1005.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="874.46" xbr="605.16" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="70" name="2026-05-06_11-26-18.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="684.87" ytl="554.73" xbr="844.27" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="960.79" xbr="153.43" ybr="1006.65" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="874.46" xbr="605.16" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="971.91" xbr="1054.02" ybr="1017.77" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+  </image>
+  <image id="71" name="2026-05-06_11-26-22.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="960.79" xbr="153.43" ybr="1006.65" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="874.46" xbr="605.16" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="971.91" xbr="1054.02" ybr="1017.77" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="684.87" ytl="554.73" xbr="844.27" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+  </image>
+  <image id="72" name="2026-05-06_11-26-25.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="169.49" ytl="515.60" xbr="604.01" ybr="662.35" rotation="359.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1004.14" ytl="440.50" xbr="1055.73" ybr="492.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="971.91" xbr="1054.02" ybr="1017.77" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="362.32" xbr="153.43" ybr="408.18" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="685.40" ytl="918.59" xbr="844.80" ybr="997.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="684.87" ytl="554.73" xbr="844.27" ybr="633.84" rotation="359.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="170.63" ytl="874.46" xbr="605.16" ybr="1021.21" rotation="0.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="102.99" ytl="960.79" xbr="153.43" ybr="1006.65" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="99.55" ytl="876.17" xbr="151.14" ybr="927.76" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1003.58" ytl="356.23" xbr="1054.02" ybr="402.09" z_order="0">
+    </box>
+  </image>
+  <image id="73" name="2026-05-06_11-26-34.jpg" width="1920" height="1080">
+    <box label="connector" source="manual" occluded="0" xtl="629.05" ytl="293.15" xbr="788.46" ybr="372.26" rotation="358.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="943.96" ytl="90.24" xbr="994.40" ybr="136.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="55.98" ytl="638.85" xbr="107.58" ybr="690.44" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="120.19" ytl="269.10" xbr="554.71" ybr="415.86" rotation="358.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="54.83" ytl="128.43" xbr="105.28" ybr="174.29" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="640.69" ytl="657.19" xbr="800.09" ybr="736.29" rotation="357.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="58.27" ytl="723.46" xbr="108.72" ybr="769.32" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="124.78" ytl="625.67" xbr="559.30" ybr="772.42" rotation="358.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="960.01" ytl="701.34" xbr="1010.45" ybr="747.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="944.52" ytl="171.08" xbr="996.11" ybr="222.67" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="74" name="2026-05-06_11-26-38.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="960.01" ytl="704.78" xbr="1010.45" ybr="750.64" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="944.52" ytl="171.08" xbr="996.11" ybr="222.67" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="54.83" ytl="128.43" xbr="105.28" ybr="174.29" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="119.04" ytl="270.25" xbr="553.56" ybr="417.00" rotation="358.00" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="55.98" ytl="638.85" xbr="107.58" ybr="690.44" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="638.39" ytl="654.89" xbr="797.79" ybr="734.00" rotation="357.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="943.96" ytl="90.24" xbr="994.40" ybr="136.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="58.27" ytl="723.46" xbr="108.72" ybr="769.32" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="127.07" ytl="624.52" xbr="561.59" ybr="771.28" rotation="358.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="629.05" ytl="293.15" xbr="788.46" ybr="372.26" rotation="358.70" z_order="0">
+    </box>
+  </image>
+  <image id="75" name="2026-05-06_11-26-42.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="58.27" ytl="723.46" xbr="108.72" ybr="769.32" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="943.96" ytl="90.24" xbr="994.40" ybr="136.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="960.01" ytl="704.78" xbr="1010.45" ybr="750.64" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="55.98" ytl="638.85" xbr="107.58" ybr="690.44" rotation="0.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="944.52" ytl="171.08" xbr="996.11" ybr="222.67" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="119.04" ytl="270.25" xbr="553.56" ybr="417.00" rotation="358.00" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="127.07" ytl="624.52" xbr="561.59" ybr="771.28" rotation="358.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="638.39" ytl="654.89" xbr="797.79" ybr="734.00" rotation="357.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="629.05" ytl="293.15" xbr="788.46" ybr="372.26" rotation="358.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="52.06" ytl="130.84" xbr="102.51" ybr="176.70" z_order="0">
+    </box>
+  </image>
+  <image id="76" name="2026-05-06_11-26-46.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="944.52" ytl="171.08" xbr="996.11" ybr="222.67" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="629.05" ytl="293.15" xbr="788.46" ybr="372.26" rotation="358.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="52.54" ytl="128.43" xbr="102.99" ybr="174.29" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="960.01" ytl="704.78" xbr="1010.45" ybr="750.64" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="943.96" ytl="90.24" xbr="994.40" ybr="136.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="58.27" ytl="723.46" xbr="108.72" ybr="769.32" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="127.07" ytl="624.52" xbr="561.59" ybr="771.28" rotation="358.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="55.98" ytl="638.85" xbr="107.58" ybr="690.44" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="119.04" ytl="270.25" xbr="553.56" ybr="417.00" rotation="358.00" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="638.39" ytl="654.89" xbr="797.79" ybr="734.00" rotation="357.90" z_order="0">
+    </box>
+  </image>
+  <image id="77" name="2026-05-06_11-26-50.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="52.54" ytl="128.43" xbr="102.99" ybr="174.29" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="629.05" ytl="293.15" xbr="788.46" ybr="372.26" rotation="358.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="127.07" ytl="624.52" xbr="561.59" ybr="771.28" rotation="358.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="944.52" ytl="171.08" xbr="996.11" ybr="222.67" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="960.01" ytl="704.78" xbr="1010.45" ybr="750.64" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="58.27" ytl="723.46" xbr="108.72" ybr="769.32" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="119.04" ytl="270.25" xbr="553.56" ybr="417.00" rotation="358.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="943.96" ytl="90.24" xbr="994.40" ybr="136.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="55.98" ytl="638.85" xbr="107.58" ybr="690.44" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="638.39" ytl="654.89" xbr="797.79" ybr="734.00" rotation="357.90" z_order="0">
+    </box>
+  </image>
+  <image id="78" name="2026-05-06_11-26-56.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="309.36" ytl="275.98" xbr="743.88" ybr="422.73" rotation="0.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="821.68" ytl="323.80" xbr="981.08" ybr="402.90" rotation="0.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="293.31" ytl="634.84" xbr="727.83" ybr="781.60" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1146.89" ytl="134.96" xbr="1197.33" ybr="180.82" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1145.16" ytl="214.64" xbr="1196.75" ybr="266.24" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="813.81" ytl="685.85" xbr="973.21" ybr="764.95" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1130.84" ytl="747.20" xbr="1181.28" ybr="793.06" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="221.08" ytl="634.26" xbr="272.67" ybr="685.85" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="246.30" ytl="121.55" xbr="296.74" ybr="167.41" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="218.78" ytl="721.17" xbr="269.23" ybr="767.03" z_order="0">
+    </box>
+  </image>
+  <image id="79" name="2026-05-06_11-27-01.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="293.31" ytl="633.70" xbr="727.83" ybr="780.45" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1130.84" ytl="747.20" xbr="1181.28" ybr="793.06" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="812.66" ytl="687.00" xbr="972.06" ybr="766.10" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1146.89" ytl="134.96" xbr="1197.33" ybr="180.82" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1145.16" ytl="214.64" xbr="1196.75" ybr="266.24" rotation="0.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="221.08" ytl="634.26" xbr="272.67" ybr="685.85" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="302.48" ytl="277.13" xbr="737.00" ybr="423.88" rotation="0.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="218.78" ytl="721.17" xbr="269.23" ybr="767.03" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="822.78" ytl="325.99" xbr="982.18" ybr="405.09" rotation="0.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="245.15" ytl="120.41" xbr="295.60" ybr="166.27" z_order="0">
+    </box>
+  </image>
+  <image id="80" name="2026-05-06_11-27-09.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="245.15" ytl="120.41" xbr="295.60" ybr="166.27" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="812.66" ytl="687.00" xbr="972.06" ybr="766.10" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1146.89" ytl="134.96" xbr="1197.33" ybr="180.82" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="302.48" ytl="277.13" xbr="737.00" ybr="423.88" rotation="0.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="822.78" ytl="325.99" xbr="982.18" ybr="405.09" rotation="0.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="293.31" ytl="635.99" xbr="727.83" ybr="782.74" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1130.84" ytl="747.20" xbr="1181.28" ybr="793.06" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="218.78" ytl="721.17" xbr="269.23" ybr="767.03" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="221.08" ytl="634.26" xbr="272.67" ybr="685.85" rotation="0.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1145.16" ytl="214.64" xbr="1196.75" ybr="266.24" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="81" name="2026-05-06_11-27-15.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="1146.89" ytl="134.96" xbr="1197.33" ybr="180.82" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="293.31" ytl="635.99" xbr="727.83" ybr="782.74" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="822.78" ytl="325.99" xbr="982.18" ybr="405.09" rotation="0.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="218.78" ytl="721.17" xbr="269.23" ybr="767.03" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="245.15" ytl="120.41" xbr="295.60" ybr="166.27" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="302.48" ytl="277.13" xbr="737.00" ybr="423.88" rotation="0.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="221.08" ytl="634.26" xbr="272.67" ybr="685.85" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="812.66" ytl="687.00" xbr="972.06" ybr="766.10" rotation="1.60" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1145.16" ytl="214.64" xbr="1196.75" ybr="266.24" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1134.28" ytl="747.20" xbr="1184.72" ybr="793.06" z_order="0">
+    </box>
+  </image>
+  <image id="82" name="2026-05-06_11-27-22.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="302.48" ytl="277.13" xbr="737.00" ybr="423.88" rotation="0.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1133.13" ytl="747.20" xbr="1183.57" ybr="793.06" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="221.08" ytl="634.26" xbr="272.67" ybr="685.85" rotation="0.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1145.16" ytl="214.64" xbr="1196.75" ybr="266.24" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="293.31" ytl="635.99" xbr="727.83" ybr="782.74" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="822.78" ytl="325.99" xbr="982.18" ybr="405.09" rotation="0.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1146.89" ytl="134.96" xbr="1197.33" ybr="180.82" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="812.66" ytl="687.00" xbr="972.06" ybr="766.10" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="218.78" ytl="721.17" xbr="269.23" ybr="767.03" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="245.15" ytl="120.41" xbr="295.60" ybr="166.27" z_order="0">
+    </box>
+  </image>
+  <image id="83" name="2026-05-06_11-27-29.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="516.87" ytl="763.59" xbr="567.32" ybr="809.45" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="594.84" ytl="300.06" xbr="1029.36" ybr="446.81" rotation="358.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1111.71" ytl="333.65" xbr="1271.12" ybr="412.75" rotation="358.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1117.63" ytl="696.06" xbr="1277.03" ybr="775.17" rotation="358.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1425.49" ytl="131.52" xbr="1475.93" ybr="177.38" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="597.13" ytl="664.65" xbr="1031.65" ybr="811.40" rotation="359.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1427.19" ytl="213.50" xbr="1478.79" ybr="265.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1436.95" ytl="746.05" xbr="1487.40" ybr="791.91" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="514.58" ytl="675.54" xbr="566.18" ybr="727.13" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="509.99" ytl="151.36" xbr="560.44" ybr="197.22" z_order="0">
+    </box>
+  </image>
+  <image id="84" name="2026-05-06_11-27-33.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="515.72" ytl="763.59" xbr="566.17" ybr="809.45" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="589.10" ytl="303.50" xbr="1023.63" ybr="450.26" rotation="358.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1111.71" ytl="334.74" xbr="1271.12" ybr="413.85" rotation="358.90" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="594.84" ytl="663.50" xbr="1029.36" ybr="810.26" rotation="359.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1427.19" ytl="213.50" xbr="1478.79" ybr="265.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="514.58" ytl="675.54" xbr="566.18" ybr="727.13" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="509.99" ytl="151.36" xbr="560.44" ybr="197.22" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1436.95" ytl="746.05" xbr="1487.40" ybr="791.91" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1118.28" ytl="695.91" xbr="1277.68" ybr="775.01" rotation="358.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1425.49" ytl="131.52" xbr="1475.93" ybr="177.38" z_order="0">
+    </box>
+  </image>
+  <image id="85" name="2026-05-06_11-27-38.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="514.58" ytl="675.54" xbr="566.18" ybr="727.13" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="509.99" ytl="151.36" xbr="560.44" ybr="197.22" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="516.87" ytl="763.59" xbr="567.32" ybr="809.45" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1118.28" ytl="695.91" xbr="1277.68" ybr="775.01" rotation="358.50" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1111.71" ytl="334.74" xbr="1271.12" ybr="413.85" rotation="358.90" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="592.56" ytl="663.50" xbr="1027.08" ybr="810.25" rotation="359.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="589.10" ytl="303.50" xbr="1023.63" ybr="450.26" rotation="358.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1436.95" ytl="746.05" xbr="1487.40" ybr="791.91" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1425.49" ytl="131.52" xbr="1475.93" ybr="177.38" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1427.19" ytl="213.50" xbr="1478.79" ybr="265.09" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="86" name="2026-05-06_11-27-41.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="594.85" ytl="663.50" xbr="1029.37" ybr="810.25" rotation="359.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="513.44" ytl="674.39" xbr="565.03" ybr="725.98" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1111.71" ytl="334.74" xbr="1271.12" ybr="413.85" rotation="358.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1427.19" ytl="213.50" xbr="1478.79" ybr="265.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="516.87" ytl="763.59" xbr="567.32" ybr="809.45" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1425.49" ytl="131.52" xbr="1475.93" ybr="177.38" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="509.99" ytl="151.36" xbr="560.44" ybr="197.22" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1436.95" ytl="746.05" xbr="1487.40" ybr="791.91" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="589.10" ytl="303.50" xbr="1023.63" ybr="450.26" rotation="358.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1118.28" ytl="695.91" xbr="1277.68" ybr="775.01" rotation="358.50" z_order="0">
+    </box>
+  </image>
+  <image id="87" name="2026-05-06_11-27-45.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1427.19" ytl="213.50" xbr="1478.79" ybr="265.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="509.99" ytl="151.36" xbr="560.44" ybr="197.22" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1118.28" ytl="695.91" xbr="1277.68" ybr="775.01" rotation="358.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1436.95" ytl="746.05" xbr="1487.40" ybr="791.91" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="594.85" ytl="665.79" xbr="1029.37" ybr="812.55" rotation="359.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1425.49" ytl="131.52" xbr="1475.93" ybr="177.38" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="516.87" ytl="763.59" xbr="567.32" ybr="809.45" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="589.10" ytl="303.50" xbr="1023.63" ybr="450.26" rotation="358.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="513.44" ytl="674.39" xbr="565.03" ybr="725.98" rotation="0.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1111.71" ytl="334.74" xbr="1271.12" ybr="413.85" rotation="358.90" z_order="0">
+    </box>
+  </image>
+  <image id="88" name="2026-05-06_11-27-48.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="594.85" ytl="665.79" xbr="1029.37" ybr="812.55" rotation="359.50" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1427.19" ytl="213.50" xbr="1478.79" ybr="265.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="509.99" ytl="151.36" xbr="560.44" ybr="197.22" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1425.49" ytl="131.52" xbr="1475.93" ybr="177.38" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="516.87" ytl="763.59" xbr="567.32" ybr="809.45" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1111.71" ytl="334.74" xbr="1271.12" ybr="413.85" rotation="358.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="513.44" ytl="674.39" xbr="565.03" ybr="725.98" rotation="0.30" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="589.10" ytl="303.50" xbr="1023.63" ybr="450.26" rotation="358.30" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1118.28" ytl="695.91" xbr="1277.68" ybr="775.01" rotation="358.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1436.95" ytl="746.05" xbr="1487.40" ybr="791.91" z_order="0">
+    </box>
+  </image>
+  <image id="89" name="2026-05-06_11-27-52.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="594.85" ytl="665.79" xbr="1029.37" ybr="812.55" rotation="359.50" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1118.28" ytl="695.91" xbr="1277.68" ybr="775.01" rotation="358.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="516.87" ytl="763.59" xbr="567.32" ybr="809.45" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1111.71" ytl="334.74" xbr="1271.12" ybr="413.85" rotation="358.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1427.19" ytl="213.50" xbr="1478.79" ybr="265.09" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="509.99" ytl="151.36" xbr="560.44" ybr="197.22" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1436.95" ytl="746.05" xbr="1487.40" ybr="791.91" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="589.10" ytl="303.50" xbr="1023.63" ybr="450.26" rotation="358.30" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="513.44" ytl="674.39" xbr="565.03" ybr="725.98" rotation="0.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1425.49" ytl="131.52" xbr="1475.93" ybr="177.38" z_order="0">
+    </box>
+  </image>
+  <image id="90" name="2026-05-06_11-27-59.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="562.74" ytl="745.47" xbr="614.33" ybr="797.06" rotation="4.50" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="661.33" ytl="391.79" xbr="1095.86" ybr="538.54" rotation="3.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="561.59" ytl="834.68" xbr="612.03" ybr="880.54" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="597.13" ytl="221.30" xbr="647.57" ybr="267.16" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1507.45" ytl="347.64" xbr="1559.04" ybr="399.23" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1512.62" ytl="263.36" xbr="1563.07" ybr="309.22" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1164.25" ytl="811.92" xbr="1323.65" ybr="891.03" rotation="2.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="640.71" ytl="751.78" xbr="1075.23" ybr="898.53" rotation="2.90" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1185.04" ytl="450.75" xbr="1344.45" ybr="529.86" rotation="3.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1478.22" ytl="876.75" xbr="1528.67" ybr="922.61" z_order="0">
+    </box>
+  </image>
+  <image id="91" name="2026-05-06_11-28-03.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="565.03" ytl="744.32" xbr="616.62" ybr="795.92" rotation="4.50" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1164.25" ytl="811.92" xbr="1323.65" ybr="891.03" rotation="2.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1478.22" ytl="876.75" xbr="1528.67" ybr="922.61" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="641.86" ytl="752.93" xbr="1076.38" ybr="899.68" rotation="2.90" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="597.13" ytl="221.30" xbr="647.57" ybr="267.16" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1507.45" ytl="347.64" xbr="1559.04" ybr="399.23" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="660.19" ytl="390.64" xbr="1094.71" ybr="537.39" rotation="3.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1183.95" ytl="451.85" xbr="1343.35" ybr="530.96" rotation="3.00" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1512.62" ytl="264.51" xbr="1563.07" ybr="310.37" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="561.59" ytl="834.68" xbr="612.03" ybr="880.54" z_order="0">
+    </box>
+  </image>
+  <image id="92" name="2026-05-06_11-28-07.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1507.45" ytl="347.64" xbr="1559.04" ybr="399.23" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="660.19" ytl="390.64" xbr="1094.71" ybr="537.39" rotation="3.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="641.86" ytl="752.93" xbr="1076.38" ybr="899.68" rotation="2.90" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="565.03" ytl="744.32" xbr="616.62" ybr="795.92" rotation="4.50" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1478.22" ytl="876.75" xbr="1528.67" ybr="922.61" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1164.25" ytl="811.92" xbr="1323.65" ybr="891.03" rotation="2.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1512.62" ytl="264.51" xbr="1563.07" ybr="310.37" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="594.83" ytl="220.15" xbr="645.28" ybr="266.01" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="561.59" ytl="834.68" xbr="612.03" ybr="880.54" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="1183.95" ytl="451.85" xbr="1343.35" ybr="530.96" rotation="3.00" z_order="0">
+    </box>
+  </image>
+  <image id="93" name="2026-05-06_11-28-12.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="466.43" ytl="519.05" xbr="900.95" ybr="665.80" rotation="1.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="990.23" ytl="563.49" xbr="1149.63" ybr="642.59" rotation="1.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="982.23" xbr="1350.96" ybr="1028.09" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="464.15" ytl="877.90" xbr="898.67" ybr="1024.65" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="356.59" xbr="445.79" ybr="402.45" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1311.40" ytl="453.11" xbr="1362.99" ybr="504.71" rotation="0.20" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="981.47" ytl="925.75" xbr="1140.87" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+  </image>
+  <image id="94" name="2026-05-06_11-28-15.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="450.82" xbr="1361.84" ybr="502.41" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="356.59" xbr="445.79" ybr="402.45" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+  </image>
+  <image id="95" name="2026-05-06_11-28-19.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="450.82" xbr="1361.84" ybr="502.41" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="356.59" xbr="445.79" ybr="402.45" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+  </image>
+  <image id="96" name="2026-05-06_11-28-24.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="450.82" xbr="1361.84" ybr="502.41" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="355.44" xbr="445.79" ybr="401.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+  </image>
+  <image id="97" name="2026-05-06_11-28-28.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="395.34" ytl="355.44" xbr="445.79" ybr="401.30" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="450.82" xbr="1361.84" ybr="502.41" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+  </image>
+  <image id="98" name="2026-05-06_11-28-33.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="450.82" xbr="1361.84" ybr="502.41" rotation="0.20" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="396.49" ytl="356.59" xbr="446.94" ybr="402.45" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+  </image>
+  <image id="99" name="2026-05-06_11-28-38.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="396.49" ytl="356.59" xbr="446.94" ybr="402.45" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="450.82" xbr="1361.84" ybr="502.41" rotation="0.20" z_order="0">
+    </box>
+  </image>
+  <image id="100" name="2026-05-06_11-28-48.jpg" width="1920" height="1080">
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="396.49" ytl="356.59" xbr="446.94" ybr="402.45" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="450.82" xbr="1361.84" ybr="502.41" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+  </image>
+  <image id="101" name="2026-05-06_11-28-56.jpg" width="1920" height="1080">
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="450.82" xbr="1361.84" ybr="502.41" rotation="0.20" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="396.49" ytl="356.59" xbr="446.94" ybr="402.45" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+  </image>
+  <image id="102" name="2026-05-06_11-29-02.jpg" width="1920" height="1080">
+    <box label="mount_hole" source="manual" occluded="0" xtl="1311.98" ytl="367.70" xbr="1362.43" ybr="413.56" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="1310.25" ytl="451.97" xbr="1361.84" ybr="503.56" rotation="0.20" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="396.49" ytl="356.59" xbr="446.94" ybr="402.45" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="979.28" ytl="925.75" xbr="1138.68" ybr="1004.85" rotation="0.60" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="382.73" ytl="965.38" xbr="433.18" ybr="1011.24" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="467.58" ytl="515.61" xbr="902.10" ybr="662.36" rotation="1.10" z_order="0">
+    </box>
+    <box label="group_connector" source="manual" occluded="0" xtl="461.86" ytl="879.04" xbr="896.38" ybr="1025.79" rotation="1.40" z_order="0">
+    </box>
+    <box label="fiducial" source="manual" occluded="0" xtl="382.74" ytl="878.47" xbr="434.33" ybr="930.06" rotation="1.60" z_order="0">
+    </box>
+    <box label="connector" source="manual" occluded="0" xtl="989.13" ytl="562.39" xbr="1148.54" ybr="641.50" rotation="1.70" z_order="0">
+    </box>
+    <box label="mount_hole" source="manual" occluded="0" xtl="1300.52" ytl="983.38" xbr="1350.96" ybr="1029.24" z_order="0">
+    </box>
+  </image>
+</annotations>

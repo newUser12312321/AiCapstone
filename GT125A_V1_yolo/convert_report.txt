@@ -1,0 +1,7 @@
+xml: C:\Projects\AiCapstoneV2\GT125A_V1\annotations.xml
+images_dir: C:\Projects\AiCapstoneV2\edge\data\GT_125_undistorted
+out_dir: C:\Projects\AiCapstoneV2\GT125A_V1_yolo
+classes (5): ['edge_connector_zone', 'fiducial', 'ic_chip', 'mount_hole', 'smd_array_block']
+train images: 89
+val images: 21
+missing source files: 0

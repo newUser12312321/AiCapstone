@@ -18,6 +18,7 @@
       "gn-948x"
     ],
     "model_path": "weights/gn948x_best.pt",
+    "confidence_threshold": 0.5,
     "expected_counts": {}
   },
   "EGW_04": {

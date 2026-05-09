@@ -50,6 +50,14 @@ class Settings(BaseSettings):
     CAMERA_FOCUS_MANUAL_REAPPLY_DELAY_SEC: float = Field(default=0.25, ge=0.0, le=2.0)
     # 수동 모드에서도 0보다 크면: 연속 AF를 이 시간(ms)만 돌린 뒤 AF 끄고 focus_absolute 적용 (재연결 후 흐림 완화)
     CAMERA_FOCUS_POST_PLUG_AF_MS: int = Field(default=0, ge=0, le=10000)
+    # 캘리브레이션(npz) 로딩 및 라이브 캡처 시 undistort 적용 여부 (.env 에서 false 가능)
+    CAMERA_CALIBRATION_ENABLED: bool = Field(default=True)
+    # npz 키: camera_matrix, dist_coeffs 를 포함해야 함
+    CAMERA_CALIBRATION_FILE: str = Field(default="config/camera_calibration_c922_1920x1080.npz")
+    # getOptimalNewCameraMatrix alpha (0.0~1.0)
+    CAMERA_CALIBRATION_ALPHA: float = Field(default=1.0, ge=0.0, le=1.0)
+    # True면 undistort 후 ROI로 검은 테두리를 제거
+    CAMERA_CALIBRATION_CROP_ROI: bool = Field(default=False)
 
     # ── YOLO 추론 설정 ───────────────────────────────────────────────────────
     # 단일 통합 모델 (best.pt) 사용

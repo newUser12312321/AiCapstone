@@ -105,6 +105,7 @@ sender:           Optional[ServerSender]   = None
 board_id_detector: Optional[YoloDetector] = None
 board_profiles: dict[str, dict[str, Any]] = {}
 board_detector_cache: dict[str, YoloDetector] = {}
+camera_calibration: Optional[dict[str, Any]] = None
 
 
 def _resolve_edge_relative_path(path_like: str) -> Path:
@@ -112,6 +113,75 @@ def _resolve_edge_relative_path(path_like: str) -> Path:
     if p.is_absolute():
         return p
     return (_EDGE_DIR / p).resolve()
+
+
+def _load_camera_calibration() -> None:
+    """설정 기반 npz를 로딩해 런타임 undistort에 사용할 캐시를 준비한다."""
+    global camera_calibration
+    camera_calibration = None
+    if not settings.CAMERA_CALIBRATION_ENABLED:
+        logger.info("[캘리브레이션] 비활성화 (CAMERA_CALIBRATION_ENABLED=false)")
+        return
+
+    cal_path = _resolve_edge_relative_path(settings.CAMERA_CALIBRATION_FILE)
+    if not cal_path.exists():
+        logger.warning("[캘리브레이션] 파일 없음: %s", cal_path)
+        return
+
+    try:
+        with np.load(str(cal_path), allow_pickle=False) as data:
+            camera_matrix = np.asarray(data["camera_matrix"], dtype=np.float64)
+            dist_coeffs = np.asarray(data["dist_coeffs"], dtype=np.float64)
+            cal_w = int(data["image_width"]) if "image_width" in data else None
+            cal_h = int(data["image_height"]) if "image_height" in data else None
+        camera_calibration = {
+            "camera_matrix": camera_matrix,
+            "dist_coeffs": dist_coeffs,
+            "cal_w": cal_w,
+            "cal_h": cal_h,
+            "path": str(cal_path),
+        }
+        logger.info(
+            "[캘리브레이션] 로드 완료: %s (size=%sx%s)",
+            cal_path,
+            cal_w if cal_w is not None else "?",
+            cal_h if cal_h is not None else "?",
+        )
+    except Exception as e:
+        logger.error("[캘리브레이션] 로드 실패: %s (%s)", cal_path, e, exc_info=True)
+        camera_calibration = None
+
+
+def _undistort_frame_if_enabled(frame: np.ndarray) -> np.ndarray:
+    """캘리브레이션이 활성화된 경우 frame에 undistort를 적용한다."""
+    if camera_calibration is None:
+        return frame
+
+    h, w = frame.shape[:2]
+    cal_w = camera_calibration.get("cal_w")
+    cal_h = camera_calibration.get("cal_h")
+    if cal_w is not None and cal_h is not None and (w != cal_w or h != cal_h):
+        logger.warning(
+            "[캘리브레이션] 해상도 불일치: frame=%dx%d, calib=%dx%d (원본 사용)",
+            w,
+            h,
+            cal_w,
+            cal_h,
+        )
+        return frame
+
+    camera_matrix = camera_calibration["camera_matrix"]
+    dist_coeffs = camera_calibration["dist_coeffs"]
+    alpha = float(settings.CAMERA_CALIBRATION_ALPHA)
+    new_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(
+        camera_matrix, dist_coeffs, (w, h), alpha, (w, h)
+    )
+    undistorted = cv2.undistort(frame, camera_matrix, dist_coeffs, None, new_camera_matrix)
+    if settings.CAMERA_CALIBRATION_CROP_ROI:
+        x, y, rw, rh = [int(v) for v in roi]
+        if rw > 0 and rh > 0:
+            undistorted = undistorted[y:y + rh, x:x + rw]
+    return undistorted
 
 
 def _load_board_profiles() -> dict[str, dict[str, Any]]:
@@ -140,6 +210,17 @@ def _load_board_profiles() -> dict[str, dict[str, Any]]:
         logger.error("[멀티보드] board profile 최상위는 object여야 합니다.")
         return {}
     profiles: dict[str, dict[str, Any]] = {}
+    def _parse_conf_override(v: Any) -> Optional[float]:
+        if v is None or v == "":
+            return None
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return None
+        if 0.0 <= f <= 1.0:
+            return f
+        return None
+
     for board_type, profile in raw.items():
         if not isinstance(profile, dict):
             continue
@@ -149,6 +230,7 @@ def _load_board_profiles() -> dict[str, dict[str, Any]]:
             "identifier_classes": [str(x).lower() for x in identifiers if str(x).strip()],
             "model_path": str(model_path),
             "expected_counts": profile.get("expected_counts") or {},
+            "confidence_threshold": _parse_conf_override(profile.get("confidence_threshold")),
         }
     logger.info("[멀티보드] profiles 로드: %s", list(profiles.keys()))
     return profiles
@@ -221,6 +303,7 @@ async def lifespan(app: FastAPI):
     logger.info("[시작] 단일 통합 모델 로드 모드")
     detector = YoloDetector()
     detector.load()
+    _load_camera_calibration()
 
     if settings.MULTI_BOARD_ENABLED:
         board_profiles = _load_board_profiles()
@@ -317,6 +400,7 @@ async def run_inspection_pipeline(stage2_source_mode: Optional[str] = None) -> O
         # STEP 1: 카메라 캡처
         logger.info("[파이프라인] STEP 1 — 이미지 캡처")
         frame, image_path = camera.capture_and_save()
+        frame = _undistort_frame_if_enabled(frame)
 
         debug_imshow = settings.ENVIRONMENT == "development"
         mode = (stage2_source_mode or settings.STAGE2_SOURCE_MODE).strip().lower()
@@ -452,6 +536,7 @@ def _run_production_vision_pipeline(
         stage2_detector = detector
         selected_board_type: Optional[str] = None
         selected_expected_counts: dict[str, int] = {}
+        selected_confidence_override: Optional[float] = None
         if settings.MULTI_BOARD_ENABLED and board_profiles:
             from inference.board_ocr_router import resolve_board_type_from_ocr_text
 
@@ -481,6 +566,7 @@ def _run_production_vision_pipeline(
                 profile = board_profiles[board_type]
                 selected_board_type = board_type
                 selected_expected_counts = profile.get("expected_counts") or {}
+                selected_confidence_override = profile.get("confidence_threshold")
                 routed = _get_board_detector(profile["model_path"])
                 if routed is not None:
                     stage1_detector = routed
@@ -492,6 +578,12 @@ def _run_production_vision_pipeline(
                         board_conf,
                         profile["model_path"],
                     )
+                    if selected_confidence_override is not None:
+                        logger.info(
+                            "[멀티보드] board=%s conf override=%.2f",
+                            board_type,
+                            selected_confidence_override,
+                        )
             else:
                 logger.warning(
                     "[멀티보드] 보드 타입 미확정 — OCR 라우팅 또는 보드 YOLO에서 매칭 없음 "
@@ -540,7 +632,10 @@ def _run_production_vision_pipeline(
 
         # STEP 2-A: Stage 1 — 피듀셜 마크 탐지 및 정렬 검사
         logger.info("[파이프라인] STEP 2-A — 피듀셜 마크 탐지")
-        fiducials, fiducial_ms = stage1_detector.detect_fiducials(frame)
+        fiducials, fiducial_ms = stage1_detector.detect_fiducials(
+            frame,
+            conf_override=selected_confidence_override,
+        )
         alignment = compute_alignment(fiducials)
 
         measured_skew_deg = alignment.angle_error_deg
@@ -648,7 +743,10 @@ def _run_production_vision_pipeline(
                 logger.warning("[파이프라인] raw 모드에서는 ROI 대신 전체 프레임으로 Stage2 수행")
             else:
                 roi, roi_x, roi_y = crop_inspection_roi_with_offset(stage2_source_image, alignment)
-        defect_items, defect_ms = stage2_detector.detect_defects(roi)
+        defect_items, defect_ms = stage2_detector.detect_defects(
+            roi,
+            conf_override=selected_confidence_override,
+        )
 
         logger.info("[파이프라인] 결함 탐지: %d건", len(defect_items))
 

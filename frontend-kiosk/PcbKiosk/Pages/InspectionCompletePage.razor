@@ -1,0 +1,121 @@
+@page "/inspection-complete"
+@page "/inspection-complete/{InspectionId:long}"
+@inject InspectionApiClient CloudApi
+@inject IConfiguration Config
+@inject NavigationManager Nav
+
+<section class="complete-page">
+    <header class="complete-header">
+        <div>
+            <h1>검사 완료 (피두셜)</h1>
+            <p>@(_detail?.InspectedAt.LocalDateTime.ToString("yyyy. M. d. tt h:mm:ss") ?? "시간 정보 없음")</p>
+        </div>
+        <div class="status-badge @(_isPass ? "pass" : "fail")">@(_detail?.Result ?? "UNKNOWN")</div>
+    </header>
+
+    @if (_detail is null)
+    {
+        <div class="empty-panel">검사 결과를 불러오지 못했습니다.</div>
+    }
+    else
+    {
+        <div class="complete-grid">
+            <section class="result-canvas">
+                @if (string.IsNullOrWhiteSpace(ImageUrl))
+                {
+                    <div class="empty-image">결과 이미지 없음</div>
+                }
+                else
+                {
+                    <img src="@ImageUrl" alt="검사 결과 이미지" />
+                    @foreach (var defect in _detail.Defects)
+                    {
+                        <div class="bbox"
+                             style="@($"left:{defect.BboxX}px;top:{defect.BboxY}px;width:{defect.BboxWidth}px;height:{defect.BboxHeight}px;")">
+                            <span class="bbox-label">@defect.DefectType @($"{defect.Confidence:P0}")</span>
+                        </div>
+                    }
+                }
+            </section>
+
+            <aside class="info-panel">
+                <h2>검사 정보</h2>
+                <div class="info-card">
+                    <span>검사 ID</span>
+                    <strong>#@_detail.Id</strong>
+                </div>
+                <div class="info-card">
+                    <span>디바이스</span>
+                    <strong>@_detail.DeviceId</strong>
+                </div>
+                <div class="info-card">
+                    <span>검출 수</span>
+                    <strong>@_detail.DefectCount 건</strong>
+                </div>
+                <div class="info-card">
+                    <span>추론 시간</span>
+                    <strong>@($"{_detail.InferenceTimeMs ?? 0} ms")</strong>
+                </div>
+                <div class="info-card">
+                    <span>총 처리 시간</span>
+                    <strong>@($"{_detail.TotalTimeMs ?? 0} ms")</strong>
+                </div>
+
+                @if (_detail.Defects.Count > 0)
+                {
+                    var first = _detail.Defects[0];
+                    <div class="info-card">
+                        <span>첫 검출 중심 좌표</span>
+                        <strong>(@(first.BboxX + first.BboxWidth / 2), @(first.BboxY + first.BboxHeight / 2)) px</strong>
+                    </div>
+                }
+
+                <button class="home-btn" @onclick="GoHome">메인 화면으로 돌아가기</button>
+            </aside>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public long? InspectionId { get; set; }
+
+    private InspectionSummary? _detail;
+    private bool _isPass => string.Equals(_detail?.Result, "PASS", StringComparison.OrdinalIgnoreCase);
+    private string? ImageUrl => Resolve(_detail?.ImagePath);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (InspectionId.HasValue)
+        {
+            _detail = await CloudApi.GetByIdAsync(InspectionId.Value);
+        }
+        else
+        {
+            _detail = (await CloudApi.GetLatestAsync(1)).FirstOrDefault();
+        }
+    }
+
+    private void GoHome() => Nav.NavigateTo("/");
+
+    private string Resolve(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return string.Empty;
+        }
+
+        var normalized = path.Replace("\\", "/");
+        if (normalized.StartsWith("http://") || normalized.StartsWith("https://"))
+        {
+            return normalized;
+        }
+
+        if (!normalized.StartsWith("/"))
+        {
+            normalized = "/" + normalized;
+        }
+
+        var edge = Config["EdgeBaseUrl"] ?? "http://localhost:8000";
+        return $"{edge.TrimEnd('/')}{normalized}";
+    }
+}

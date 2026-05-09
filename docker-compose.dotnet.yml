@@ -1,0 +1,26 @@
+services:
+  backend-dotnet:
+    build:
+      context: ./backend-dotnet/src/AiFactory.Api
+      dockerfile: Dockerfile
+    container_name: aifactory-backend-dotnet
+    ports:
+      - "5000:8080"
+      - "8081:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: unless-stopped
+
+  frontend-csharp:
+    build:
+      context: ./frontend-csharp/PcbDashboard
+      dockerfile: Dockerfile
+      args:
+        API_BASE_URL: http://localhost:8081
+        EDGE_BASE_URL: http://localhost:8000
+    container_name: aifactory-frontend-csharp
+    depends_on:
+      - backend-dotnet
+    ports:
+      - "5002:80"
+    restart: unless-stopped

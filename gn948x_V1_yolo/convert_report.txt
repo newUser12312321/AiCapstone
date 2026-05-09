@@ -1,0 +1,7 @@
+xml: C:\Projects\AiCapstoneV2\gn948x_V1\annotations.xml
+images_dir: C:\Projects\AiCapstoneV2\edge\data\gn948x\undistorted
+out_dir: C:\Projects\AiCapstoneV2\gn948x_V1_yolo
+classes (4): ['connector', 'fiducial', 'group_connector', 'mount_hole']
+train images: 83
+val images: 20
+missing source files: 0
