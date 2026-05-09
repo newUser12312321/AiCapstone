@@ -98,6 +98,10 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex min-h-0 flex-1 flex-col gap-4">
+              <div className="shrink-0">
+                <StatCardGroup />
+              </div>
+
               <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-5 lg:items-stretch">
                 <div className="flex h-full min-h-0 flex-col lg:col-span-2 lg:min-h-[260px]">
                   <PassFailChart />
@@ -105,11 +109,6 @@ export default function DashboardPage() {
                 <div className="flex h-full min-h-0 flex-col lg:col-span-3 lg:min-h-[260px]">
                   <TrendChart />
                 </div>
-              </div>
-
-              {/* P1: KPI 요약 */}
-              <div className="shrink-0">
-                <StatCardGroup />
               </div>
             </div>
           </div>
@@ -157,7 +156,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="glass-panel flex min-h-0 flex-1 flex-col rounded-[24px] p-[18px]">
-              <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">최근 결함 내역</h3>
+              <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">주요 불량 유형</h3>
               {topDefects.length === 0 ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">최근 FAIL 데이터가 없어 집계할 수 없습니다.</p>
               ) : (
