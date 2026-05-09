@@ -27,13 +27,22 @@ export default function Header() {
   return (
     <header className="h-16 bg-[var(--dash-surface-strong)]/60 border-b border-[var(--dash-border)] backdrop-blur-md flex items-center px-6 shrink-0">
 
-      {/* 서비스 로고 + 이름 */}
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-gradient-to-br from-[var(--dash-accent)] to-indigo-500 rounded-full flex items-center justify-center shadow-[var(--dash-shadow-soft)]">
-          <Cpu size={16} className="text-white" />
+      {/* 시스템 브랜드 */}
+      <div className="flex items-center gap-3.5 min-w-0">
+        <div className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-[var(--dash-accent)] via-violet-600 to-indigo-600 flex items-center justify-center shadow-[0_8px_28px_rgba(139,92,246,0.35)] ring-1 ring-white/15">
+          <Cpu size={18} className="text-white drop-shadow-sm" />
         </div>
-        <div>
-          <h1 className="text-sm font-bold text-[var(--dash-text-primary)] leading-none tracking-tight">라즈베리파이 기반 PCB 비전 검사 시스템</h1>
+        <div className="min-w-0 py-0.5">
+          <h1
+            className="
+              text-xl sm:text-2xl font-extrabold leading-tight tracking-tight
+              bg-gradient-to-r from-[var(--dash-text-primary)] via-[var(--dash-accent)] to-[var(--dash-info)]
+              bg-clip-text text-transparent
+              drop-shadow-[0_0_24px_rgba(139,92,246,0.25)]
+            "
+          >
+            PCB 비전 검사 시스템
+          </h1>
         </div>
       </div>
 

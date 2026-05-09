@@ -39,18 +39,26 @@ _CLASS_LABEL_KO: dict[str, str] = {
     "gn-948x": "GN-948X",
 }
 
-# BGR — 대비용 단순 팔레트 (클래스 해시)
+# BGR — 기판 위에서 잘 보이도록 채도·명도 높은 팔레트
 _PALETTE_BGR = [
     (0, 255, 255),
-    (0, 165, 255),
-    (180, 105, 255),
-    (255, 144, 30),
-    (147, 20, 255),
-    (60, 180, 75),
-    (255, 255, 0),
-    (250, 50, 83),
-    (42, 42, 165),
+    (0, 180, 255),
+    (255, 80, 220),
+    (0, 255, 128),
+    (255, 200, 0),
+    (255, 96, 60),
+    (180, 255, 255),
+    (255, 255, 80),
+    (120, 220, 255),
+    (255, 128, 255),
 ]
+
+_BOX_OUTLINE_BGR = (0, 0, 0)  # 바깥 검정 테두리로 대비
+
+
+def _box_line_thickness_for_shape(h: int, w: int) -> int:
+    m = min(h, w)
+    return int(np.clip(m / 280.0, 4.0, 10.0))
 
 
 def _label_ko(defect_type: str) -> str:
@@ -65,19 +73,27 @@ def _color_bgr(defect_type: str) -> tuple[int, int, int]:
     return _PALETTE_BGR[h]
 
 
-def _pil_font():
+def _pil_font(size_px: int):
     from PIL import ImageFont
 
+    size_px = max(18, min(size_px, 52))
     for fp in (
         r"C:\Windows\Fonts\malgun.ttf",
+        "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf",
         "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     ):
         try:
-            return ImageFont.truetype(fp, 18)
+            return ImageFont.truetype(fp, size_px)
         except OSError:
             continue
     return ImageFont.load_default()
+
+
+def _label_font_size_px(h: int, w: int) -> int:
+    """크롭 후에도 읽기 쉽도록 짧은 변 기준 스케일."""
+    return int(np.clip(min(h, w) * 0.038, 22, 46))
 
 
 def _crop_to_board_content(
@@ -87,7 +103,7 @@ def _crop_to_board_content(
     margin_ratio: float = 0.065,
     min_margin_px: int = 42,
     max_margin_px: int = 130,
-    extra_top_for_labels_px: int = 52,
+    extra_top_for_labels_px: int = 88,
 ) -> np.ndarray:
     """
     검출 박스들의 외접 사각형 + 라벨이 올라갈 위쪽 여유 + 비율 기반 마진으로 크롭.
@@ -137,28 +153,47 @@ def _draw_labels_pil(
     vis_bgr: np.ndarray,
     items: list[tuple[int, int, str, tuple[int, int, int]]],
 ) -> np.ndarray:
-    """박스가 그려진 BGR 이미지 위에 한글 라벨만 오버레이."""
+    """박스가 그려진 BGR 이미지 위에 한글 라벨 — 큰 글자·검정 스트로크·어두운 배너."""
     try:
         from PIL import Image, ImageDraw
+
+        h_img, w_img = vis_bgr.shape[:2]
+        fs = _label_font_size_px(h_img, w_img)
+        pad = max(6, fs // 5)
+        stroke_w = max(2, fs // 12)
 
         img_rgb = cv2.cvtColor(vis_bgr, cv2.COLOR_BGR2RGB)
         pil = Image.fromarray(img_rgb)
         draw = ImageDraw.Draw(pil)
-        font = _pil_font()
+        font = _pil_font(fs)
+
         for x, y_base, text, color_bgr in items:
             rgb = (int(color_bgr[2]), int(color_bgr[1]), int(color_bgr[0]))
-            bbox = draw.textbbox((0, 0), text, font=font)
+            bbox = draw.textbbox((0, 0), text, font=font, stroke_width=stroke_w)
             tw = bbox[2] - bbox[0]
             th = bbox[3] - bbox[1]
-            pad = 2
-            ty_text = y_base - th - pad * 2
+            ty_text = y_base - th - pad * 2 - stroke_w * 2
             if ty_text < 0:
-                ty_text = y_base + 4
-            draw.rectangle(
-                [x, ty_text, x + tw + pad * 2, ty_text + th + pad * 2],
-                fill=(0, 0, 0),
+                ty_text = min(y_base + 8, max(0, h_img - th - pad * 2 - stroke_w * 2))
+
+            bx0 = max(0, x)
+            by0 = max(0, ty_text)
+            bx1 = min(w_img - 1, x + tw + pad * 2 + stroke_w * 4)
+            by1 = min(h_img - 1, ty_text + th + pad * 2 + stroke_w * 4)
+
+            draw.rectangle([bx0, by0, bx1, by1], fill=(22, 22, 22), outline=(255, 255, 255), width=2)
+
+            tx = bx0 + pad + stroke_w
+            ty_draw = by0 + pad + stroke_w
+            draw.text(
+                (tx, ty_draw),
+                text,
+                font=font,
+                fill=rgb,
+                stroke_width=stroke_w,
+                stroke_fill=(0, 0, 0),
             )
-            draw.text((x + pad, ty_text + pad), text, font=font, fill=rgb)
+
         return cv2.cvtColor(np.array(pil), cv2.COLOR_RGB2BGR)
     except Exception as e:
         logger.warning("[board-ref] PIL 라벨 실패: %s", e)
@@ -206,6 +241,8 @@ def render_board_reference_overlay_jpeg(board_key: str, *, conf: float = 0.15) -
     detector.load()
     detections, _ms = detector.detect(frame, target_class=None, conf=conf)
 
+    fh, fw = frame.shape[:2]
+    line_t = _box_line_thickness_for_shape(fh, fw)
     vis = frame.copy()
     label_items: list[tuple[int, int, str, tuple[int, int, int]]] = []
     for det in detections:
@@ -215,9 +252,10 @@ def render_board_reference_overlay_jpeg(board_key: str, *, conf: float = 0.15) -
         x2 = int(round(float(b.x + b.width)))
         y2 = int(round(float(b.y + b.height)))
         color = _color_bgr(det.defect_type)
-        cv2.rectangle(vis, (x1, y1), (x2, y2), color, 2)
+        cv2.rectangle(vis, (x1, y1), (x2, y2), _BOX_OUTLINE_BGR, line_t + 4)
+        cv2.rectangle(vis, (x1, y1), (x2, y2), color, line_t)
         label = _label_ko(det.defect_type)
-        ty = max(22, y1 - 4)
+        ty = max(_label_font_size_px(fh, fw) + 8, y1 - 4)
         label_items.append((x1, ty, label, color))
 
     vis = _draw_labels_pil(vis, label_items)
