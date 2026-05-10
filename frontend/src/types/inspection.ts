@@ -231,3 +231,33 @@ export function defectDisplayName(defectType: string, detail?: string | null): s
 
   return trimmed ? `${base} (${trimmed})` : base
 }
+
+/** `MISSING:` 안의 클래스 토큰 → DEFECT_LABEL 조회 (대소문자·스네이크 변형 허용) */
+function defectLabelForYamlClass(raw: string): string | undefined {
+  const k = raw.trim()
+  if (!k) return undefined
+  return (
+    DEFECT_LABEL[k] ??
+    DEFECT_LABEL[k.toLowerCase()] ??
+    DEFECT_LABEL[k.toUpperCase()]
+  )
+}
+
+/**
+ * 대시보드 「주요 불량 유형」 집계용 라벨.
+ * 엣지 `expected_counts` 불일치 시 붙는 `MISSING:{클래스}:expected=...` 는
+ * 동일 클래스 일반 검출(예: mount_hole 박스)과 한글 카테고리가 겹치지 않게 동일 버킷으로 묶는다.
+ * (DEFECT_LABEL 에 없는 클래스만 긴 「… 누락 (기대 n…)」 문구 유지)
+ */
+export function defectDashboardAggregateLabel(defectType: string, detail?: string | null): string {
+  const t = (defectType ?? '').trim()
+  if (t.startsWith('MISSING:')) {
+    const m = t.match(/^MISSING:([^:]+):/)
+    const inner = m?.[1]
+    if (inner) {
+      const bucket = defectLabelForYamlClass(inner)
+      if (bucket) return bucket
+    }
+  }
+  return defectDisplayName(defectType, detail)
+}

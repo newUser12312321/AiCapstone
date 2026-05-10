@@ -160,7 +160,7 @@ function buildFiducialClassDistanceRows(
   })
 }
 
-/** 얇은 헤일로 + 가는 점선 — PCB 위 과밀 완화 */
+/** 헤일로 + 점선 — PCB 위에서도 식별 가능하도록 중간 두께 */
 function FiducialDistanceRayLines(props: {
   x1: number
   y1: number
@@ -179,7 +179,7 @@ function FiducialDistanceRayLines(props: {
         x2={x2}
         y2={y2}
         stroke={outerStroke}
-        strokeWidth={4}
+        strokeWidth={6}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray={dash}
@@ -190,7 +190,7 @@ function FiducialDistanceRayLines(props: {
         x2={x2}
         y2={y2}
         stroke={innerStroke}
-        strokeWidth={1.35}
+        strokeWidth={2.1}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray={dash}
@@ -227,7 +227,7 @@ function FiducialToClassDistanceLines({
       : null
 
   return (
-    <g aria-hidden className="pointer-events-none opacity-[0.92]">
+    <g aria-hidden className="pointer-events-none">
       {defects.map((d, i) => {
         if (FIDUCIAL_RAY_SKIP_DEFECT_TYPES.has(d.defectType)) return null
 
@@ -269,11 +269,11 @@ function FiducialToClassDistanceLines({
               y1={from.y}
               x2={cx}
               y2={cy}
-              outerStroke="rgba(15, 23, 42, 0.42)"
+              outerStroke="rgba(15, 23, 42, 0.62)"
               innerStroke={innerStroke}
               dash={dash}
             />
-            <circle cx={cx} cy={cy} r={3} fill="rgba(15,23,42,0.55)" stroke="#f8fafc" strokeWidth={0.9} />
+            <circle cx={cx} cy={cy} r={4} fill="rgba(15,23,42,0.72)" stroke="#f8fafc" strokeWidth={1.15} />
           </g>
         )
       })}
@@ -305,7 +305,7 @@ function FiducialMarker({
   const sy = y * scaleY
   const color = '#38bdf8'
   const gap = compact ? 4 : 5
-  const arm = compact ? 12 : 16
+  const arm = compact ? 13 : 17
   const cap =
     confidence != null && !Number.isNaN(confidence)
       ? `${label} ${(confidence * 100).toFixed(0)}%`
@@ -322,7 +322,7 @@ function FiducialMarker({
         x2={sx - gap}
         y2={sy}
         stroke={color}
-        strokeWidth={1.75}
+        strokeWidth={2.15}
         strokeLinecap="round"
       />
       <line
@@ -331,7 +331,7 @@ function FiducialMarker({
         x2={sx + arm}
         y2={sy}
         stroke={color}
-        strokeWidth={1.75}
+        strokeWidth={2.15}
         strokeLinecap="round"
       />
       <line
@@ -340,7 +340,7 @@ function FiducialMarker({
         x2={sx}
         y2={sy - gap}
         stroke={color}
-        strokeWidth={1.75}
+        strokeWidth={2.15}
         strokeLinecap="round"
       />
       <line
@@ -349,10 +349,10 @@ function FiducialMarker({
         x2={sx}
         y2={sy + arm}
         stroke={color}
-        strokeWidth={1.75}
+        strokeWidth={2.15}
         strokeLinecap="round"
       />
-      <circle cx={sx} cy={sy} r={compact ? 9 : 11} fill="none" stroke={color} strokeWidth={compact ? 1.35 : 1.75} />
+      <circle cx={sx} cy={sy} r={compact ? 10 : 12} fill="none" stroke={color} strokeWidth={compact ? 1.65 : 2.05} />
       {/* 라벨·신뢰도 — 마크 위쪽으로만 배치 (마크 가리지 않음) */}
       <rect
         x={sx - tw / 2}
@@ -360,15 +360,15 @@ function FiducialMarker({
         width={tw}
         height={14}
         rx={4}
-        fill="rgba(15,23,42,0.78)"
-        stroke="rgba(56,189,248,0.5)"
-        strokeWidth={1}
+        fill="rgba(15,23,42,0.88)"
+        stroke="rgba(56,189,248,0.65)"
+        strokeWidth={1.05}
       />
       <text
         x={sx}
         y={labelY - 1}
         fill="#e0f2fe"
-        fontSize={10}
+        fontSize={11}
         fontWeight={600}
         textAnchor="middle"
         fontFamily="ui-monospace, monospace"
@@ -380,17 +380,17 @@ function FiducialMarker({
         x={sx - (compact ? 72 : 88)}
         y={sy + arm + 2}
         width={compact ? 144 : 176}
-        height={compact ? 22 : 28}
+        height={compact ? 24 : 30}
         rx={compact ? 4 : 6}
-        fill="rgba(15,23,42,0.92)"
-        stroke="rgba(56,189,248,0.75)"
-        strokeWidth={compact ? 1.1 : 1.5}
+        fill="rgba(15,23,42,0.94)"
+        stroke="rgba(56,189,248,0.88)"
+        strokeWidth={compact ? 1.2 : 1.55}
       />
       <text
         x={sx}
-        y={sy + arm + (compact ? 16 : 21)}
+        y={sy + arm + (compact ? 17 : 22)}
         fill="#f0f9ff"
-        fontSize={compact ? 11 : 14}
+        fontSize={compact ? 12 : 15}
         fontWeight={700}
         textAnchor="middle"
         fontFamily="ui-monospace, monospace"
@@ -432,13 +432,22 @@ function DefectBox({
 
   return (
     <g>
-      <rect x={sx} y={sy} width={sw} height={sh} rx={2} fill="none" stroke={color} strokeWidth={1.45} opacity={0.92} />
-      <rect x={sx} y={ty} width={tw} height={16} rx={4} fill="rgba(15,23,42,0.82)" stroke={color} strokeWidth={0.95} />
+      <rect
+        x={sx}
+        y={sy}
+        width={sw}
+        height={sh}
+        rx={2}
+        fill="none"
+        stroke={color}
+        strokeWidth={2.35}
+      />
+      <rect x={sx} y={ty} width={tw} height={17} rx={4} fill="rgba(15,23,42,0.9)" stroke={color} strokeWidth={1.15} />
       <text
-        x={sx + 5}
-        y={ty + 11}
+        x={sx + 6}
+        y={ty + 12}
         fill={color}
-        fontSize={10}
+        fontSize={11}
         fontWeight={700}
         fontFamily="ui-monospace, monospace"
       >

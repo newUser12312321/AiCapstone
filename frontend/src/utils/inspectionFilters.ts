@@ -1,5 +1,5 @@
 import type { InspectionLog } from '@/types/inspection'
-import { defectDisplayName } from '@/types/inspection'
+import { defectDashboardAggregateLabel, defectDisplayName } from '@/types/inspection'
 
 export type LineFilter = {
   deviceId?: string
@@ -19,7 +19,8 @@ export function filterByLine(logs: InspectionLog[], f: LineFilter): InspectionLo
 
 export function logMatchesDefectDisplayLabel(log: InspectionLog, label: string): boolean {
   if (!label.trim()) return true
-  return log.defects.some(
-    (d) => defectDisplayName(d.defectType, d.detail) === label
-  )
+  return log.defects.some((d) => {
+    if (defectDisplayName(d.defectType, d.detail) === label) return true
+    return defectDashboardAggregateLabel(d.defectType, d.detail) === label
+  })
 }

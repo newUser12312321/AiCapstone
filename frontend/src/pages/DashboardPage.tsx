@@ -7,7 +7,7 @@ import StatCardGroup from '@/components/dashboard/StatCard'
 import PassFailChart from '@/components/dashboard/PassFailChart'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useAllInspections, useRecentInspections, useStats } from '@/hooks/useInspectionData'
-import { defectDisplayName, deviceDisplayLabel } from '@/types/inspection'
+import { defectDashboardAggregateLabel, deviceDisplayLabel } from '@/types/inspection'
 import { buildHistoryPath, getLocalDateString, inspectionDetailPath } from '@/utils/historyNavigation'
 
 export default function DashboardPage() {
@@ -41,7 +41,7 @@ export default function DashboardPage() {
     const counter = new Map<string, number>()
     recentFailLogs.forEach((log) => {
       log.defects.forEach((d) => {
-        const label = defectDisplayName(d.defectType, d.detail)
+        const label = defectDashboardAggregateLabel(d.defectType, d.detail)
         counter.set(label, (counter.get(label) ?? 0) + 1)
       })
     })
