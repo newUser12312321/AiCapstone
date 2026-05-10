@@ -9,17 +9,21 @@ import {
   type CameraFocusState,
   type KioskInspectionPreset,
 } from '@/api/edgeApi'
-import { useRecentInspections } from '@/hooks/useInspectionData'
+import { fetchRecentInspections } from '@/api/inspectionApi'
+import { QUERY_KEYS, useRecentInspections } from '@/hooks/useInspectionData'
+import { runTripleRedFlash } from '@/utils/kioskFailFlash'
 import clsx from 'clsx'
+
+const RECENT_LOG_LIMIT = 5
 
 export default function KioskPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [actionMsg, setActionMsg] = useState<string | null>(null)
+  const [failFullScreenFlash, setFailFullScreenFlash] = useState(false)
   const [kioskPreset, setKioskPreset] = useState<KioskInspectionPreset>('standard')
   const [focusDraft, setFocusDraft] = useState<number | null>(null)
-  const { data: recentLogs = [] } = useRecentInspections(5)
-  const latest = recentLogs[0]
+  const { data: recentLogs = [] } = useRecentInspections(RECENT_LOG_LIMIT)
 
   const focusQuery = useQuery({
     queryKey: ['edge', 'camera-focus'],
@@ -50,19 +54,19 @@ export default function KioskPage() {
   const triggerMutation = useMutation({
     mutationFn: (preset: KioskInspectionPreset) => triggerEdgeInspection('aligned', preset),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['inspections', 'recent'] })
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.recent(RECENT_LOG_LIMIT) })
+      const logs = await queryClient.fetchQuery({
+        queryKey: QUERY_KEYS.recent(RECENT_LOG_LIMIT),
+        queryFn: () => fetchRecentInspections(RECENT_LOG_LIMIT),
+      })
+      const newest = logs[0]
+      if (newest?.result === 'FAIL') {
+        await runTripleRedFlash(setFailFullScreenFlash)
+      }
       setActionMsg('검사가 완료되었습니다. 우측 최근 검사이력에서 항목을 선택해 상세 결과를 확인하세요.')
     },
     onError: (e: Error) => setActionMsg(e.message || '검사 요청 실패'),
   })
-
-  const verdict = !latest ? '대기' : latest.result === 'PASS' ? '정상' : '불량'
-
-  const verdictClass = latest?.result === 'PASS'
-    ? 'bg-[var(--dash-success)]'
-    : latest?.result === 'FAIL'
-      ? 'bg-[var(--dash-danger)]'
-      : 'bg-[var(--dash-text-tertiary)]'
 
   const focusControlsDisabled =
     focusQuery.isLoading || focusMutation.isPending || focusFromServer == null
@@ -83,7 +87,14 @@ export default function KioskPage() {
   }, [applyFocus, focusFromServer, focusMutation.isPending])
 
   return (
-    <div className="dashboard-theme min-h-screen w-full text-[var(--dash-text-primary)] p-4 md:p-6 overflow-y-auto">
+    <div className="dashboard-theme relative min-h-screen w-full text-[var(--dash-text-primary)] p-4 md:p-6 overflow-y-auto">
+      <div
+        aria-hidden
+        className={clsx(
+          'fixed inset-0 z-[600] pointer-events-none transition-none',
+          failFullScreenFlash && 'bg-[rgba(220,38,38,0.52)]'
+        )}
+      />
       <div className="glass-panel mx-auto max-w-7xl min-h-[min(100vh,100%)] rounded-[30px] p-5 md:p-6 shadow-[var(--dash-glow)] overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-5 items-start">
           <section className="glass-panel rounded-3xl p-5 md:p-6">
@@ -202,36 +213,10 @@ export default function KioskPage() {
             </div>
           </section>
 
-          <section className="select-none glass-panel rounded-3xl p-5 md:p-6 flex flex-col gap-4">
-            <div className="glass-panel-subtle rounded-2xl p-4">
-              <p className="text-base text-[var(--dash-text-secondary)] mb-2">최신 판정</p>
-              <div className={`w-full rounded-2xl px-4 py-10 text-center text-6xl md:text-7xl text-white font-extrabold ${verdictClass}`}>
-                {verdict}
-              </div>
-              <p className="mt-3 text-sm text-[var(--dash-text-secondary)]">
-                {latest ? `검사시각 ${new Date(latest.inspectedAt).toLocaleTimeString('ko-KR')}` : '아직 검사 기록이 없습니다.'}
-              </p>
-            </div>
-
-            <div className="glass-panel-subtle rounded-2xl p-4">
-              <p className="text-base text-[var(--dash-text-secondary)] mb-3 text-center">검사 실행</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setActionMsg(null)
-                  triggerMutation.mutate(kioskPreset)
-                }}
-                disabled={triggerMutation.isPending}
-                className="w-full rounded-full bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] shadow-[var(--dash-glow)] disabled:opacity-50 px-6 py-6 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3"
-              >
-                {triggerMutation.isPending ? <Loader2 className="animate-spin" size={28} /> : <Camera size={28} />}
-                검사 시작
-              </button>
-            </div>
-
-            <div className="glass-panel-subtle rounded-2xl p-4 flex-1 min-h-0">
+          <section className="select-none glass-panel rounded-3xl p-5 md:p-6 flex flex-col gap-4 min-h-0">
+            <div className="glass-panel-subtle rounded-2xl p-4 flex-1 min-h-0 flex flex-col">
               <p className="text-base text-[var(--dash-text-secondary)] mb-3">최근 검사이력 5건</p>
-              <div className="space-y-2">
+              <div className="space-y-2 flex-1 min-h-0 overflow-y-auto pr-0.5">
                 {recentLogs.length === 0 && (
                   <p className="text-sm text-[var(--dash-text-secondary)]">표시할 검사 이력이 없습니다.</p>
                 )}
@@ -258,7 +243,23 @@ export default function KioskPage() {
               </div>
             </div>
 
-            {actionMsg && <p className="text-sm text-[var(--dash-text-secondary)]">{actionMsg}</p>}
+            <div className="glass-panel-subtle rounded-2xl p-4 shrink-0">
+              <p className="text-base text-[var(--dash-text-secondary)] mb-3 text-center">검사 실행</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setActionMsg(null)
+                  triggerMutation.mutate(kioskPreset)
+                }}
+                disabled={triggerMutation.isPending}
+                className="w-full rounded-full bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] shadow-[var(--dash-glow)] disabled:opacity-50 px-6 py-6 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3"
+              >
+                {triggerMutation.isPending ? <Loader2 className="animate-spin" size={28} /> : <Camera size={28} />}
+                검사 시작
+              </button>
+            </div>
+
+            {actionMsg && <p className="text-sm text-[var(--dash-text-secondary)] shrink-0">{actionMsg}</p>}
           </section>
         </div>
       </div>
