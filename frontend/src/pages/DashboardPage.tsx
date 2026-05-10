@@ -69,7 +69,7 @@ export default function DashboardPage() {
   return (
     <div className="flex h-full min-h-0 flex-col bg-transparent px-5 pt-5 pb-4">
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1320px] flex-1 flex-col">
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-stretch">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-start">
           <div className="flex h-full min-h-0 flex-col gap-4 xl:col-span-8">
             <div className="glass-panel shrink-0 rounded-[26px] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -119,19 +119,12 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="flex min-h-0 flex-1 flex-col gap-4">
-              <div className="shrink-0">
-                <StatCardGroup
-                  lineFilter={{}}
-                  allLogs={allLogs}
-                  chartSlot={
-                    <PassFailChart variant="statTile" lineFilter={{}} logs={allLogs} />
-                  }
-                />
-              </div>
-              <div className="min-h-0 flex-1">
-                <HourlyInspectionVolumeChart />
-              </div>
+            <div className="shrink-0">
+              <StatCardGroup
+                lineFilter={{}}
+                allLogs={allLogs}
+                chartSlot={<PassFailChart variant="statTile" lineFilter={{}} logs={allLogs} />}
+              />
             </div>
           </div>
 
@@ -149,9 +142,10 @@ export default function DashboardPage() {
                   검사 내역이 없습니다.
                 </div>
               ) : (
-                <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+                <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-1">
                   {recentLogs.slice(0, 5).map((log) => {
                     const { date, time } = formatSplitDateTime(log.inspectedAt)
+                    const pass = log.result === 'PASS'
                     return (
                       <button
                         type="button"
@@ -163,46 +157,37 @@ export default function DashboardPage() {
                             },
                           })
                         }
-                        className="glass-panel-subtle w-full rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-[var(--dash-bg-secondary)]"
+                        className={clsx(
+                          'glass-panel-subtle w-full rounded-xl px-3.5 py-3 text-left transition-colors hover:bg-[var(--dash-bg-secondary)] border-l-[5px]',
+                          pass ? 'border-[var(--dash-success)]' : 'border-[var(--dash-danger)]'
+                        )}
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-medium text-[var(--dash-text-primary)]">#{log.id} · {log.deviceId}</p>
-                          <span
-                            className={clsx(
-                              'shrink-0 text-[10px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full border',
-                              log.result === 'PASS'
-                                ? 'bg-[var(--dash-success)]/20 text-[var(--dash-success)] border-[var(--dash-success)]/45'
-                                : 'bg-[var(--dash-danger)]/22 text-[var(--dash-danger)] border-[var(--dash-danger)]/50'
-                            )}
-                          >
-                            {log.result}
-                          </span>
-                        </div>
-                        <div className="flex items-start justify-between gap-2 mt-1.5">
-                          <p
-                            className={clsx(
-                              'text-xs truncate flex-1 min-w-0',
-                              log.result === 'FAIL'
-                                ? 'text-[var(--dash-danger)]'
-                                : 'text-[var(--dash-text-secondary)]'
-                            )}
-                          >
-                            {log.result === 'PASS'
-                              ? '합격'
-                              : log.defects.length > 0
-                                ? defectDisplayName(log.defects[0].defectType, log.defects[0].detail)
-                                : 'FAIL'}
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                          <p className="text-sm font-semibold text-[var(--dash-text-primary)]">
+                            #{log.id} · {log.deviceId}
                           </p>
-                          <span className="text-[10px] text-[var(--dash-text-tertiary)] text-right shrink-0">
-                            {time ? (
-                              <>
-                                <span className="block">{date}</span>
-                                <span className="font-mono">{time}</span>
-                              </>
-                            ) : (
-                              <span className="font-mono">{date}</span>
-                            )}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                            <span
+                              className={clsx(
+                                'inline-flex items-center justify-center min-w-[5.5rem] text-sm font-black uppercase tracking-wide px-4 py-2 rounded-xl border-2 shadow-[0_2px_12px_rgba(0,0,0,0.12)]',
+                                pass
+                                  ? 'bg-[var(--dash-success)]/25 text-[var(--dash-success)] border-[var(--dash-success)]'
+                                  : 'bg-[var(--dash-danger)]/28 text-[var(--dash-danger)] border-[var(--dash-danger)]'
+                              )}
+                            >
+                              {pass ? '합격' : '불합격'}
+                            </span>
+                            <span className="text-[11px] text-[var(--dash-text-tertiary)] text-right tabular-nums">
+                              {time ? (
+                                <>
+                                  <span className="block">{date}</span>
+                                  <span className="font-mono text-[var(--dash-text-secondary)]">{time}</span>
+                                </>
+                              ) : (
+                                <span className="font-mono">{date}</span>
+                              )}
+                            </span>
+                          </div>
                         </div>
                       </button>
                     )
@@ -231,6 +216,10 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="xl:col-span-12 shrink-0 w-full min-h-0">
+            <HourlyInspectionVolumeChart />
           </div>
         </div>
 

@@ -8,6 +8,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Activity, Bell } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import raspberryPiIcon from '@/assets/raspberry-pi-icon.webp'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useStats } from '@/hooks/useInspectionData'
@@ -49,19 +50,20 @@ export default function Header() {
       <header className="h-16 bg-[var(--dash-surface-strong)]/60 border-b border-[var(--dash-border)] backdrop-blur-md flex items-center px-6 shrink-0">
 
         <div className="flex items-center gap-3.5 min-w-0">
-          <div
-            className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center overflow-hidden bg-white p-1.5 shadow-[0_8px_28px_rgba(139,92,246,0.35)] ring-1 ring-white/15"
-            aria-hidden
+          <Link
+            to="/"
+            title="메인 대시보드로 이동"
+            className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center overflow-hidden bg-white p-1.5 shadow-[0_8px_28px_rgba(139,92,246,0.35)] ring-1 ring-white/15 transition-transform hover:scale-105 hover:ring-[var(--dash-accent)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/50"
           >
             <img
               src={raspberryPiIcon}
               alt=""
               width={28}
               height={28}
-              className="h-7 w-7 object-contain select-none"
+              className="h-7 w-7 object-contain select-none pointer-events-none"
               draggable={false}
             />
-          </div>
+          </Link>
           <div className="min-w-0 py-0.5">
             <h1
               className="

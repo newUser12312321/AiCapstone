@@ -73,18 +73,18 @@ function StatCard({ title, value, icon: Icon, theme, caption, delta, onNavigate 
   const colors = THEME_MAP[theme]
   const inner = (
     <>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[15px] text-[var(--dash-text-secondary)] font-semibold">{title}</span>
-        <div className={clsx('w-9 h-9 rounded-full flex items-center justify-center', colors.bg)}>
-          <Icon size={18} className={colors.text} />
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-base text-[var(--dash-text-secondary)] font-semibold">{title}</span>
+        <div className={clsx('w-11 h-11 rounded-full flex items-center justify-center', colors.bg)}>
+          <Icon size={22} className={colors.text} />
         </div>
       </div>
-      <p className="text-[32px] leading-none font-bold text-[var(--dash-text-primary)] tracking-tight">{value}</p>
+      <p className="text-[40px] leading-none font-bold text-[var(--dash-text-primary)] tracking-tight">{value}</p>
       {caption && (
-        <p className="text-sm text-[var(--dash-text-tertiary)] mt-1.5">{caption}</p>
+        <p className="text-sm text-[var(--dash-text-tertiary)] mt-2">{caption}</p>
       )}
       {delta && (
-        <p className="text-xs text-[var(--dash-text-secondary)] mt-1 font-medium">{delta}</p>
+        <p className="text-xs text-[var(--dash-text-secondary)] mt-1.5 font-medium">{delta}</p>
       )}
     </>
   )
@@ -95,7 +95,7 @@ function StatCard({ title, value, icon: Icon, theme, caption, delta, onNavigate 
         type="button"
         onClick={onNavigate}
         className={clsx(
-          'glass-panel rounded-[22px] p-5 min-h-[142px] text-left w-full transition-transform hover:scale-[1.01] active:scale-[0.99]',
+          'glass-panel rounded-[22px] p-6 min-h-[196px] text-left w-full transition-transform hover:scale-[1.01] active:scale-[0.99]',
           colors.border,
           'focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/40'
         )}
@@ -106,7 +106,7 @@ function StatCard({ title, value, icon: Icon, theme, caption, delta, onNavigate 
   }
 
   return (
-    <div className={clsx('glass-panel rounded-[22px] p-5 min-h-[142px]', colors.border)}>
+    <div className={clsx('glass-panel rounded-[22px] p-6 min-h-[196px]', colors.border)}>
       {inner}
     </div>
   )
@@ -114,13 +114,13 @@ function StatCard({ title, value, icon: Icon, theme, caption, delta, onNavigate 
 
 function StatCardSkeleton() {
   return (
-    <div className="glass-panel rounded-xl p-5 animate-pulse">
-      <div className="flex items-center justify-between mb-3">
-        <div className="h-4 w-20 bg-[var(--dash-bg-secondary)] rounded" />
-        <div className="w-9 h-9 bg-[var(--dash-bg-secondary)] rounded-lg" />
+    <div className="glass-panel rounded-xl p-6 min-h-[196px] animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-5 w-24 bg-[var(--dash-bg-secondary)] rounded" />
+        <div className="w-11 h-11 bg-[var(--dash-bg-secondary)] rounded-full" />
       </div>
-      <div className="h-8 w-24 bg-[var(--dash-bg-secondary)] rounded mt-1" />
-      <div className="h-3 w-32 bg-[var(--dash-bg-secondary)] rounded mt-3" />
+      <div className="h-10 w-28 bg-[var(--dash-bg-secondary)] rounded mt-1" />
+      <div className="h-3 w-36 bg-[var(--dash-bg-secondary)] rounded mt-4" />
     </div>
   )
 }
@@ -180,7 +180,7 @@ export default function StatCardGroup({ lineFilter, allLogs, chartSlot }: StatCa
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {Array.from({ length: 3 }).map((_, i) => (
           <StatCardSkeleton key={i} />
         ))}
@@ -202,7 +202,7 @@ export default function StatCardGroup({ lineFilter, allLogs, chartSlot }: StatCa
   const fail = useBackendStats ? stats.failCount : summarize(scopedLogs).fail
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
       <StatCard
         title="전체 검사"
         value={total.toLocaleString()}
