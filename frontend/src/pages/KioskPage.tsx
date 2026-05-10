@@ -271,18 +271,33 @@ export default function KioskPage() {
 
             <div className="glass-panel-subtle flex min-h-0 flex-1 flex-col rounded-xl p-2.5">
               <p className="mb-2 shrink-0 text-center text-[11px] text-[var(--dash-text-secondary)]">검사 실행</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setActionMsg(null)
-                  triggerMutation.mutate(kioskPreset)
-                }}
-                disabled={triggerMutation.isPending}
-                className="inline-flex min-h-[48px] flex-1 w-full items-center justify-center gap-2 rounded-full bg-[var(--dash-accent)] px-4 py-3 text-lg font-bold text-white shadow-[var(--dash-glow)] hover:bg-[var(--dash-accent-hover)] disabled:opacity-50"
-              >
-                {triggerMutation.isPending ? <Loader2 className="animate-spin" size={22} /> : <Camera size={22} />}
-                검사 시작
-              </button>
+              <div className="flex min-h-0 flex-1 flex-col [container-type:size]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActionMsg(null)
+                    triggerMutation.mutate(kioskPreset)
+                  }}
+                  disabled={triggerMutation.isPending}
+                  className={clsx(
+                    'relative flex h-full min-h-[52px] w-full flex-1 flex-row items-center justify-center gap-[0.45em]',
+                    'overflow-hidden rounded-2xl border border-white/25 px-4 py-3',
+                    'bg-gradient-to-b from-[var(--dash-accent)] via-[var(--dash-accent)] to-[var(--dash-accent-hover)]',
+                    'shadow-[0_12px_36px_rgba(139,92,246,0.38),inset_0_1px_0_rgba(255,255,255,0.22)]',
+                    'text-[clamp(1.125rem,calc(0.55rem+10cqh),2.35rem)] font-extrabold tracking-tight text-white',
+                    'transition-[transform,filter] hover:brightness-[1.06] active:scale-[0.99] active:brightness-95',
+                    'disabled:pointer-events-none disabled:opacity-45',
+                    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50'
+                  )}
+                >
+                  {triggerMutation.isPending ? (
+                    <Loader2 className="size-[1.15em] shrink-0 animate-spin" strokeWidth={2.5} aria-hidden />
+                  ) : (
+                    <Camera className="size-[1.15em] shrink-0" strokeWidth={2.25} aria-hidden />
+                  )}
+                  <span className="leading-none">검사 시작</span>
+                </button>
+              </div>
             </div>
 
             {actionMsg && (
