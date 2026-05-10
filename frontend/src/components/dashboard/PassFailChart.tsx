@@ -42,11 +42,11 @@ function CenterLabel({
       <g>
         <text
           x={cx}
-          y={cy - 5}
+          y={cy - 4}
           textAnchor="middle"
           dominantBaseline="central"
           style={{
-            fontSize: '1.125rem',
+            fontSize: '1.25rem',
             fontWeight: 700,
             fill: 'var(--dash-text-primary)',
           }}
@@ -55,9 +55,9 @@ function CenterLabel({
         </text>
         <text
           x={cx}
-          y={cy + 12}
+          y={cy + 14}
           textAnchor="middle"
-          style={{ fontSize: '0.625rem', fill: 'var(--dash-text-tertiary)' }}
+          style={{ fontSize: '0.6875rem', fill: 'var(--dash-text-tertiary)' }}
         >
           불량률
         </text>
@@ -130,15 +130,15 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
 
   const isTile = variant === 'statTile'
   const shellClass = isTile
-    ? 'glass-panel flex min-h-[142px] h-full animate-pulse flex-col rounded-[22px] p-5'
+    ? 'glass-panel flex min-h-[168px] h-full animate-pulse flex-col rounded-[22px] p-5'
     : 'glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-[22px] p-5'
 
   if (isLoading || !stats) {
     return (
       <div className={shellClass}>
         <div className={isTile ? 'mb-2 h-4 w-32 shrink-0 rounded bg-[var(--dash-bg-secondary)]' : 'mb-4 h-4 w-36 shrink-0 rounded bg-[var(--dash-bg-secondary)]'} />
-        <div className={`flex flex-1 items-center justify-center ${isTile ? 'min-h-[88px]' : ''}`}>
-          <div className={`rounded-full bg-[var(--dash-bg-secondary)] ${isTile ? 'h-20 w-20' : 'h-48 w-48'}`} />
+        <div className={`flex flex-1 items-center justify-center ${isTile ? 'min-h-[120px]' : ''}`}>
+          <div className={`rounded-full bg-[var(--dash-bg-secondary)] ${isTile ? 'h-28 w-28' : 'h-48 w-48'}`} />
         </div>
       </div>
     )
@@ -162,7 +162,7 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
       <div
         className={
           isTile
-            ? 'glass-panel flex min-h-[142px] h-full flex-col items-center justify-center rounded-[22px] p-5'
+            ? 'glass-panel flex min-h-[168px] h-full flex-col items-center justify-center rounded-[22px] p-5'
             : 'glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[22px] p-5'
         }
       >
@@ -177,15 +177,15 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
     else goResult('FAIL')
   }
 
-  const innerR = isTile ? 30 : 72
-  const outerR = isTile ? 46 : 100
-  const chartHeight = isTile ? 108 : undefined
+  const innerR = isTile ? 44 : 72
+  const outerR = isTile ? 68 : 100
+  const chartHeight = isTile ? 148 : undefined
 
   return (
     <div
       className={
         isTile
-          ? 'glass-panel flex min-h-[142px] h-full flex-col rounded-[22px] p-5 transition-transform hover:scale-[1.01]'
+          ? 'glass-panel flex min-h-[168px] h-full flex-col rounded-[22px] p-5 transition-transform hover:scale-[1.01]'
           : 'glass-panel flex h-full min-h-[240px] flex-col rounded-[22px] p-5'
       }
     >

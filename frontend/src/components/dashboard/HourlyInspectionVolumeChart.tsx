@@ -73,7 +73,7 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
           <div className="h-4 w-48 rounded bg-[var(--dash-bg-secondary)]" />
           <div className="h-3 w-24 rounded bg-[var(--dash-bg-secondary)]" />
         </div>
-        <div className="min-h-0 flex-1 rounded bg-[var(--dash-bg-secondary)]" />
+        <div className="h-[260px] rounded bg-[var(--dash-bg-secondary)]" />
       </div>
     )
   }
@@ -87,8 +87,9 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
         </span>
       </div>
 
-      <div className="min-h-0 w-full flex-1" style={{ minHeight: 220 }}>
-        <ResponsiveContainer width="100%" height="100%">
+      {/* ResponsiveContainer는 부모 높이 %에 의존 — flex-1만으로는 0 높이가 되어 차트가 안 보일 수 있음 */}
+      <div className="w-full shrink-0" style={{ height: 260 }}>
+        <ResponsiveContainer width="100%" height={260}>
           <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
             <defs>
               <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
@@ -141,6 +142,11 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      {data.length > 0 && data.every((p) => p.count === 0) && (
+        <p className="mt-2 text-center text-xs text-[var(--dash-text-tertiary)]">
+          최근 24시간 구간에 집계된 검사가 없습니다.
+        </p>
+      )}
     </div>
   )
 }

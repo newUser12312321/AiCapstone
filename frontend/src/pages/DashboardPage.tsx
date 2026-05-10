@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import clsx from 'clsx'
 import { ArrowRight, CheckCircle2, Settings } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import HourlyInspectionVolumeChart from '@/components/dashboard/HourlyInspectionVolumeChart'
@@ -137,18 +138,19 @@ export default function DashboardPage() {
           <div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1 xl:col-span-4">
             <div className="glass-panel flex min-h-0 flex-[2] flex-col rounded-[24px] p-[18px]">
               <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">
-                최근 이상 징후 ({settings.recentFeedLimit}건 기준)
+                최근 검사 내역
               </h3>
+              <p className="mb-3 shrink-0 text-xs text-[var(--dash-text-tertiary)]">최근 5건 · 클릭 시 상세</p>
               {isRecentLoading ? (
                 <p className="text-sm text-[var(--dash-text-secondary)]">로딩 중…</p>
-              ) : recentFailLogs.length === 0 ? (
-                <div className="glass-panel-subtle rounded-xl px-3 py-3 text-sm text-[var(--dash-success)] flex items-center gap-2">
-                  <CheckCircle2 size={15} />
-                  최근 구간에서 FAIL 이력이 없습니다.
+              ) : recentLogs.length === 0 ? (
+                <div className="glass-panel-subtle rounded-xl px-3 py-3 text-sm text-[var(--dash-text-secondary)] flex items-center gap-2">
+                  <CheckCircle2 size={15} className="text-[var(--dash-text-tertiary)]" />
+                  검사 내역이 없습니다.
                 </div>
               ) : (
                 <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-                  {recentFailLogs.slice(0, 6).map((log) => {
+                  {recentLogs.slice(0, 5).map((log) => {
                     const { date, time } = formatSplitDateTime(log.inspectedAt)
                     return (
                       <button
@@ -165,7 +167,33 @@ export default function DashboardPage() {
                       >
                         <div className="flex items-center justify-between gap-2">
                           <p className="text-sm font-medium text-[var(--dash-text-primary)]">#{log.id} · {log.deviceId}</p>
-                          <span className="text-xs text-[var(--dash-text-tertiary)] text-right">
+                          <span
+                            className={clsx(
+                              'shrink-0 text-[10px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full border',
+                              log.result === 'PASS'
+                                ? 'bg-[var(--dash-success)]/20 text-[var(--dash-success)] border-[var(--dash-success)]/45'
+                                : 'bg-[var(--dash-danger)]/22 text-[var(--dash-danger)] border-[var(--dash-danger)]/50'
+                            )}
+                          >
+                            {log.result}
+                          </span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2 mt-1.5">
+                          <p
+                            className={clsx(
+                              'text-xs truncate flex-1 min-w-0',
+                              log.result === 'FAIL'
+                                ? 'text-[var(--dash-danger)]'
+                                : 'text-[var(--dash-text-secondary)]'
+                            )}
+                          >
+                            {log.result === 'PASS'
+                              ? '합격'
+                              : log.defects.length > 0
+                                ? defectDisplayName(log.defects[0].defectType, log.defects[0].detail)
+                                : 'FAIL'}
+                          </p>
+                          <span className="text-[10px] text-[var(--dash-text-tertiary)] text-right shrink-0">
                             {time ? (
                               <>
                                 <span className="block">{date}</span>
@@ -176,9 +204,6 @@ export default function DashboardPage() {
                             )}
                           </span>
                         </div>
-                        <p className="text-xs text-[var(--dash-danger)] mt-1 truncate">
-                          {log.defects.length > 0 ? defectDisplayName(log.defects[0].defectType, log.defects[0].detail) : 'FAIL'}
-                        </p>
                       </button>
                     )
                   })}
