@@ -24,6 +24,11 @@ export interface DefectDetail {
 /** 최종 판정 결과 타입 */
 export type InspectionResultType = 'PASS' | 'FAIL'
 
+/** 화면 표시용 판정 라벨(API·쿼리는 PASS/FAIL 유지) */
+export function inspectionResultLabel(result: InspectionResultType): string {
+  return result === 'PASS' ? '정상' : '불량'
+}
+
 /** 검사 이력 단건 레코드 (GET /api/inspections 응답 요소) */
 export interface InspectionLog {
   id: number

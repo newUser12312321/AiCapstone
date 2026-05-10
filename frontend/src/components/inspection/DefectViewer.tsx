@@ -7,7 +7,7 @@ import { X, ImageOff, AlertCircle } from 'lucide-react'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useInspectionById } from '@/hooks/useInspectionData'
 import type { InspectionLog } from '@/types/inspection'
-import { DEFECT_COLOR, defectDisplayName } from '@/types/inspection'
+import { DEFECT_COLOR, defectDisplayName, inspectionResultLabel } from '@/types/inspection'
 
 // ── 이미지 로드 전 기본값 (로드 후 naturalWidth/Height 사용) ───────────────
 const DEFAULT_REF_WIDTH = 1920
@@ -350,7 +350,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
             검사 상세 (피듀셜)
             {log && (
               <span className="ml-2 text-xs text-[var(--dash-text-tertiary)] font-normal">
-                #{log.id} — {log.result === 'PASS' ? '✅ PASS' : '❌ FAIL'}
+                #{log.id} — {log.result === 'PASS' ? '✅ 정상' : `❌ ${inspectionResultLabel(log.result)}`}
               </span>
             )}
           </span>
@@ -694,7 +694,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
 
             {missingReasons.length > 0 && (
               <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
-                <h4 className="text-[11px] font-semibold text-[var(--dash-danger)] mb-1">FAIL 원인</h4>
+                <h4 className="text-[11px] font-semibold text-[var(--dash-danger)] mb-1">불량 원인</h4>
                 <ul className="space-y-1">
                   {missingReasons.map((d, i) => (
                     <li key={`${d.defectType}-${i}`} className="text-[11px] text-[var(--dash-danger)]">

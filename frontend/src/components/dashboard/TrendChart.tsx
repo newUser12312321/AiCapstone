@@ -141,7 +141,7 @@ export default function TrendChart({ lineFilter }: TrendChartProps) {
 
           <Bar
             dataKey="pass"
-            name="PASS"
+            name="정상"
             stackId="stack"
             fill={PASS_COLOR}
             radius={[0, 0, 0, 0]}
@@ -151,7 +151,7 @@ export default function TrendChart({ lineFilter }: TrendChartProps) {
 
           <Bar
             dataKey="fail"
-            name="FAIL"
+            name="불량"
             stackId="stack"
             fill={FAIL_COLOR}
             radius={[3, 3, 0, 0]}

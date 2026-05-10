@@ -5,7 +5,7 @@
  * (inline 모드) 테이블 아래에 DefectViewer를 펼친다.
  *
  * 기능:
- * - PASS/FAIL 뱃지 색상 구분
+ * - 정상/불량 뱃지 색상 구분
  * - 결함 종류 태그 (단선, 까짐 등)
  * - 각도 오차 표시
  * - 클릭으로 상세 DefectViewer 연동
@@ -16,14 +16,14 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronRight, AlertCircle } from 'lucide-react'
 import clsx from 'clsx'
 import type { InspectionLog } from '@/types/inspection'
-import { defectDisplayName, DEFECT_COLOR } from '@/types/inspection'
+import { defectDisplayName, DEFECT_COLOR, inspectionResultLabel } from '@/types/inspection'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import DefectViewer from './DefectViewer'
 import { inspectionDetailPath } from '@/utils/historyNavigation'
 
 // ── 보조 컴포넌트 ─────────────────────────────────────────────────────────────
 
-/** PASS / FAIL 결과 뱃지 — 다크·라이트 테마 모두에서 채도 있는 대비 */
+/** 정상 / 불량 결과 뱃지 — 다크·라이트 테마 모두에서 채도 있는 대비 */
 function ResultBadge({ result }: { result: 'PASS' | 'FAIL' }) {
   return (
     <span
@@ -34,7 +34,7 @@ function ResultBadge({ result }: { result: 'PASS' | 'FAIL' }) {
           : 'bg-[var(--dash-danger)]/26 text-[var(--dash-danger)] border-2 border-[var(--dash-danger)]/70'
       )}
     >
-      {result}
+      {inspectionResultLabel(result)}
     </span>
   )
 }

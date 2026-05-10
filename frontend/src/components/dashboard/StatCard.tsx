@@ -131,7 +131,7 @@ export interface StatCardGroupProps {
   /** 라인·기종 필터 (빈 문자열이면 전체) */
   lineFilter: LineFilter
   allLogs: InspectionLog[]
-  /** 네 번째 칸 — 합격/불합격 비율 등 */
+  /** 네 번째 칸 — 정상/불량 비율 등 */
   chartSlot?: ReactNode
 }
 
@@ -213,7 +213,7 @@ export default function StatCardGroup({ lineFilter, allLogs, chartSlot }: StatCa
         onNavigate={() => go({})}
       />
       <StatCard
-        title="합격 (PASS)"
+        title="정상"
         value={pass.toLocaleString()}
         icon={CheckCircle}
         theme="green"
@@ -222,7 +222,7 @@ export default function StatCardGroup({ lineFilter, allLogs, chartSlot }: StatCa
         onNavigate={() => goToday({ result: 'PASS' })}
       />
       <StatCard
-        title="불합격 (FAIL)"
+        title="불량"
         value={fail.toLocaleString()}
         icon={XCircle}
         theme="red"

@@ -68,18 +68,18 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
 
   if (isLoading) {
     return (
-      <div className="glass-panel flex min-h-[280px] flex-1 animate-pulse flex-col rounded-[22px] p-5">
+      <div className="glass-panel flex min-h-[420px] flex-1 animate-pulse flex-col rounded-[22px] p-5">
         <div className="mb-4 flex shrink-0 items-center justify-between">
           <div className="h-4 w-48 rounded bg-[var(--dash-bg-secondary)]" />
           <div className="h-3 w-24 rounded bg-[var(--dash-bg-secondary)]" />
         </div>
-        <div className="h-[260px] rounded bg-[var(--dash-bg-secondary)]" />
+        <div className="h-[360px] rounded bg-[var(--dash-bg-secondary)]" />
       </div>
     )
   }
 
   return (
-    <div className="glass-panel flex min-h-[280px] flex-1 flex-col rounded-[22px] p-5">
+    <div className="glass-panel flex min-h-[420px] flex-1 flex-col rounded-[22px] p-5">
       <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-2">
         <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 건수</h2>
         <span className="text-xs text-[var(--dash-text-tertiary)]">
@@ -87,9 +87,8 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
         </span>
       </div>
 
-      {/* ResponsiveContainer는 부모 높이 %에 의존 — flex-1만으로는 0 높이가 되어 차트가 안 보일 수 있음 */}
-      <div className="w-full shrink-0" style={{ height: 260 }}>
-        <ResponsiveContainer width="100%" height={260}>
+      <div className="w-full h-[360px] shrink-0">
+        <ResponsiveContainer width="100%" height={360}>
           <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
             <defs>
               <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">

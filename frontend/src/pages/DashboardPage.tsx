@@ -180,7 +180,7 @@ export default function DashboardPage() {
                                   : 'bg-[var(--dash-danger)]/28 text-[var(--dash-danger)] border-[var(--dash-danger)]'
                               )}
                             >
-                              {pass ? '합격' : '불합격'}
+                              {pass ? '정상' : '불량'}
                             </span>
                             <span className="text-[11px] text-[var(--dash-text-tertiary)] text-right tabular-nums">
                               {time ? (
@@ -204,7 +204,7 @@ export default function DashboardPage() {
             <div className="glass-panel flex min-h-0 flex-1 flex-col rounded-[24px] p-[18px]">
               <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">주요 불량 유형</h3>
               {topDefects.length === 0 ? (
-                <p className="text-sm text-[var(--dash-text-secondary)]">최근 FAIL 데이터가 없어 집계할 수 없습니다.</p>
+                <p className="text-sm text-[var(--dash-text-secondary)]">최근 불량 데이터가 없어 집계할 수 없습니다.</p>
               ) : (
                 <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                   {topDefects.map(([label, count]) => (

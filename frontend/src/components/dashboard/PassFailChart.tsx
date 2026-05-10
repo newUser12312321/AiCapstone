@@ -1,5 +1,5 @@
 /**
- * 합격/불합격 도넛 차트 — 세그먼트 클릭 시 검사 이력으로 이동
+ * 정상/불량 비율 도넛 차트 — 세그먼트 클릭 시 검사 이력으로 이동
  */
 
 import {
@@ -137,8 +137,8 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
     return (
       <div className={shellClass}>
         <div className={isTile ? 'mb-2 h-4 w-32 shrink-0 rounded bg-[var(--dash-bg-secondary)]' : 'mb-4 h-4 w-36 shrink-0 rounded bg-[var(--dash-bg-secondary)]'} />
-        <div className={`flex flex-1 items-center justify-center ${isTile ? 'min-h-[132px]' : ''}`}>
-          <div className={`rounded-full bg-[var(--dash-bg-secondary)] ${isTile ? 'h-32 w-32' : 'h-48 w-48'}`} />
+        <div className={`flex flex-1 items-center justify-center ${isTile ? 'min-h-[110px]' : ''}`}>
+          <div className={`rounded-full bg-[var(--dash-bg-secondary)] ${isTile ? 'h-28 w-28' : 'h-48 w-48'}`} />
         </div>
       </div>
     )
@@ -153,8 +153,8 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
     : summarize(logs)
 
   const pieData: PieDataPoint[] = [
-    { name: 'PASS (합격)', value: pass, fill: PASS_COLOR },
-    { name: 'FAIL (불합격)', value: fail, fill: FAIL_COLOR },
+    { name: '정상', value: pass, fill: PASS_COLOR },
+    { name: '불량', value: fail, fill: FAIL_COLOR },
   ]
 
   if (pass === 0 && fail === 0) {
@@ -166,8 +166,8 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
             : 'glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[22px] p-5'
         }
       >
-        <h2 className="mb-2 self-stretch text-[15px] font-semibold text-[var(--dash-text-secondary)]">합격 / 불합격 비율</h2>
-        <p className="text-sm text-[var(--dash-text-secondary)]">표시할 합격·불합격 데이터가 없습니다.</p>
+        <h2 className="mb-2 self-stretch text-[15px] font-semibold text-[var(--dash-text-secondary)]">정상 / 불량 비율</h2>
+        <p className="text-sm text-[var(--dash-text-secondary)]">표시할 정상·불량 데이터가 없습니다.</p>
       </div>
     )
   }
@@ -177,9 +177,13 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
     else goResult('FAIL')
   }
 
-  const innerR = isTile ? 52 : 72
-  const outerR = isTile ? 78 : 100
-  const chartHeight = isTile ? 162 : undefined
+  /* statTile: 반지름이 크면 범례·패딩 안에서 도넛이 위아래로 잘림 → 여백 + 반지름 축소 */
+  const innerR = isTile ? 28 : 72
+  const outerR = isTile ? 44 : 100
+  const chartHeight = isTile ? 130 : undefined
+  const pieMargins = isTile
+    ? { top: 6, right: 4, bottom: 22, left: 4 }
+    : { top: 0, right: 0, bottom: 0, left: 0 }
 
   return (
     <div
@@ -190,12 +194,12 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
       }
     >
       <h2 className={`shrink-0 text-[15px] font-semibold text-[var(--dash-text-secondary)] ${isTile ? 'mb-2' : 'mb-4'}`}>
-        합격 / 불합격 비율
+        정상 / 불량 비율
       </h2>
 
       <div className="min-h-0 w-full flex-1" style={chartHeight ? { height: chartHeight } : undefined}>
         <ResponsiveContainer width="100%" height={chartHeight ? chartHeight : '100%'}>
-          <PieChart>
+          <PieChart margin={pieMargins}>
             <Pie
               data={pieData}
               cx="50%"

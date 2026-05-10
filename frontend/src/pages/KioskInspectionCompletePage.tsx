@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Home, Loader2 } from 'lucide-react'
 import { fetchInspectionById } from '@/api/inspectionApi'
+import { inspectionResultLabel } from '@/types/inspection'
 
 function fiducialDistancePx(log: {
   fiducial1X: number | null
@@ -43,7 +44,11 @@ export default function KioskInspectionCompletePage() {
   )
 
   const isPass = log?.result === 'PASS'
-  const kioskVerdictPrimary = silkPrintDefect ? '실크인쇄불량' : log?.result ?? 'PENDING'
+  const kioskVerdictPrimary = silkPrintDefect
+    ? '실크인쇄불량'
+    : log
+      ? inspectionResultLabel(log.result)
+      : 'PENDING'
   const distance = log ? fiducialDistancePx(log) : null
 
   return (

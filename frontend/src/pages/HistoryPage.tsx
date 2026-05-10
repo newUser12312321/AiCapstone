@@ -1,7 +1,7 @@
 /**
  * 검사 이력 페이지
  *
- * 전체 검사 이력을 조회하고 날짜 기간 필터 및 결과(PASS/FAIL) 필터를 제공한다.
+ * 전체 검사 이력을 조회하고 날짜 기간 필터 및 결과(정상/불량, URL은 PASS/FAIL) 필터를 제공한다.
  * 쿼리스트링(from, to, result, device, board, defect, hour, open)으로 대시보드·차트와 연동한다.
  */
 
@@ -291,14 +291,14 @@ export default function HistoryPage() {
               onClick={(v) => patchQuery({ result: v, open: undefined })}
             />
             <FilterButton
-              label="PASS"
+              label="정상"
               value="PASS"
               current={resultFilter}
               count={allLogs.filter((l) => l.result === 'PASS').length}
               onClick={(v) => patchQuery({ result: v, open: undefined })}
             />
             <FilterButton
-              label="FAIL"
+              label="불량"
               value="FAIL"
               current={resultFilter}
               count={allLogs.filter((l) => l.result === 'FAIL').length}
@@ -313,10 +313,10 @@ export default function HistoryPage() {
             조회 결과 <span className="text-[var(--dash-text-primary)] font-semibold">{filteredLogs.length}건</span>
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
-            합격 <span className="text-[var(--dash-success)] font-semibold">{passCount}건</span>
+            정상 <span className="text-[var(--dash-success)] font-semibold">{passCount}건</span>
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
-            불합격 <span className="text-[var(--dash-danger)] font-semibold">{failCount}건</span>
+            불량 <span className="text-[var(--dash-danger)] font-semibold">{failCount}건</span>
           </span>
           {filteredLogs.length > 0 && (
           <span>

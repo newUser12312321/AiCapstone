@@ -27,7 +27,7 @@ export function useDashboardAlerts(): string[] {
       else break
     }
     if (consecutive >= settings.alertMinConsecutiveFail) {
-      out.push(`연속 FAIL ${consecutive}건 (임계 ${settings.alertMinConsecutiveFail}건)`)
+      out.push(`연속 불량 ${consecutive}건 (임계 ${settings.alertMinConsecutiveFail}건)`)
     }
 
     const inf = recentLogs

@@ -301,7 +301,7 @@ export default function SettingsPage() {
             </label>
             <label className="block">
               <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
-                연속 FAIL 알림 (건)
+                연속 불량 알림 (건)
               </span>
               <input
                 type="number"
