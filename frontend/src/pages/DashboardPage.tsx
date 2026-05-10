@@ -126,6 +126,11 @@ export default function DashboardPage() {
                 chartSlot={<PassFailChart variant="statTile" lineFilter={{}} logs={allLogs} />}
               />
             </div>
+
+            {/* 통계 카드와 동일 가로 폭(8/12 컬럼), 세로는 카드 아래 */}
+            <div className="min-h-0 w-full shrink-0">
+              <HourlyInspectionVolumeChart />
+            </div>
           </div>
 
           <div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1 xl:col-span-4">
@@ -216,10 +221,6 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
-          </div>
-
-          <div className="xl:col-span-12 shrink-0 w-full min-h-0">
-            <HourlyInspectionVolumeChart />
           </div>
         </div>
 
