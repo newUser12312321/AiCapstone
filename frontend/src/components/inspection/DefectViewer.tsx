@@ -199,8 +199,8 @@ function FiducialDistanceRayLines(props: {
   )
 }
 
-/** 거리 레이 선 생략 — 고정홀 등 대량 클래스가 선을 과도하게 늘릴 때 (표에는 그대로 유지) */
-const FIDUCIAL_RAY_SKIP_DEFECT_TYPES = new Set<string>(['mount_hole', 'fiducial'])
+/** 거리 레이 선 생략 — 피듀셜 검출 박스는 F1/F2 마커와 중복되어 선만 많아지므로 생략 (표에는 유지) */
+const FIDUCIAL_RAY_SKIP_DEFECT_TYPES = new Set<string>(['fiducial'])
 
 /** 보정 후 오버레이 SVG 안 — 최단 피듀셜 ↔ 박스 중심만 연결 (F1+F2 동시 연결 생략으로 선 수 절반) */
 function FiducialToClassDistanceLines({
@@ -845,7 +845,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
                 <p className="px-3 py-2 text-[10px] leading-snug text-[var(--dash-text-tertiary)] border-t border-[var(--dash-border)]">
                   이미지 위 선은 각 박스에서{' '}
                   <strong className="text-[var(--dash-text-secondary)]">더 가까운 피듀셜</strong>으로만 연결합니다.
-                  고정홀·피듀셜 클래스는 선 밀도를 줄이기 위해 생략합니다(표에는 그대로).
+                  피듀셜 클래스 검출만 선을 생략합니다(F1/F2 마커와 겹침). 표에는 그대로입니다.
                 </p>
               </div>
             )}
