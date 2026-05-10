@@ -4,7 +4,7 @@
       "model_name_zone",
       "g_series_name_zone"
     ],
-    "model_path": "weights/gt125a_best.pt",
+    "model_path": "weights/GT_125A_bestV2.pt",
     "expected_counts": {
       "mount_hole": 4,
       "fiducial": 2,
