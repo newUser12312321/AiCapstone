@@ -1,13 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Home, Loader2 } from 'lucide-react'
 import { fetchInspectionById } from '@/api/inspectionApi'
-import KioskFailBurstLabel from '@/components/kiosk/KioskFailBurstLabel'
-import KioskPassBurstLabel from '@/components/kiosk/KioskPassBurstLabel'
 import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
-import { runTripleBurstFlash } from '@/utils/kioskFailFlash'
-import clsx from 'clsx'
 
 function fiducialDistancePx(log: {
   fiducial1X: number | null
@@ -25,11 +21,6 @@ export default function KioskInspectionCompletePage() {
   const { inspectionId } = useParams<{ inspectionId: string }>()
   const id = Number(inspectionId)
   const isValidId = Number.isFinite(id) && id > 0
-  const [failFullScreenFlash, setFailFullScreenFlash] = useState(false)
-  const [failLabelFlash, setFailLabelFlash] = useState(false)
-  const [passFullScreenFlash, setPassFullScreenFlash] = useState(false)
-  const [passLabelFlash, setPassLabelFlash] = useState(false)
-  const flashedForIdRef = useRef<number | null>(null)
 
   const { data: log, isLoading, isError } = useQuery({
     queryKey: ['inspection', id],
@@ -60,44 +51,8 @@ export default function KioskInspectionCompletePage() {
       : 'PENDING'
   const distance = log ? fiducialDistancePx(log) : null
 
-  useEffect(() => {
-    if (!log) return
-    if (log.result !== 'FAIL' && log.result !== 'PASS') return
-    if (flashedForIdRef.current === log.id) return
-    flashedForIdRef.current = log.id
-    let cancelled = false
-    const isFail = log.result === 'FAIL'
-    void (async () => {
-      await runTripleBurstFlash(
-        (on) => {
-          if (cancelled) return
-          if (isFail) setFailFullScreenFlash(on)
-          else setPassFullScreenFlash(on)
-        },
-        (on) => {
-          if (cancelled) return
-          if (isFail) setFailLabelFlash(on)
-          else setPassLabelFlash(on)
-        }
-      )
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [log?.id, log?.result])
-
   return (
     <div className="dashboard-theme relative min-h-screen w-full text-[var(--dash-text-primary)] p-4 md:p-6 overflow-y-auto">
-      <div
-        aria-hidden
-        className={clsx(
-          'fixed inset-0 z-[600] pointer-events-none transition-none',
-          failFullScreenFlash && 'bg-[rgba(220,38,38,0.52)]',
-          passFullScreenFlash && 'bg-[rgba(22,163,74,0.48)]'
-        )}
-      />
-      <KioskFailBurstLabel visible={failLabelFlash} />
-      <KioskPassBurstLabel visible={passLabelFlash} />
       <div className="glass-panel mx-auto max-w-[980px] rounded-[30px] p-5 md:p-6 shadow-[var(--dash-glow)]">
         <div className="flex flex-col gap-4">
           <header className="glass-panel rounded-3xl px-6 py-5 flex items-center justify-between gap-4 flex-wrap">

@@ -14,6 +14,7 @@ import { QUERY_KEYS, useRecentInspections } from '@/hooks/useInspectionData'
 import KioskFailBurstLabel from '@/components/kiosk/KioskFailBurstLabel'
 import KioskPassBurstLabel from '@/components/kiosk/KioskPassBurstLabel'
 import { runTripleBurstFlash } from '@/utils/kioskFailFlash'
+import kioskRaspberryIcon from '@/assets/kiosk-raspberry-icon.webp'
 import clsx from 'clsx'
 
 const RECENT_LOG_LIMIT = 5
@@ -109,10 +110,24 @@ export default function KioskPage() {
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-stretch lg:gap-3">
           <section className="glass-panel flex min-h-0 flex-col gap-2 overflow-hidden rounded-2xl p-3 lg:flex-1">
             <div className="flex shrink-0 flex-wrap items-end justify-between gap-2 gap-y-1">
-              <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-wide text-[var(--dash-text-tertiary)]">PCB Kiosk</p>
-                <h1 className="text-xl font-bold leading-tight tracking-tight text-[var(--dash-text-primary)] lg:text-2xl">
-                  검사 화면
+              <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                <img
+                  src={kioskRaspberryIcon}
+                  alt=""
+                  width={40}
+                  height={40}
+                  draggable={false}
+                  className="h-9 w-9 shrink-0 object-contain select-none lg:h-10 lg:w-10"
+                />
+                <h1
+                  className="
+                  text-xl sm:text-2xl font-extrabold leading-tight tracking-tight
+                  bg-gradient-to-r from-[var(--dash-text-primary)] via-[var(--dash-accent)] to-[var(--dash-info)]
+                  bg-clip-text text-transparent
+                  drop-shadow-[0_0_24px_rgba(139,92,246,0.25)]
+                "
+                >
+                  PCB 비전 검사 시스템
                 </h1>
               </div>
               <div className="flex min-w-0 flex-1 flex-wrap items-end justify-end gap-2 sm:flex-nowrap sm:justify-end lg:max-w-[52%]">
@@ -225,9 +240,9 @@ export default function KioskPage() {
           </section>
 
           <section className="glass-panel flex min-h-0 select-none flex-col gap-2 overflow-hidden rounded-2xl p-3 lg:flex-1">
-            <div className="glass-panel-subtle flex min-h-0 flex-1 flex-col rounded-xl p-2.5">
+            <div className="glass-panel-subtle flex shrink-0 flex-col rounded-xl p-2.5">
               <p className="mb-2 shrink-0 text-xs font-medium text-[var(--dash-text-secondary)]">최근 검사이력 5건</p>
-              <div className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-0.5">
+              <div className="space-y-1 overflow-y-auto overscroll-contain pr-0.5">
                 {recentLogs.length === 0 && (
                   <p className="text-[11px] text-[var(--dash-text-secondary)]">검사 이력이 없습니다.</p>
                 )}
@@ -254,8 +269,8 @@ export default function KioskPage() {
               </div>
             </div>
 
-            <div className="glass-panel-subtle shrink-0 rounded-xl p-2.5">
-              <p className="mb-2 text-center text-[11px] text-[var(--dash-text-secondary)]">검사 실행</p>
+            <div className="glass-panel-subtle flex min-h-0 flex-1 flex-col rounded-xl p-2.5">
+              <p className="mb-2 shrink-0 text-center text-[11px] text-[var(--dash-text-secondary)]">검사 실행</p>
               <button
                 type="button"
                 onClick={() => {
@@ -263,7 +278,7 @@ export default function KioskPage() {
                   triggerMutation.mutate(kioskPreset)
                 }}
                 disabled={triggerMutation.isPending}
-                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-[var(--dash-accent)] px-4 py-3 text-lg font-bold text-white shadow-[var(--dash-glow)] hover:bg-[var(--dash-accent-hover)] disabled:opacity-50"
+                className="inline-flex min-h-[48px] flex-1 w-full items-center justify-center gap-2 rounded-full bg-[var(--dash-accent)] px-4 py-3 text-lg font-bold text-white shadow-[var(--dash-glow)] hover:bg-[var(--dash-accent-hover)] disabled:opacity-50"
               >
                 {triggerMutation.isPending ? <Loader2 className="animate-spin" size={22} /> : <Camera size={22} />}
                 검사 시작
