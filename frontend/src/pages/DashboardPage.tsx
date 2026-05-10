@@ -1,15 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { ArrowRight, CheckCircle2, Settings } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import HourlyInspectionVolumeChart from '@/components/dashboard/HourlyInspectionVolumeChart'
 import StatCardGroup from '@/components/dashboard/StatCard'
 import PassFailChart from '@/components/dashboard/PassFailChart'
-import TrendChart from '@/components/dashboard/TrendChart'
-import ThroughputStrip from '@/components/dashboard/ThroughputStrip'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useAllInspections, useRecentInspections, useStats } from '@/hooks/useInspectionData'
 import { defectDisplayName } from '@/types/inspection'
 import { buildHistoryPath, getLocalDateString } from '@/utils/historyNavigation'
-import { filterByLine } from '@/utils/inspectionFilters'
 
 export default function DashboardPage() {
   const { settings, formatSplitDateTime } = useDashboardSettings()
@@ -20,55 +18,22 @@ export default function DashboardPage() {
   )
   const { data: stats } = useStats()
 
-  const [filterDevice, setFilterDevice] = useState('')
-  const [filterBoard, setFilterBoard] = useState('')
-
-  const lineFilter = useMemo(
-    () => ({
-      deviceId: filterDevice.trim() || undefined,
-      board: filterBoard.trim() || undefined,
-    }),
-    [filterDevice, filterBoard]
-  )
-
-  const deviceOptions = useMemo(() => {
-    const s = new Set<string>()
-    allLogs.forEach((l) => {
-      if (l.deviceId) s.add(l.deviceId)
-    })
-    return Array.from(s).sort()
-  }, [allLogs])
-
-  const boardOptions = useMemo(() => {
-    const s = new Set<string>()
-    allLogs.forEach((l) => {
-      const b = (l.silkBoardName ?? '').trim()
-      if (b) s.add(b)
-    })
-    return Array.from(s).sort()
-  }, [allLogs])
-
-  const scopedRecent = useMemo(
-    () => filterByLine(recentLogs, lineFilter),
-    [recentLogs, lineFilter]
-  )
-
   const recentFailLogs = useMemo(
-    () => scopedRecent.filter((log) => log.result === 'FAIL'),
-    [scopedRecent]
+    () => recentLogs.filter((log) => log.result === 'FAIL'),
+    [recentLogs]
   )
 
   const avgInferenceMs = useMemo(() => {
-    const valid = scopedRecent.map((l) => l.inferenceTimeMs).filter((v): v is number => typeof v === 'number')
+    const valid = recentLogs.map((l) => l.inferenceTimeMs).filter((v): v is number => typeof v === 'number')
     if (!valid.length) return null
     return Math.round(valid.reduce((acc, v) => acc + v, 0) / valid.length)
-  }, [scopedRecent])
+  }, [recentLogs])
 
   const avgTotalMs = useMemo(() => {
-    const valid = scopedRecent.map((l) => l.totalTimeMs).filter((v): v is number => typeof v === 'number')
+    const valid = recentLogs.map((l) => l.totalTimeMs).filter((v): v is number => typeof v === 'number')
     if (!valid.length) return null
     return Math.round(valid.reduce((acc, v) => acc + v, 0) / valid.length)
-  }, [scopedRecent])
+  }, [recentLogs])
 
   const topDefects = useMemo(() => {
     const counter = new Map<string, number>()
@@ -86,10 +51,7 @@ export default function DashboardPage() {
   const statusTone = stats && stats.failRate >= 3 ? 'text-[var(--dash-danger)]' : 'text-[var(--dash-success)]'
   const today = getLocalDateString()
 
-  const lineQ = {
-    device: lineFilter.deviceId,
-    board: lineFilter.board,
-  }
+  const lineQ = {}
 
   const goDefectHistory = (label: string) => {
     navigate(
@@ -133,35 +95,6 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap items-end gap-3">
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs text-[var(--dash-text-tertiary)]">디바이스 (라인)</label>
-                  <select
-                    value={filterDevice}
-                    onChange={(e) => setFilterDevice(e.target.value)}
-                    className="min-w-[160px] rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
-                  >
-                    <option value="">전체</option>
-                    {deviceOptions.map((d) => (
-                      <option key={d} value={d}>{d}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs text-[var(--dash-text-tertiary)]">기판명 (실크)</label>
-                  <select
-                    value={filterBoard}
-                    onChange={(e) => setFilterBoard(e.target.value)}
-                    className="min-w-[180px] rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
-                  >
-                    <option value="">전체</option>
-                    {boardOptions.map((b) => (
-                      <option key={b} value={b}>{b}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
                 <div className="glass-panel-subtle rounded-2xl px-4 py-3.5">
                   <p className="text-xs text-[var(--dash-text-tertiary)] mb-1">현재 라인 상태</p>
@@ -185,18 +118,17 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex min-h-0 flex-1 flex-col gap-4">
-              <ThroughputStrip allLogs={allLogs} lineFilter={lineFilter} />
               <div className="shrink-0">
-                <StatCardGroup lineFilter={lineFilter} allLogs={allLogs} />
+                <StatCardGroup
+                  lineFilter={{}}
+                  allLogs={allLogs}
+                  chartSlot={
+                    <PassFailChart variant="statTile" lineFilter={{}} logs={allLogs} />
+                  }
+                />
               </div>
-
-              <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-5 lg:items-stretch">
-                <div className="flex h-full min-h-0 flex-col lg:col-span-2 lg:min-h-[260px]">
-                  <PassFailChart lineFilter={lineFilter} logs={filterByLine(allLogs, lineFilter)} />
-                </div>
-                <div className="flex h-full min-h-0 flex-col lg:col-span-3 lg:min-h-[260px]">
-                  <TrendChart lineFilter={lineFilter} />
-                </div>
+              <div className="min-h-0 flex-1">
+                <HourlyInspectionVolumeChart />
               </div>
             </div>
           </div>

@@ -57,7 +57,8 @@ export default function BoardReferencePage() {
           <div>
             <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text-primary)]">기판 기준 정보</h1>
             <p className="text-sm text-[var(--dash-text-secondary)] mt-1">
-              정상 라벨링 기준 이미지와 클래스 정상 개수, 피듀셜 기준 픽셀·mm 스케일을 보드별로 확인합니다.
+              정상 라벨링 기준 이미지와 클래스 정상 개수, 두 피듀셜 마크 간 실측 거리, 피듀셜 기준 픽셀·mm 스케일을
+              보드별로 확인합니다.
             </p>
           </div>
           <div className="flex items-center gap-2 rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 shadow-[var(--dash-shadow-soft)]">
@@ -82,6 +83,14 @@ export default function BoardReferencePage() {
         <section className="border border-[var(--dash-border)] rounded-2xl bg-[var(--dash-surface)] p-4 shadow-[var(--dash-shadow-soft)] space-y-3">
           <h2 className="text-base text-[var(--dash-text-secondary)] font-semibold">피듀셜 기준 스케일 (px ↔ mm)</h2>
           <p className="text-xs text-[var(--dash-text-tertiary)] leading-relaxed">{calib.description}</p>
+          {selected.fiducialMarkSpacingMm != null && (
+            <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5 flex flex-wrap items-baseline justify-between gap-2">
+              <span className="text-xs text-[var(--dash-text-secondary)]">두 피듀셜 마크 간 실측 거리</span>
+              <span className="text-lg font-mono font-semibold text-[var(--dash-accent)] tabular-nums">
+                {selected.fiducialMarkSpacingMm} mm
+              </span>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5">
               <div className="text-xs text-[var(--dash-text-secondary)]">통합 기본값 · px/mm</div>

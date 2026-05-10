@@ -4,6 +4,8 @@ export interface BoardReference {
   key: string
   label: string
   expectedCounts: Record<string, number>
+  /** 두 피듀셜 마크 중심 간 실측 거리 (mm) */
+  fiducialMarkSpacingMm?: number
 }
 
 /** Vite `base` 반영 (Docker 서브경로 등). `public/board-reference/` 정적 파일용 */
@@ -18,6 +20,7 @@ export const BOARD_REFERENCES: BoardReference[] = [
   {
     key: 'GT_125A',
     label: 'GT-125A',
+    fiducialMarkSpacingMm: 140,
     expectedCounts: {
       mount_hole: 4,
       fiducial: 2,
@@ -29,6 +32,7 @@ export const BOARD_REFERENCES: BoardReference[] = [
   {
     key: 'GN_948X',
     label: 'GN-948X',
+    fiducialMarkSpacingMm: 117,
     expectedCounts: {
       mount_hole: 4,
       fiducial: 2,

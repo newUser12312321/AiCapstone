@@ -29,12 +29,41 @@ function CenterLabel({
   cy,
   failRate,
   decimalPlaces,
+  compact,
 }: {
   cx: number
   cy: number
   failRate: number
   decimalPlaces: number
+  compact?: boolean
 }) {
+  if (compact) {
+    return (
+      <g>
+        <text
+          x={cx}
+          y={cy - 5}
+          textAnchor="middle"
+          dominantBaseline="central"
+          style={{
+            fontSize: '1.125rem',
+            fontWeight: 700,
+            fill: 'var(--dash-text-primary)',
+          }}
+        >
+          {failRate.toFixed(decimalPlaces)}%
+        </text>
+        <text
+          x={cx}
+          y={cy + 12}
+          textAnchor="middle"
+          style={{ fontSize: '0.625rem', fill: 'var(--dash-text-tertiary)' }}
+        >
+          불량률
+        </text>
+      </g>
+    )
+  }
   return (
     <g>
       <text
@@ -77,9 +106,11 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { name
 export interface PassFailChartProps {
   lineFilter: LineFilter
   logs: InspectionLog[]
+  /** 통계 카드 행 네 번째 칸용 — 높이·도넛 크기 축소 */
+  variant?: 'default' | 'statTile'
 }
 
-export default function PassFailChart({ lineFilter, logs }: PassFailChartProps) {
+export default function PassFailChart({ lineFilter, logs, variant = 'default' }: PassFailChartProps) {
   const { settings } = useDashboardSettings()
   const { data: stats, isLoading } = useStats()
   const navigate = useNavigate()
@@ -97,12 +128,17 @@ export default function PassFailChart({ lineFilter, logs }: PassFailChartProps) 
     navigate(buildHistoryPath({ from: today, to: today, ...lineQ, result }))
   }
 
+  const isTile = variant === 'statTile'
+  const shellClass = isTile
+    ? 'glass-panel flex min-h-[142px] h-full animate-pulse flex-col rounded-[22px] p-5'
+    : 'glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-[22px] p-5'
+
   if (isLoading || !stats) {
     return (
-      <div className="glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-[22px] p-5">
-        <div className="mb-4 h-4 w-36 shrink-0 rounded bg-[var(--dash-bg-secondary)]" />
-        <div className="flex flex-1 items-center justify-center">
-          <div className="h-48 w-48 rounded-full bg-[var(--dash-bg-secondary)]" />
+      <div className={shellClass}>
+        <div className={isTile ? 'mb-2 h-4 w-32 shrink-0 rounded bg-[var(--dash-bg-secondary)]' : 'mb-4 h-4 w-36 shrink-0 rounded bg-[var(--dash-bg-secondary)]'} />
+        <div className={`flex flex-1 items-center justify-center ${isTile ? 'min-h-[88px]' : ''}`}>
+          <div className={`rounded-full bg-[var(--dash-bg-secondary)] ${isTile ? 'h-20 w-20' : 'h-48 w-48'}`} />
         </div>
       </div>
     )
@@ -123,7 +159,14 @@ export default function PassFailChart({ lineFilter, logs }: PassFailChartProps) 
 
   if (pass === 0 && fail === 0) {
     return (
-      <div className="glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[22px] p-5">
+      <div
+        className={
+          isTile
+            ? 'glass-panel flex min-h-[142px] h-full flex-col items-center justify-center rounded-[22px] p-5'
+            : 'glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[22px] p-5'
+        }
+      >
+        <h2 className="mb-2 self-stretch text-[15px] font-semibold text-[var(--dash-text-secondary)]">합격 / 불합격 비율</h2>
         <p className="text-sm text-[var(--dash-text-secondary)]">표시할 합격·불합격 데이터가 없습니다.</p>
       </div>
     )
@@ -134,21 +177,31 @@ export default function PassFailChart({ lineFilter, logs }: PassFailChartProps) 
     else goResult('FAIL')
   }
 
+  const innerR = isTile ? 30 : 72
+  const outerR = isTile ? 46 : 100
+  const chartHeight = isTile ? 108 : undefined
+
   return (
-    <div className="glass-panel flex h-full min-h-[240px] flex-col rounded-[22px] p-5">
-      <h2 className="mb-4 shrink-0 text-[15px] font-semibold text-[var(--dash-text-secondary)]">
+    <div
+      className={
+        isTile
+          ? 'glass-panel flex min-h-[142px] h-full flex-col rounded-[22px] p-5 transition-transform hover:scale-[1.01]'
+          : 'glass-panel flex h-full min-h-[240px] flex-col rounded-[22px] p-5'
+      }
+    >
+      <h2 className={`shrink-0 text-[15px] font-semibold text-[var(--dash-text-secondary)] ${isTile ? 'mb-2' : 'mb-4'}`}>
         합격 / 불합격 비율
       </h2>
 
-      <div className="min-h-0 w-full flex-1">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="min-h-0 w-full flex-1" style={chartHeight ? { height: chartHeight } : undefined}>
+        <ResponsiveContainer width="100%" height={chartHeight ? chartHeight : '100%'}>
           <PieChart>
             <Pie
               data={pieData}
               cx="50%"
               cy="50%"
-              innerRadius={72}
-              outerRadius={100}
+              innerRadius={innerR}
+              outerRadius={outerR}
               paddingAngle={3}
               dataKey="value"
               onClick={handlePieClick}
@@ -159,6 +212,7 @@ export default function PassFailChart({ lineFilter, logs }: PassFailChartProps) 
                   cy={cy}
                   failRate={failRate}
                   decimalPlaces={settings.decimalPlaces}
+                  compact={isTile}
                 />
               )}
               labelLine={false}
@@ -169,11 +223,12 @@ export default function PassFailChart({ lineFilter, logs }: PassFailChartProps) 
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend
+              wrapperStyle={isTile ? { fontSize: '11px', paddingTop: 4 } : undefined}
               formatter={(value) => (
                 <span
                   style={{
                     color: 'var(--dash-text-secondary)',
-                    fontSize: '0.8125rem',
+                    fontSize: isTile ? '0.6875rem' : '0.8125rem',
                   }}
                 >
                   {value}

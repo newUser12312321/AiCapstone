@@ -17,7 +17,7 @@ import {
   fetchStats,
 } from '@/api/inspectionApi'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
-import type { TrendDataPoint } from '@/types/inspection'
+import type { HourlyVolumePoint, TrendDataPoint } from '@/types/inspection'
 import type { LineFilter } from '@/utils/inspectionFilters'
 import { filterByLine } from '@/utils/inspectionFilters'
 import { getLocalDateString } from '@/utils/historyNavigation'
@@ -183,4 +183,95 @@ export function useTrendData(lineFilter?: LineFilter): { data: TrendDataPoint[];
     }))
 
   return { data: trendData, isLoading }
+}
+
+function floorToHourStartMs(ts: number, utc: boolean): number {
+  const d = new Date(ts)
+  if (utc) {
+    d.setUTCMilliseconds(0)
+    d.setUTCSeconds(0)
+    d.setUTCMinutes(0)
+    return d.getTime()
+  }
+  d.setMilliseconds(0)
+  d.setSeconds(0)
+  d.setMinutes(0)
+  return d.getTime()
+}
+
+function formatHourlyLabels(bucketStartMs: number, utc: boolean): {
+  shortLabel: string
+  tooltipTitle: string
+  anchorDate: string
+  hour: number
+} {
+  const d = new Date(bucketStartMs)
+  const mo = String(utc ? d.getUTCMonth() + 1 : d.getMonth() + 1).padStart(2, '0')
+  const day = String(utc ? d.getUTCDate() : d.getDate()).padStart(2, '0')
+  const h = utc ? d.getUTCHours() : d.getHours()
+  const hh = String(h).padStart(2, '0')
+  const y = utc ? d.getUTCFullYear() : d.getFullYear()
+  const anchorDate = `${y}-${mo}-${day}`
+  return {
+    shortLabel: `${mo}/${day} ${hh}:00`,
+    tooltipTitle: `${y}-${mo}-${day} ${hh}:00 구간 (1시간)`,
+    anchorDate,
+    hour: h,
+  }
+}
+
+/**
+ * 최근 24시간을 1시간 버킷으로 나눈 검사 건수 집계 (주식형 추이 차트용).
+ * 버킷은 설정의 timeZoneMode(로컬/UTC) 기준으로 정렬된다.
+ */
+export function useHourlyInspectionVolume(lineFilter?: LineFilter): {
+  data: HourlyVolumePoint[]
+  isLoading: boolean
+} {
+  const { settings } = useDashboardSettings()
+  const { data: logs = [], isLoading } = useAllInspections()
+
+  if (isLoading) {
+    return { data: [], isLoading: true }
+  }
+
+  const utc = settings.timeZoneMode === 'utc'
+  const scoped = filterByLine(logs, {
+    deviceId: lineFilter?.deviceId,
+    board: lineFilter?.board,
+  })
+
+  const now = Date.now()
+  const endBucket = floorToHourStartMs(now, utc)
+  const bucketStarts: number[] = []
+  for (let i = 23; i >= 0; i--) {
+    bucketStarts.push(endBucket - i * 3600000)
+  }
+
+  const counts = new Map<number, number>()
+  bucketStarts.forEach((ms) => counts.set(ms, 0))
+
+  const windowStart = bucketStarts[0]!
+  const windowEndExclusive = bucketStarts[23]! + 3600000
+
+  scoped.forEach((log) => {
+    const t = new Date(log.inspectedAt).getTime()
+    if (t < windowStart || t >= windowEndExclusive) return
+    const b = floorToHourStartMs(t, utc)
+    if (counts.has(b)) counts.set(b, (counts.get(b) ?? 0) + 1)
+  })
+
+  const data: HourlyVolumePoint[] = bucketStarts.map((bucketStartMs) => {
+    const { shortLabel, tooltipTitle, anchorDate, hour } = formatHourlyLabels(bucketStartMs, utc)
+    return {
+      bucketStartMs,
+      label: shortLabel,
+      tooltipTitle,
+      count: counts.get(bucketStartMs) ?? 0,
+      anchorDate,
+      hour,
+    }
+  })
+
+  return { data, isLoading: false }
 }

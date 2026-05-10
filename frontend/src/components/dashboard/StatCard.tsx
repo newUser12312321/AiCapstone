@@ -2,8 +2,9 @@
  * 통계 요약 카드 — 클릭 시 검사 이력(/history)로 필터 연동
  */
 
+import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
-import { CheckCircle, XCircle, Activity, AlertTriangle } from 'lucide-react'
+import { CheckCircle, XCircle, Activity } from 'lucide-react'
 import clsx from 'clsx'
 import { useNavigate } from 'react-router-dom'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
@@ -47,13 +48,6 @@ function formatDayDelta(curr: number, prev: number): string | null {
   const pct = ((curr - prev) / prev) * 100
   const arrow = pct >= 0 ? '▲' : '▼'
   return `전일 대비 ${arrow} ${Math.abs(pct).toFixed(1)}%`
-}
-
-function formatRateDelta(curr: number, prev: number): string | null {
-  if (curr === 0 && prev === 0) return null
-  const d = curr - prev
-  const arrow = d >= 0 ? '▲' : '▼'
-  return `전일 불량률 ${arrow} ${Math.abs(d).toFixed(2)}%p`
 }
 
 // ── 개별 카드 ────────────────────────────────────────────────────────────────
@@ -137,9 +131,11 @@ export interface StatCardGroupProps {
   /** 라인·기종 필터 (빈 문자열이면 전체) */
   lineFilter: LineFilter
   allLogs: InspectionLog[]
+  /** 네 번째 칸 — 합격/불합격 비율 등 */
+  chartSlot?: ReactNode
 }
 
-export default function StatCardGroup({ lineFilter, allLogs }: StatCardGroupProps) {
+export default function StatCardGroup({ lineFilter, allLogs, chartSlot }: StatCardGroupProps) {
   const { formatRatePercent } = useDashboardSettings()
   const { data: stats, isLoading, isError } = useStats()
   const navigate = useNavigate()
@@ -185,7 +181,10 @@ export default function StatCardGroup({ lineFilter, allLogs }: StatCardGroupProp
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
+        {Array.from({ length: 3 }).map((_, i) => (
+          <StatCardSkeleton key={i} />
+        ))}
+        {chartSlot}
       </div>
     )
   }
@@ -201,7 +200,6 @@ export default function StatCardGroup({ lineFilter, allLogs }: StatCardGroupProp
   const total = useBackendStats ? stats.totalCount : summarize(scopedLogs).total
   const pass = useBackendStats ? stats.passCount : summarize(scopedLogs).pass
   const fail = useBackendStats ? stats.failCount : summarize(scopedLogs).fail
-  const failRate = useBackendStats ? stats.failRate : (total ? (fail / total) * 100 : 0)
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -232,15 +230,7 @@ export default function StatCardGroup({ lineFilter, allLogs }: StatCardGroupProp
         delta={formatDayDelta(tK.fail, yK.fail)}
         onNavigate={() => goToday({ result: 'FAIL' })}
       />
-      <StatCard
-        title="불량률"
-        value={`${formatRatePercent(failRate)}%`}
-        icon={AlertTriangle}
-        theme={failRate >= 3 ? 'red' : 'yellow'}
-        caption="FAIL / 전체 검사"
-        delta={formatRateDelta(tK.failRate, yK.failRate)}
-        onNavigate={() => goToday({ result: 'FAIL' })}
-      />
+      {chartSlot}
     </div>
   )
 }
