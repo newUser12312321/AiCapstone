@@ -94,7 +94,7 @@ export default function KioskPage() {
   }, [applyFocus, focusFromServer, focusMutation.isPending])
 
   return (
-    <div className="dashboard-theme relative min-h-screen w-full text-[var(--dash-text-primary)] p-4 md:p-6 overflow-y-auto">
+    <div className="dashboard-theme relative flex h-dvh min-h-0 w-full max-h-dvh flex-col overflow-hidden text-[var(--dash-text-primary)] p-2 touch-manipulation">
       <div
         aria-hidden
         className={clsx(
@@ -105,22 +105,22 @@ export default function KioskPage() {
       />
       <KioskFailBurstLabel visible={failLabelFlash} />
       <KioskPassBurstLabel visible={passLabelFlash} />
-      <div className="glass-panel mx-auto max-w-7xl min-h-[min(100vh,100%)] rounded-[30px] p-5 md:p-6 shadow-[var(--dash-glow)] overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-5 items-start">
-          <section className="glass-panel rounded-3xl p-5 md:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm text-[var(--dash-text-secondary)]">PCB Inspection Kiosk</p>
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--dash-text-primary)]">
+      <div className="glass-panel mx-auto flex min-h-0 w-full max-w-[1024px] flex-1 flex-col rounded-2xl p-3 shadow-[var(--dash-glow)]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-stretch lg:gap-3">
+          <section className="glass-panel flex min-h-0 flex-col gap-2 overflow-hidden rounded-2xl p-3 lg:flex-1">
+            <div className="flex shrink-0 flex-wrap items-end justify-between gap-2 gap-y-1">
+              <div className="min-w-0">
+                <p className="text-[10px] uppercase tracking-wide text-[var(--dash-text-tertiary)]">PCB Kiosk</p>
+                <h1 className="text-xl font-bold leading-tight tracking-tight text-[var(--dash-text-primary)] lg:text-2xl">
                   검사 화면
                 </h1>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-3 min-w-0 sm:min-w-[280px]">
-                <span className="glass-panel-subtle text-sm px-3 h-9 inline-flex items-center rounded-full text-[var(--dash-text-secondary)] shrink-0">
-                  실시간 프리뷰
+              <div className="flex min-w-0 flex-1 flex-wrap items-end justify-end gap-2 sm:flex-nowrap sm:justify-end lg:max-w-[52%]">
+                <span className="glass-panel-subtle hidden h-8 shrink-0 items-center rounded-full px-2.5 text-[11px] text-[var(--dash-text-secondary)] sm:inline-flex">
+                  LIVE
                 </span>
-                <div className="flex flex-col gap-1 flex-1 min-w-0">
-                  <label htmlFor="kiosk-board-preset" className="text-xs font-medium text-[var(--dash-text-secondary)]">
+                <div className="min-w-[140px] flex-1 sm:max-w-[240px]">
+                  <label htmlFor="kiosk-board-preset" className="mb-0.5 block text-[10px] font-medium text-[var(--dash-text-secondary)]">
                     PCB 기판명
                   </label>
                   <select
@@ -128,7 +128,7 @@ export default function KioskPage() {
                     value={kioskPreset}
                     onChange={(e) => setKioskPreset(e.target.value as KioskInspectionPreset)}
                     disabled={triggerMutation.isPending}
-                    className="w-full h-11 px-3 rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] text-sm font-semibold text-[var(--dash-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/40 disabled:opacity-50"
+                    className="h-9 w-full rounded-lg border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-2 text-xs font-semibold text-[var(--dash-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/40 disabled:opacity-50"
                   >
                     <option value="standard">일반검사 (실크인쇄 포함)</option>
                     <option value="gt125a">GT-125A (실크 생략)</option>
@@ -137,22 +137,23 @@ export default function KioskPage() {
                 </div>
               </div>
             </div>
-            <div className="w-full h-[42vh] md:h-[48vh] rounded-2xl overflow-hidden bg-black border border-[var(--dash-border)]">
+
+            <div className="relative min-h-[100px] flex-1 overflow-hidden rounded-xl border border-[var(--dash-border)] bg-black">
               <img
                 src="/edge/camera/stream.mjpg"
                 alt="카메라 프리뷰"
-                className="w-full h-full object-contain"
+                className="h-full w-full object-contain"
               />
             </div>
 
-            <div className="mt-4 glass-panel-subtle rounded-2xl p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <div className="flex items-center gap-2 min-w-0">
-                  <Aperture size={20} className="text-[var(--dash-accent)] shrink-0" aria-hidden />
+            <div className="glass-panel-subtle shrink-0 rounded-xl p-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <Aperture size={16} className="shrink-0 text-[var(--dash-accent)]" aria-hidden />
                   <div>
-                    <p className="text-base font-semibold text-[var(--dash-text-primary)]">프리뷰 초점</p>
-                    <p className="text-sm text-[var(--dash-text-secondary)]">
-                      수동 초점값 기본 25, 버튼으로 1단계씩 조절
+                    <p className="text-xs font-semibold text-[var(--dash-text-primary)]">프리뷰 초점</p>
+                    <p className="hidden text-[10px] text-[var(--dash-text-secondary)] sm:block">
+                      ± 버튼으로 1단계 조절 · 기본 25
                     </p>
                   </div>
                 </div>
@@ -160,58 +161,58 @@ export default function KioskPage() {
                   type="button"
                   onClick={() => focusQuery.refetch()}
                   disabled={focusQuery.isFetching}
-                  className="self-start glass-panel-subtle inline-flex items-center gap-2 px-4 h-12 rounded-full text-sm text-[var(--dash-text-primary)] hover:brightness-110 disabled:opacity-50"
+                  className="glass-panel-subtle inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3 text-[11px] text-[var(--dash-text-primary)] hover:brightness-110 disabled:opacity-50"
                 >
-                  <RefreshCcw size={14} className={focusQuery.isFetching ? 'animate-spin' : ''} />
-                  초점 상태 새로고침
+                  <RefreshCcw size={12} className={focusQuery.isFetching ? 'animate-spin' : ''} />
+                  새로고침
                 </button>
               </div>
 
               {focusQuery.isLoading && (
-                <p className="mt-3 text-sm text-[var(--dash-text-secondary)] flex items-center gap-2">
-                  <Loader2 className="animate-spin size-4" />
-                  초점 정보를 불러오는 중입니다…
+                <p className="mt-2 flex items-center gap-1.5 text-[11px] text-[var(--dash-text-secondary)]">
+                  <Loader2 className="size-3.5 animate-spin" />
+                  초점 불러오는 중…
                 </p>
               )}
 
               {focusQuery.isError && (
-                <p className="mt-3 text-sm text-[var(--dash-warning)]">
-                  엣지에 카메라가 없거나 연결되지 않아 초점을 조절할 수 없습니다. (Pi의 Edge API가 실행 중인지 확인하세요.)
+                <p className="mt-2 text-[11px] leading-snug text-[var(--dash-warning)]">
+                  카메라·엣지 미연결 시 초점 조절 불가 (Pi Edge API 확인)
                 </p>
               )}
 
               {focusFromServer != null && (
-                <div className="mt-4 flex flex-col gap-4">
+                <div className="mt-2 flex flex-col gap-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm text-[var(--dash-text-secondary)] w-full sm:w-auto">수동 초점</span>
+                    <span className="text-[11px] text-[var(--dash-text-secondary)]">수동 초점</span>
                     {focusMutation.isPending && (
-                      <Loader2 className="animate-spin size-4 text-[var(--dash-accent)]" aria-label="적용 중" />
+                      <Loader2 className="size-3.5 animate-spin text-[var(--dash-accent)]" aria-label="적용 중" />
                     )}
                   </div>
 
-                  <div className={clsx('flex flex-col gap-2', focusControlsDisabled && 'opacity-60')}>
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm text-[var(--dash-text-secondary)]">현재 초점값</span>
-                      <span className="text-base font-mono tabular-nums text-[var(--dash-accent)]">{manualValue}</span>
+                  <div className={clsx('flex flex-col gap-1.5', focusControlsDisabled && 'opacity-60')}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] text-[var(--dash-text-secondary)]">현재값</span>
+                      <span className="font-mono text-sm tabular-nums text-[var(--dash-accent)]">{manualValue}</span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
                         disabled={focusControlsDisabled}
                         onClick={() => bumpManualFocus(-1)}
-                        className="shrink-0 w-14 h-14 rounded-xl glass-panel-subtle text-2xl font-bold hover:brightness-110 disabled:opacity-40"
+                        className="glass-panel-subtle h-11 w-11 shrink-0 rounded-lg text-xl font-bold hover:brightness-110 disabled:opacity-40"
                         aria-label="초점 가까이"
                       >
                         −
                       </button>
-                      <div className="flex-1 h-14 rounded-xl glass-panel-subtle grid place-items-center text-lg font-semibold text-[var(--dash-text-primary)]">
+                      <div className="glass-panel-subtle grid h-11 flex-1 place-items-center rounded-lg text-sm font-semibold text-[var(--dash-text-primary)]">
                         {manualValue}
                       </div>
                       <button
                         type="button"
                         disabled={focusControlsDisabled}
                         onClick={() => bumpManualFocus(1)}
-                        className="shrink-0 w-14 h-14 rounded-xl glass-panel-subtle text-2xl font-bold hover:brightness-110 disabled:opacity-40"
+                        className="glass-panel-subtle h-11 w-11 shrink-0 rounded-lg text-xl font-bold hover:brightness-110 disabled:opacity-40"
                         aria-label="초점 멀리"
                       >
                         +
@@ -223,24 +224,24 @@ export default function KioskPage() {
             </div>
           </section>
 
-          <section className="select-none glass-panel rounded-3xl p-5 md:p-6 flex flex-col gap-4 min-h-0">
-            <div className="glass-panel-subtle rounded-2xl p-4 flex-1 min-h-0 flex flex-col">
-              <p className="text-base text-[var(--dash-text-secondary)] mb-3">최근 검사이력 5건</p>
-              <div className="space-y-2 flex-1 min-h-0 overflow-y-auto pr-0.5">
+          <section className="glass-panel flex min-h-0 select-none flex-col gap-2 overflow-hidden rounded-2xl p-3 lg:flex-1">
+            <div className="glass-panel-subtle flex min-h-0 flex-1 flex-col rounded-xl p-2.5">
+              <p className="mb-2 shrink-0 text-xs font-medium text-[var(--dash-text-secondary)]">최근 검사이력 5건</p>
+              <div className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-0.5">
                 {recentLogs.length === 0 && (
-                  <p className="text-sm text-[var(--dash-text-secondary)]">표시할 검사 이력이 없습니다.</p>
+                  <p className="text-[11px] text-[var(--dash-text-secondary)]">검사 이력이 없습니다.</p>
                 )}
                 {recentLogs.map((log) => (
                   <button
                     key={log.id}
                     type="button"
                     onClick={() => navigate(`/kiosk/complete/${log.id}`)}
-                    className="w-full text-left rounded-xl glass-panel px-3 py-2 hover:brightness-110 transition-all"
+                    className="glass-panel w-full rounded-lg px-2 py-1.5 text-left transition-all hover:brightness-110 active:brightness-95"
                   >
-                    <p className="text-sm font-semibold text-[var(--dash-text-primary)] truncate">
+                    <p className="truncate text-[11px] font-semibold text-[var(--dash-text-primary)]">
                       {log.silkBoardName?.trim() || `검사 #${log.id}`}
                     </p>
-                    <div className="mt-1 flex items-center justify-between gap-2 text-xs">
+                    <div className="mt-0.5 flex items-center justify-between gap-1 text-[10px]">
                       <span className="text-[var(--dash-text-tertiary)]">
                         {new Date(log.inspectedAt).toLocaleTimeString('ko-KR')}
                       </span>
@@ -253,8 +254,8 @@ export default function KioskPage() {
               </div>
             </div>
 
-            <div className="glass-panel-subtle rounded-2xl p-4 shrink-0">
-              <p className="text-base text-[var(--dash-text-secondary)] mb-3 text-center">검사 실행</p>
+            <div className="glass-panel-subtle shrink-0 rounded-xl p-2.5">
+              <p className="mb-2 text-center text-[11px] text-[var(--dash-text-secondary)]">검사 실행</p>
               <button
                 type="button"
                 onClick={() => {
@@ -262,14 +263,16 @@ export default function KioskPage() {
                   triggerMutation.mutate(kioskPreset)
                 }}
                 disabled={triggerMutation.isPending}
-                className="w-full rounded-full bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] shadow-[var(--dash-glow)] disabled:opacity-50 px-6 py-6 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3"
+                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-[var(--dash-accent)] px-4 py-3 text-lg font-bold text-white shadow-[var(--dash-glow)] hover:bg-[var(--dash-accent-hover)] disabled:opacity-50"
               >
-                {triggerMutation.isPending ? <Loader2 className="animate-spin" size={28} /> : <Camera size={28} />}
+                {triggerMutation.isPending ? <Loader2 className="animate-spin" size={22} /> : <Camera size={22} />}
                 검사 시작
               </button>
             </div>
 
-            {actionMsg && <p className="text-sm text-[var(--dash-text-secondary)] shrink-0">{actionMsg}</p>}
+            {actionMsg && (
+              <p className="line-clamp-2 shrink-0 text-[10px] leading-snug text-[var(--dash-text-secondary)]">{actionMsg}</p>
+            )}
           </section>
         </div>
       </div>
