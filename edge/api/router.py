@@ -227,6 +227,7 @@ async def camera_preview_stream() -> StreamingResponse:
 @router.post("/inspect/trigger", summary="수동 검사 트리거")
 async def trigger_inspection(
     stage2Source: Optional[str] = None,
+    kioskPreset: Optional[str] = None,
 ) -> dict[str, str]:
     """
     운영자가 HTTP 요청으로 즉시 검사를 한 번 실행하도록 트리거한다.
@@ -239,12 +240,16 @@ async def trigger_inspection(
         완료 메시지 (실패 시 500)
     """
     mode = _normalize_stage2_mode(stage2Source)
-    logger.info("[라우터] 수동 검사 트리거 요청 수신 (stage2=%s)", mode)
+    logger.info(
+        "[라우터] 수동 검사 트리거 요청 수신 (stage2=%s, kioskPreset=%s)",
+        mode,
+        kioskPreset or "(기본)",
+    )
 
     try:
         from main import run_inspection_pipeline
 
-        packet = await run_inspection_pipeline(mode)
+        packet = await run_inspection_pipeline(mode, kiosk_preset=kioskPreset)
         if packet is None:
             raise HTTPException(
                 status_code=500,

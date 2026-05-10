@@ -6,13 +6,20 @@
  * 수동 PCB 검사 1회 실행 (백그라운드). 결과는 Spring Boot DB에 적재된다.
  */
 export type Stage2SourceMode = 'aligned' | 'raw'
+/** 키오스크 기판 모드 — 엣지 `kioskPreset` 쿼리와 동일 (standard=실크 포함) */
+export type KioskInspectionPreset = 'standard' | 'gt125a' | 'gn948x'
 export type CameraFocusState = { auto: boolean; value: number }
 export type RetryQueueStatus = { pendingCount: number }
 
 export async function triggerEdgeInspection(
-  stage2Source: Stage2SourceMode
+  stage2Source: Stage2SourceMode,
+  kioskPreset: KioskInspectionPreset = 'standard'
 ): Promise<{ message: string }> {
-  const res = await fetch(`/edge/inspect/trigger?stage2Source=${stage2Source}`, { method: 'POST' })
+  const params = new URLSearchParams({ stage2Source })
+  if (kioskPreset !== 'standard') {
+    params.set('kioskPreset', kioskPreset)
+  }
+  const res = await fetch(`/edge/inspect/trigger?${params.toString()}`, { method: 'POST' })
   if (!res.ok) {
     const detail = await res.text()
     throw new Error(detail || `${res.status} ${res.statusText}`)

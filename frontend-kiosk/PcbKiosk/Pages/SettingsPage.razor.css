@@ -4,3 +4,4 @@ input, button {
   min-height: 48px; border-radius: 8px; border: 1px solid #374151; font-size: 18px; padding: 6px 10px;
 }
 button { border: none; background: #2563eb; color: #fff; font-weight: 600; }
+.stop-auto-btn { background: #b91c1c; margin-top: 8px; }

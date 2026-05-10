@@ -20,9 +20,16 @@
 
         <section class="control-panel">
             <div class="panel-title">검사 제어</div>
+            <div class="board-select-row">
+                <label class="board-select-label" for="board-preset">PCB 기판명</label>
+                <select id="board-preset" class="board-select" @bind="_kioskPreset">
+                    <option value="standard">일반검사 (실크인쇄 포함)</option>
+                    <option value="gt125a">GT-125A (실크 생략)</option>
+                    <option value="gn948x">gn948x (실크 생략)</option>
+                </select>
+            </div>
             <button class="primary-btn" @onclick="RunInspectionAndGoResultAsync">검사 시작 (1회)</button>
             <button class="secondary-btn" @onclick="StartAutoAsync">자동 검사 시작</button>
-            <button class="danger-btn" @onclick="StopAutoAsync">자동 검사 중지</button>
             @if (!string.IsNullOrWhiteSpace(_actionMessage))
             {
                 <p class="status-message">@_actionMessage</p>
@@ -61,6 +68,7 @@
 @code {
     private InspectionSummary? _latest;
     private string? _actionMessage;
+    private string _kioskPreset = "standard";
     private bool IsPass => string.Equals(_latest?.Result, "PASS", StringComparison.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync() => await RefreshLatestAsync();
@@ -70,7 +78,7 @@
         try
         {
             _actionMessage = null;
-            await EdgeApi.TriggerInspectionAsync();
+            await EdgeApi.TriggerInspectionAsync(_kioskPreset);
             _actionMessage = "검사 완료 화면으로 이동합니다...";
             await Task.Delay(1800);
             await RefreshLatestAsync();
@@ -89,7 +97,6 @@
         }
     }
     private async Task StartAutoAsync() => await ExecuteEdgeActionAsync(() => EdgeApi.StartAutoInspectionAsync(), "자동 검사 시작");
-    private async Task StopAutoAsync() => await ExecuteEdgeActionAsync(() => EdgeApi.StopAutoInspectionAsync(), "자동 검사 중지");
 
     private async Task ExecuteEdgeActionAsync(Func<Task> action, string successMessage)
     {

@@ -366,7 +366,10 @@ app.mount("/demo_samples", StaticFiles(directory=str(DEMO_SAMPLES_DIR)), name="d
 
 # ── 2-Stage 비전 검사 파이프라인 ──────────────────────────────────────────────
 
-async def run_inspection_pipeline(stage2_source_mode: Optional[str] = None) -> Optional[InspectionPacket]:
+async def run_inspection_pipeline(
+    stage2_source_mode: Optional[str] = None,
+    kiosk_preset: Optional[str] = None,
+) -> Optional[InspectionPacket]:
     """
     PCB 검사 전체 파이프라인을 실행한다.
 
@@ -410,11 +413,26 @@ async def run_inspection_pipeline(stage2_source_mode: Optional[str] = None) -> O
             pipeline_start,
             stage2_source_mode=mode,
             debug_imshow=debug_imshow,
+            kiosk_preset=kiosk_preset,
         )
 
     except Exception as e:
         logger.error("[파이프라인] 예외 발생: %s", e, exc_info=True)
         return None
+
+
+def _normalize_kiosk_preset(raw: Optional[str]) -> Optional[str]:
+    """키오스크 검사 모드: standard(None) | gt125a | gn948x"""
+    if raw is None:
+        return None
+    s = str(raw).strip().lower()
+    if not s or s in ("standard", "default", "full", "normal"):
+        return None
+    if s in ("gt125a", "gt-125a", "g_series", "g-series"):
+        return "gt125a"
+    if s in ("gn948x", "gn_948x", "gn-948x"):
+        return "gn948x"
+    return None
 
 
 def _run_production_vision_pipeline(
@@ -424,12 +442,18 @@ def _run_production_vision_pipeline(
     *,
     stage2_source_mode: str = "aligned",
     debug_imshow: bool = False,
+    kiosk_preset: Optional[str] = None,
 ) -> Optional[InspectionPacket]:
     """카메라/파일 공통 — Stage 1·2 및 전송."""
     try:
         if debug_imshow:
             cv2.imshow("Captured Frame", cv2.resize(frame, (640, 360)))
             cv2.waitKey(1)
+
+        kiosk_preset_norm = _normalize_kiosk_preset(kiosk_preset)
+        skip_silk = kiosk_preset_norm in ("gt125a", "gn948x")
+        if skip_silk:
+            logger.info("[키오스크] 실크·Gemini 생략, 보드 프리셋=%s", kiosk_preset_norm)
 
         silk_gate_full_text = ""
         gemini_full_text = ""
@@ -439,7 +463,7 @@ def _run_production_vision_pipeline(
         gate_should_run = use_gemini_gate and (
             not settings.BOARD_SILK_GATE_REQUIRE_MULTIBOARD or settings.MULTI_BOARD_ENABLED
         )
-        if gate_should_run:
+        if gate_should_run and not skip_silk:
             from inference.gemini_silk_gate import run_gemini_silk_gate as run_gemini_gate
 
             gg = run_gemini_gate(frame)
@@ -489,16 +513,25 @@ def _run_production_vision_pipeline(
                 _finalize(packet)
                 return packet
 
-        _silk_kw = extract_silk_display_fields(gemini_full_text)
-        silk_packet_kw = dict(
-            silk_series_name=_silk_kw.series_name,
-            silk_board_name=_silk_kw.board_name,
-            silk_manufacturer=_silk_kw.manufacturer,
-            silk_manufacture_date=_silk_kw.manufacture_date,
-        )
+        if skip_silk:
+            _disp = "GT-125A" if kiosk_preset_norm == "gt125a" else "GN-948X"
+            silk_packet_kw = dict(
+                silk_series_name=None,
+                silk_board_name=_disp,
+                silk_manufacturer=None,
+                silk_manufacture_date=None,
+            )
+        else:
+            _silk_kw = extract_silk_display_fields(gemini_full_text)
+            silk_packet_kw = dict(
+                silk_series_name=_silk_kw.series_name,
+                silk_board_name=_silk_kw.board_name,
+                silk_manufacturer=_silk_kw.manufacturer,
+                silk_manufacture_date=_silk_kw.manufacture_date,
+            )
 
         # Gemini 게이트 통과 후 OCR 4필드 중 하나라도 비면 실크 인쇄 불량으로 종료
-        if gate_should_run and silk_gate_full_text.strip():
+        if gate_should_run and not skip_silk and silk_gate_full_text.strip():
             if not silk_display_fields_complete(_silk_kw):
                 logger.warning(
                     "[실크] 시리즈/기판명/제조사/제조일 중 미검출 → SILK_SCREEN_PRINT_DEFECT"
@@ -544,7 +577,47 @@ def _run_production_vision_pipeline(
             board_conf = 0.0
             board_cls = ""
 
-            if getattr(settings, "BOARD_OCR_ROUTING_ENABLED", False) and silk_gate_full_text:
+            if skip_silk:
+                forced_key = "G_SERIES" if kiosk_preset_norm == "gt125a" else "GN_948X"
+                if forced_key not in board_profiles:
+                    logger.error(
+                        "[키오스크] board_profiles 에 키 없음: %s (gt125a→G_SERIES, gn948x→GN_948X)",
+                        forced_key,
+                    )
+                    packet = _build_packet(
+                        result=InspectionResult.FAIL,
+                        f1x=None,
+                        f1y=None,
+                        f2x=None,
+                        f2y=None,
+                        f1_conf=None,
+                        f2_conf=None,
+                        angle_error=0.0,
+                        inference_ms=0,
+                        defects=[
+                            DefectPayload(
+                                defect_type="GEMINI_GATE_CONFIG_ERROR",
+                                confidence=1.0,
+                                bbox_x=0,
+                                bbox_y=0,
+                                bbox_width=1,
+                                bbox_height=1,
+                                detail=f"키오스크 기판 프리설정에 대한 board_profiles 항목이 없습니다: {forced_key}",
+                            )
+                        ],
+                        image_path=image_path,
+                        pipeline_start=pipeline_start,
+                        device_id=None,
+                        **silk_packet_kw,
+                    )
+                    _finalize(packet)
+                    return packet
+                board_type = forced_key
+                board_conf = 1.0
+                board_cls = "kiosk_preset"
+                logger.info("[키오스크] 가중치 라우팅 고정: %s", forced_key)
+
+            if getattr(settings, "BOARD_OCR_ROUTING_ENABLED", False) and silk_gate_full_text and not skip_silk:
                 bk, dbg = resolve_board_type_from_ocr_text(silk_gate_full_text)
                 if bk:
                     if bk in board_profiles:
@@ -559,7 +632,7 @@ def _run_production_vision_pipeline(
                             "" if getattr(settings, "BOARD_IDENTIFIER_YOLO_ENABLED", False) else " (비활성)",
                         )
 
-            if not board_type:
+            if not board_type and not skip_silk:
                 board_type, board_conf, board_cls = _select_board_type(frame)
 
             if board_type:

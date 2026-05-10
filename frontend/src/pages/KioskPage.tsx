@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Aperture, Camera, Loader2, MonitorX, RefreshCcw } from 'lucide-react'
+import { Aperture, Camera, Loader2, RefreshCcw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import {
   fetchCameraFocus,
-  exitKioskToDesktop,
   triggerEdgeInspection,
   updateCameraFocus,
   type CameraFocusState,
+  type KioskInspectionPreset,
 } from '@/api/edgeApi'
 import { useRecentInspections } from '@/hooks/useInspectionData'
 import clsx from 'clsx'
@@ -16,6 +16,7 @@ export default function KioskPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [actionMsg, setActionMsg] = useState<string | null>(null)
+  const [kioskPreset, setKioskPreset] = useState<KioskInspectionPreset>('standard')
   const [focusDraft, setFocusDraft] = useState<number | null>(null)
   const { data: recentLogs = [] } = useRecentInspections(5)
   const latest = recentLogs[0]
@@ -47,20 +48,12 @@ export default function KioskPage() {
   )
 
   const triggerMutation = useMutation({
-    mutationFn: () => triggerEdgeInspection('aligned'),
+    mutationFn: (preset: KioskInspectionPreset) => triggerEdgeInspection('aligned', preset),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['inspections', 'recent'] })
       setActionMsg('검사가 완료되었습니다. 우측 최근 검사이력에서 항목을 선택해 상세 결과를 확인하세요.')
     },
     onError: (e: Error) => setActionMsg(e.message || '검사 요청 실패'),
-  })
-
-  const exitMutation = useMutation({
-    mutationFn: exitKioskToDesktop,
-    onSuccess: () => {
-      setActionMsg('키오스크 종료 요청을 보냈습니다. 잠시 후 라즈베리파이 바탕화면으로 복귀합니다.')
-    },
-    onError: (e: Error) => setActionMsg(e.message || '키오스크 종료 요청 실패'),
   })
 
   const verdict = !latest ? '대기' : latest.result === 'PASS' ? '정상' : '불량'
@@ -101,19 +94,26 @@ export default function KioskPage() {
                   검사 화면
                 </h1>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="glass-panel-subtle text-sm px-3 h-9 inline-flex items-center rounded-full text-[var(--dash-text-secondary)]">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-3 min-w-0 sm:min-w-[280px]">
+                <span className="glass-panel-subtle text-sm px-3 h-9 inline-flex items-center rounded-full text-[var(--dash-text-secondary)] shrink-0">
                   실시간 프리뷰
                 </span>
-                <button
-                  type="button"
-                  onClick={() => exitMutation.mutate()}
-                  disabled={exitMutation.isPending}
-                  className="h-11 px-4 rounded-full bg-gradient-to-r from-[var(--dash-accent)] to-indigo-500 text-white inline-flex items-center gap-2 text-sm font-semibold shadow-[var(--dash-glow)] hover:brightness-110 disabled:opacity-50"
-                >
-                  {exitMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <MonitorX size={16} />}
-                  키오스크 종료
-                </button>
+                <div className="flex flex-col gap-1 flex-1 min-w-0">
+                  <label htmlFor="kiosk-board-preset" className="text-xs font-medium text-[var(--dash-text-secondary)]">
+                    PCB 기판명
+                  </label>
+                  <select
+                    id="kiosk-board-preset"
+                    value={kioskPreset}
+                    onChange={(e) => setKioskPreset(e.target.value as KioskInspectionPreset)}
+                    disabled={triggerMutation.isPending}
+                    className="w-full h-11 px-3 rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] text-sm font-semibold text-[var(--dash-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/40 disabled:opacity-50"
+                  >
+                    <option value="standard">일반검사 (실크인쇄 포함)</option>
+                    <option value="gt125a">GT-125A (실크 생략)</option>
+                    <option value="gn948x">gn948x (실크 생략)</option>
+                  </select>
+                </div>
               </div>
             </div>
             <div className="w-full h-[42vh] md:h-[48vh] rounded-2xl overflow-hidden bg-black border border-[var(--dash-border)]">
@@ -219,7 +219,7 @@ export default function KioskPage() {
                 type="button"
                 onClick={() => {
                   setActionMsg(null)
-                  triggerMutation.mutate()
+                  triggerMutation.mutate(kioskPreset)
                 }}
                 disabled={triggerMutation.isPending}
                 className="w-full rounded-full bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] shadow-[var(--dash-glow)] disabled:opacity-50 px-6 py-6 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3"

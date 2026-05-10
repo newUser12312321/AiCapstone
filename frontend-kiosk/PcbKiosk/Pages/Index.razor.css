@@ -77,6 +77,34 @@
   gap: 12px;
 }
 
+.board-select-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.board-select-label {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+.board-select {
+  min-height: 72px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #475569;
+  background: #020617;
+  color: #f8fafc;
+  font-size: 26px;
+  font-weight: 600;
+  padding: 8px 14px;
+}
+
 .control-panel button,
 .latest-panel button {
   min-height: 82px;

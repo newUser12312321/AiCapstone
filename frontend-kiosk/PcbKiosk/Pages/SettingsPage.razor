@@ -13,6 +13,7 @@
     <label>초점 값 <input type="range" min="0" max="255" @bind="_focusValue" /></label>
     <button @onclick="LoadFocusAsync">현재 초점 불러오기</button>
     <button @onclick="SaveAsync">저장</button>
+    <button class="stop-auto-btn" @onclick="StopAutoAsync">자동 검사 중지 (엣지)</button>
     @if (!string.IsNullOrWhiteSpace(_message)) { <p>@_message</p> }
 </div>
 
@@ -41,5 +42,11 @@
     {
         try { await EdgeApi.SetFocusAsync(_focusAuto, _focusValue); _message = "저장 완료"; }
         catch (Exception ex) { _message = $"저장 실패: {ex.Message}"; }
+    }
+
+    private async Task StopAutoAsync()
+    {
+        try { await EdgeApi.StopAutoInspectionAsync(); _message = "자동 검사 중지 요청 완료"; }
+        catch (Exception ex) { _message = $"중지 실패: {ex.Message}"; }
     }
 }
