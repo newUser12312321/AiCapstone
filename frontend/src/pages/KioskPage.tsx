@@ -11,7 +11,9 @@ import {
 } from '@/api/edgeApi'
 import { fetchRecentInspections } from '@/api/inspectionApi'
 import { QUERY_KEYS, useRecentInspections } from '@/hooks/useInspectionData'
-import { runTripleRedFlash } from '@/utils/kioskFailFlash'
+import KioskFailBurstLabel from '@/components/kiosk/KioskFailBurstLabel'
+import KioskPassBurstLabel from '@/components/kiosk/KioskPassBurstLabel'
+import { runTripleBurstFlash } from '@/utils/kioskFailFlash'
 import clsx from 'clsx'
 
 const RECENT_LOG_LIMIT = 5
@@ -21,6 +23,9 @@ export default function KioskPage() {
   const queryClient = useQueryClient()
   const [actionMsg, setActionMsg] = useState<string | null>(null)
   const [failFullScreenFlash, setFailFullScreenFlash] = useState(false)
+  const [failLabelFlash, setFailLabelFlash] = useState(false)
+  const [passFullScreenFlash, setPassFullScreenFlash] = useState(false)
+  const [passLabelFlash, setPassLabelFlash] = useState(false)
   const [kioskPreset, setKioskPreset] = useState<KioskInspectionPreset>('standard')
   const [focusDraft, setFocusDraft] = useState<number | null>(null)
   const { data: recentLogs = [] } = useRecentInspections(RECENT_LOG_LIMIT)
@@ -61,7 +66,9 @@ export default function KioskPage() {
       })
       const newest = logs[0]
       if (newest?.result === 'FAIL') {
-        await runTripleRedFlash(setFailFullScreenFlash)
+        await runTripleBurstFlash(setFailFullScreenFlash, setFailLabelFlash)
+      } else if (newest?.result === 'PASS') {
+        await runTripleBurstFlash(setPassFullScreenFlash, setPassLabelFlash)
       }
       setActionMsg('검사가 완료되었습니다. 우측 최근 검사이력에서 항목을 선택해 상세 결과를 확인하세요.')
     },
@@ -92,9 +99,12 @@ export default function KioskPage() {
         aria-hidden
         className={clsx(
           'fixed inset-0 z-[600] pointer-events-none transition-none',
-          failFullScreenFlash && 'bg-[rgba(220,38,38,0.52)]'
+          failFullScreenFlash && 'bg-[rgba(220,38,38,0.52)]',
+          passFullScreenFlash && 'bg-[rgba(22,163,74,0.48)]'
         )}
       />
+      <KioskFailBurstLabel visible={failLabelFlash} />
+      <KioskPassBurstLabel visible={passLabelFlash} />
       <div className="glass-panel mx-auto max-w-7xl min-h-[min(100vh,100%)] rounded-[30px] p-5 md:p-6 shadow-[var(--dash-glow)] overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-5 items-start">
           <section className="glass-panel rounded-3xl p-5 md:p-6">
