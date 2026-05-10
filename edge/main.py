@@ -771,12 +771,19 @@ def _run_production_vision_pipeline(
         pre_align_f1x, pre_align_f1y = f1x, f1y
         pre_align_f2x, pre_align_f2y = f2x, f2y
 
-        logger.info("[파이프라인] STEP 2-A′ — 좌표 정합 (translation/rotation/scale)")
+        ref_f1, ref_f2 = settings.alignment_reference_fiducials(selected_board_type)
+        ref_src = "GN_948X" if (selected_board_type or "").strip() == "GN_948X" else "ALIGN_REF"
+        logger.info(
+            "[파이프라인] STEP 2-A′ — 좌표 정합 (translation/rotation/scale) ref=%s F1=%s F2=%s",
+            ref_src,
+            ref_f1,
+            ref_f2,
+        )
         aligned_frame, alignment, _m = align_image_to_reference_by_fiducials(
             frame,
             alignment,
-            ref_f1=(settings.ALIGN_REF_FIDUCIAL1_X, settings.ALIGN_REF_FIDUCIAL1_Y),
-            ref_f2=(settings.ALIGN_REF_FIDUCIAL2_X, settings.ALIGN_REF_FIDUCIAL2_Y),
+            ref_f1=ref_f1,
+            ref_f2=ref_f2,
             out_size=(settings.ALIGN_OUTPUT_WIDTH, settings.ALIGN_OUTPUT_HEIGHT),
         )
         frame = aligned_frame

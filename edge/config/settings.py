@@ -92,6 +92,11 @@ class Settings(BaseSettings):
     ALIGN_REF_FIDUCIAL1_Y: int = Field(default=908, ge=0)
     ALIGN_REF_FIDUCIAL2_X: int = Field(default=1528, ge=0)
     ALIGN_REF_FIDUCIAL2_Y: int = Field(default=202, ge=0)
+    # GN_948X 멀티보드 선택 시에만 사용 (ALIGN_REF_* 는 그 외 보드·미확정 시)
+    ALIGN_REF_GN_948X_FIDUCIAL1_X: int = Field(default=278, ge=0)
+    ALIGN_REF_GN_948X_FIDUCIAL1_Y: int = Field(default=908, ge=0)
+    ALIGN_REF_GN_948X_FIDUCIAL2_X: int = Field(default=1528, ge=0)
+    ALIGN_REF_GN_948X_FIDUCIAL2_Y: int = Field(default=202, ge=0)
     # 정합 출력 캔버스 크기
     ALIGN_OUTPUT_WIDTH: int = Field(default=1920, ge=320, le=4096)
     ALIGN_OUTPUT_HEIGHT: int = Field(default=1080, ge=240, le=4096)
@@ -175,6 +180,24 @@ class Settings(BaseSettings):
         if self.YOLO_DEFECT_CONFIDENCE_THRESHOLD is not None:
             return float(self.YOLO_DEFECT_CONFIDENCE_THRESHOLD)
         return float(self.YOLO_CONFIDENCE_THRESHOLD)
+
+    def alignment_reference_fiducials(
+        self,
+        board_type: Optional[str],
+    ) -> tuple[tuple[int, int], tuple[int, int]]:
+        """
+        좌표 정합 목표 F1/F2 (픽셀).
+        멀티보드에서 board_type 이 GN_948X 일 때만 전용 좌표를 쓴다.
+        """
+        if (board_type or "").strip() == "GN_948X":
+            return (
+                (self.ALIGN_REF_GN_948X_FIDUCIAL1_X, self.ALIGN_REF_GN_948X_FIDUCIAL1_Y),
+                (self.ALIGN_REF_GN_948X_FIDUCIAL2_X, self.ALIGN_REF_GN_948X_FIDUCIAL2_Y),
+            )
+        return (
+            (self.ALIGN_REF_FIDUCIAL1_X, self.ALIGN_REF_FIDUCIAL1_Y),
+            (self.ALIGN_REF_FIDUCIAL2_X, self.ALIGN_REF_FIDUCIAL2_Y),
+        )
 
     @field_validator("STAGE2_SOURCE_MODE")
     @classmethod
