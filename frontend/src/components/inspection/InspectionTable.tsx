@@ -16,7 +16,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronRight, AlertCircle } from 'lucide-react'
 import clsx from 'clsx'
 import type { InspectionLog } from '@/types/inspection'
-import { defectDisplayName, DEFECT_COLOR, inspectionResultLabel } from '@/types/inspection'
+import { defectDisplayName, DEFECT_COLOR, deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import DefectViewer from './DefectViewer'
 import { inspectionDetailPath } from '@/utils/historyNavigation'
@@ -28,7 +28,7 @@ function ResultBadge({ result }: { result: 'PASS' | 'FAIL' }) {
   return (
     <span
       className={clsx(
-        'inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold tracking-wide',
+        'inline-flex shrink-0 items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-extrabold tracking-wide',
         result === 'PASS'
           ? 'bg-[var(--dash-success)]/24 text-[var(--dash-success)] border-2 border-[var(--dash-success)]/70'
           : 'bg-[var(--dash-danger)]/26 text-[var(--dash-danger)] border-2 border-[var(--dash-danger)]/70'
@@ -87,16 +87,11 @@ function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
 
 /** 실크 OCR 요약 한 컬럼 */
 function SilkOcrCell({
-  silkSeriesName,
   silkBoardName,
   silkManufacturer,
   silkManufactureDate,
-}: Pick<
-  InspectionLog,
-  'silkSeriesName' | 'silkBoardName' | 'silkManufacturer' | 'silkManufactureDate'
->) {
+}: Pick<InspectionLog, 'silkBoardName' | 'silkManufacturer' | 'silkManufactureDate'>) {
   const lines = [
-    silkSeriesName ? `시리즈: ${silkSeriesName}` : null,
     silkBoardName ? `기판: ${silkBoardName}` : null,
     silkManufacturer ? `제조사: ${silkManufacturer}` : null,
     silkManufactureDate ? `제조일: ${silkManufactureDate}` : null,
@@ -179,7 +174,10 @@ export default function InspectionTable({
               {['ID', '시각', '실크 OCR', '디바이스', '결과', '검출 클래스', '오차 (°)', '추론 (ms)', ''].map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-3.5 text-xs font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider"
+                  className={clsx(
+                    'px-4 py-3.5 text-xs font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider',
+                    h === '결과' && 'whitespace-nowrap'
+                  )}
                 >
                   {h}
                 </th>
@@ -236,7 +234,6 @@ export default function InspectionTable({
                       {/* 실크 OCR */}
                       <td className="px-4 py-3 align-top">
                         <SilkOcrCell
-                          silkSeriesName={log.silkSeriesName}
                           silkBoardName={log.silkBoardName}
                           silkManufacturer={log.silkManufacturer}
                           silkManufactureDate={log.silkManufactureDate}
@@ -245,11 +242,11 @@ export default function InspectionTable({
 
                       {/* 디바이스 */}
                       <td className="px-4 py-3 text-[13px] text-[var(--dash-text-secondary)] font-mono">
-                        {log.deviceId}
+                        {deviceDisplayLabel(log.deviceId)}
                       </td>
 
-                      {/* 결과 뱃지 */}
-                      <td className="px-4 py-3">
+                      {/* 결과 뱃지 — 열 폭이 좁을 때 한 글자씩 세로 줄바꿈 방지 */}
+                      <td className="whitespace-nowrap px-4 py-3 align-middle">
                         <div className="flex flex-col gap-0.5">
                           <ResultBadge result={log.result} />
                           {log.result === 'FAIL' &&

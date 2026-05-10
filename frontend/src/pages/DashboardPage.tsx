@@ -7,7 +7,7 @@ import StatCardGroup from '@/components/dashboard/StatCard'
 import PassFailChart from '@/components/dashboard/PassFailChart'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useAllInspections, useRecentInspections, useStats } from '@/hooks/useInspectionData'
-import { defectDisplayName } from '@/types/inspection'
+import { defectDisplayName, deviceDisplayLabel } from '@/types/inspection'
 import { buildHistoryPath, getLocalDateString, inspectionDetailPath } from '@/utils/historyNavigation'
 
 export default function DashboardPage() {
@@ -169,12 +169,12 @@ export default function DashboardPage() {
                       >
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                           <p className="text-sm font-semibold text-[var(--dash-text-primary)]">
-                            #{log.id} · {log.deviceId}
+                            #{log.id} · {deviceDisplayLabel(log.deviceId)}
                           </p>
                           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                             <span
                               className={clsx(
-                                'inline-flex items-center justify-center min-w-[5.5rem] text-sm font-black uppercase tracking-wide px-4 py-2 rounded-xl border-2 shadow-[0_2px_12px_rgba(0,0,0,0.12)]',
+                                'inline-flex shrink-0 items-center justify-center whitespace-nowrap min-w-[5.5rem] text-sm font-black uppercase tracking-wide px-4 py-2 rounded-xl border-2 shadow-[0_2px_12px_rgba(0,0,0,0.12)]',
                                 pass
                                   ? 'bg-[var(--dash-success)]/25 text-[var(--dash-success)] border-[var(--dash-success)]'
                                   : 'bg-[var(--dash-danger)]/28 text-[var(--dash-danger)] border-[var(--dash-danger)]'

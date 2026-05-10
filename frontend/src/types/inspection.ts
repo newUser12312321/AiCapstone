@@ -29,6 +29,19 @@ export function inspectionResultLabel(result: InspectionResultType): string {
   return result === 'PASS' ? '정상' : '불량'
 }
 
+/** 서버에 저장된 멀티보드 키·레거시 값 → 현장 표기 디바이스명 */
+export function deviceDisplayLabel(deviceId: string): string {
+  const t = deviceId?.trim()
+  if (!t) return deviceId
+  const map: Record<string, string> = {
+    G_SERIES: 'GT-125A',
+    GN_948X: 'GN-948X',
+    GT_125A: 'GT-125A',
+    'G-Series': 'GT-125A',
+  }
+  return map[t] ?? deviceId
+}
+
 /** 검사 이력 단건 레코드 (GET /api/inspections 응답 요소) */
 export interface InspectionLog {
   id: number

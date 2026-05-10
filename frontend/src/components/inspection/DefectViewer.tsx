@@ -7,7 +7,7 @@ import { X, ImageOff, AlertCircle } from 'lucide-react'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useInspectionById } from '@/hooks/useInspectionData'
 import type { InspectionLog } from '@/types/inspection'
-import { DEFECT_COLOR, defectDisplayName, inspectionResultLabel } from '@/types/inspection'
+import { DEFECT_COLOR, defectDisplayName, deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 
 // ── 이미지 로드 전 기본값 (로드 후 naturalWidth/Height 사용) ───────────────
 const DEFAULT_REF_WIDTH = 1920
@@ -568,7 +568,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
 
             <dl className="space-y-2.5 text-xs">
               <MetaRow label="검사 ID"     value={`#${log.id}`}              />
-              <MetaRow label="디바이스"    value={log.deviceId}              />
+              <MetaRow label="디바이스"    value={deviceDisplayLabel(log.deviceId)}              />
               <MetaRow label="검사 시각"   value={formatFullDateTime(log.inspectedAt)} />
               <MetaRow
                 label="시리즈명 (실크)"

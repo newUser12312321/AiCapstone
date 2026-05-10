@@ -958,6 +958,18 @@ async def run_inspection_pipeline_from_source_file(
     )
 
 
+def _device_id_for_storage(raw: Optional[str]) -> str:
+    """board_profiles 내부 키(G_SERIES 등)를 이력·대시보드 표기명으로 변환."""
+    if not raw:
+        return "RPI5-LINE-A"
+    mapping = {
+        "G_SERIES": "GT-125A",
+        "GN_948X": "GN-948X",
+        "GT_125A": "GT-125A",
+    }
+    return mapping.get(raw, raw)
+
+
 def _build_packet(
     result: InspectionResult,
     f1x, f1y, f2x, f2y,
@@ -986,7 +998,7 @@ def _build_packet(
     """InspectionPacket 조립 헬퍼."""
     total_ms = int((time.perf_counter() - pipeline_start) * 1000)
     return InspectionPacket(
-        device_id=(device_id or "RPI5-LINE-A"),
+        device_id=_device_id_for_storage(device_id),
         result=result,
         fiducial1_x=f1x, fiducial1_y=f1y,
         fiducial2_x=f2x, fiducial2_y=f2y,

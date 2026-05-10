@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Home, Loader2 } from 'lucide-react'
 import { fetchInspectionById } from '@/api/inspectionApi'
-import { inspectionResultLabel } from '@/types/inspection'
+import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 
 function fiducialDistancePx(log: {
   fiducial1X: number | null
@@ -101,7 +101,10 @@ export default function KioskInspectionCompletePage() {
                   <InfoRow label="제조회사 (실크 OCR)" value={log?.silkManufacturer?.trim() || '—'} />
                   <InfoRow label="제조일자 (실크 OCR)" value={log?.silkManufactureDate?.trim() || '—'} />
                   <InfoRow label="검사 ID" value={log ? `#${log.id}` : '-'} />
-                  <InfoRow label="디바이스" value={log?.deviceId ?? '-'} />
+                  <InfoRow
+                    label="디바이스"
+                    value={log ? deviceDisplayLabel(log.deviceId) : '-'}
+                  />
                   <InfoRow label="검출 수" value={log ? `${overlayDefects.length}건` : '-'} />
                   <InfoRow label="F1-F2 거리" value={distance != null ? `${distance.toFixed(1)} px` : '-'} />
                   <InfoRow label="추론 시간" value={log?.inferenceTimeMs != null ? `${log.inferenceTimeMs} ms` : '-'} />

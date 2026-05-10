@@ -12,7 +12,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import InspectionTable from '@/components/inspection/InspectionTable'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useAllInspections } from '@/hooks/useInspectionData'
-import type { InspectionResultType } from '@/types/inspection'
+import { type InspectionResultType, deviceDisplayLabel } from '@/types/inspection'
 import {
   buildHistoryPath,
   buildHistorySearchString,
@@ -151,7 +151,7 @@ export default function HistoryPage() {
     const rows = filteredLogs.map((l) => [
       l.id,
       formatFullDateTime(l.inspectedAt),
-      l.deviceId,
+      deviceDisplayLabel(l.deviceId),
       l.result,
       l.angleErrorDeg?.toFixed(2) ?? '',
       l.inferenceTimeMs ?? '',
@@ -235,7 +235,9 @@ export default function HistoryPage() {
               >
                 <option value="">전체</option>
                 {deviceOptions.map((d) => (
-                  <option key={d} value={d}>{d}</option>
+                  <option key={d} value={d}>
+                    {deviceDisplayLabel(d)}
+                  </option>
                 ))}
               </select>
             </div>
