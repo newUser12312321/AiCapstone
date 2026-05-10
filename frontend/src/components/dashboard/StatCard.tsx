@@ -1,26 +1,71 @@
 /**
- * 통계 요약 카드 컴포넌트
- *
- * 대시보드 상단에 4개 배치되어 전체 검사 건수, 합격, 불합격, 불량률을 표시한다.
- * 로딩 중에는 Skeleton 애니메이션을 보여준다.
+ * 통계 요약 카드 — 클릭 시 검사 이력(/history)로 필터 연동
  */
 
 import type { LucideIcon } from 'lucide-react'
 import { CheckCircle, XCircle, Activity, AlertTriangle } from 'lucide-react'
 import clsx from 'clsx'
+import { useNavigate } from 'react-router-dom'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useStats } from '@/hooks/useInspectionData'
+import type { InspectionLog } from '@/types/inspection'
+import { buildHistoryPath, getLocalDateString } from '@/utils/historyNavigation'
+import type { LineFilter } from '@/utils/inspectionFilters'
 
-// ── 개별 카드 컴포넌트 ────────────────────────────────────────────────────────
+function startOfLocalDay(d = new Date()): Date {
+  const x = new Date(d)
+  x.setHours(0, 0, 0, 0)
+  return x
+}
+
+function logsBetween(logs: InspectionLog[], fromMs: number, toMs: number): InspectionLog[] {
+  return logs.filter((l) => {
+    const t = new Date(l.inspectedAt).getTime()
+    return t >= fromMs && t <= toMs
+  })
+}
+
+function summarize(logs: InspectionLog[]) {
+  const total = logs.length
+  const pass = logs.filter((l) => l.result === 'PASS').length
+  const fail = logs.filter((l) => l.result === 'FAIL').length
+  const failRate = total ? (fail / total) * 100 : 0
+  return { total, pass, fail, failRate }
+}
+
+function formatCountDelta(curr: number, prev: number): string | null {
+  if (curr === 0 && prev === 0) return null
+  if (prev === 0) return `전주 대비 신규`
+  const pct = ((curr - prev) / prev) * 100
+  const arrow = pct >= 0 ? '▲' : '▼'
+  return `전주 대비 ${arrow} ${Math.abs(pct).toFixed(1)}%`
+}
+
+function formatDayDelta(curr: number, prev: number): string | null {
+  if (curr === 0 && prev === 0) return null
+  if (prev === 0) return `전일 대비 +${curr}건`
+  const pct = ((curr - prev) / prev) * 100
+  const arrow = pct >= 0 ? '▲' : '▼'
+  return `전일 대비 ${arrow} ${Math.abs(pct).toFixed(1)}%`
+}
+
+function formatRateDelta(curr: number, prev: number): string | null {
+  if (curr === 0 && prev === 0) return null
+  const d = curr - prev
+  const arrow = d >= 0 ? '▲' : '▼'
+  return `전일 불량률 ${arrow} ${Math.abs(d).toFixed(2)}%p`
+}
+
+// ── 개별 카드 ────────────────────────────────────────────────────────────────
 
 interface StatCardProps {
   title:   string
   value:   string | number
   icon:    LucideIcon
-  /** 아이콘 배경 + 텍스트 색상 테마 */
   theme:   'indigo' | 'green' | 'red' | 'yellow'
-  /** 카드 하단에 표시할 보조 설명 (선택) */
   caption?: string
+  delta?:  string | null
+  onNavigate?: () => void
 }
 
 const THEME_MAP: Record<StatCardProps['theme'], { bg: string; text: string; border: string }> = {
@@ -30,34 +75,48 @@ const THEME_MAP: Record<StatCardProps['theme'], { bg: string; text: string; bord
   yellow: { bg: 'bg-[var(--dash-warning)]/14', text: 'text-[var(--dash-warning)]', border: 'border-[var(--dash-warning)]/26' },
 }
 
-function StatCard({ title, value, icon: Icon, theme, caption }: StatCardProps) {
+function StatCard({ title, value, icon: Icon, theme, caption, delta, onNavigate }: StatCardProps) {
   const colors = THEME_MAP[theme]
-
-  return (
-    <div className={clsx(
-      'glass-panel rounded-[22px] p-5 min-h-[142px]',
-      colors.border
-    )}>
-      {/* 상단: 아이콘 + 제목 */}
+  const inner = (
+    <>
       <div className="flex items-center justify-between mb-3">
         <span className="text-[15px] text-[var(--dash-text-secondary)] font-semibold">{title}</span>
         <div className={clsx('w-9 h-9 rounded-full flex items-center justify-center', colors.bg)}>
           <Icon size={18} className={colors.text} />
         </div>
       </div>
-
-      {/* 주요 수치 */}
       <p className="text-[32px] leading-none font-bold text-[var(--dash-text-primary)] tracking-tight">{value}</p>
-
-      {/* 보조 설명 */}
       {caption && (
         <p className="text-sm text-[var(--dash-text-tertiary)] mt-1.5">{caption}</p>
       )}
+      {delta && (
+        <p className="text-xs text-[var(--dash-text-secondary)] mt-1 font-medium">{delta}</p>
+      )}
+    </>
+  )
+
+  if (onNavigate) {
+    return (
+      <button
+        type="button"
+        onClick={onNavigate}
+        className={clsx(
+          'glass-panel rounded-[22px] p-5 min-h-[142px] text-left w-full transition-transform hover:scale-[1.01] active:scale-[0.99]',
+          colors.border,
+          'focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/40'
+        )}
+      >
+        {inner}
+      </button>
+    )
+  }
+
+  return (
+    <div className={clsx('glass-panel rounded-[22px] p-5 min-h-[142px]', colors.border)}>
+      {inner}
     </div>
   )
 }
-
-// ── 스켈레톤 (로딩 상태) ─────────────────────────────────────────────────────
 
 function StatCardSkeleton() {
   return (
@@ -72,17 +131,57 @@ function StatCardSkeleton() {
   )
 }
 
-// ── 통계 카드 그룹 (4개 묶음) ─────────────────────────────────────────────────
+// ── 그룹 ─────────────────────────────────────────────────────────────────────
 
-/**
- * 통계 API 데이터를 가져와 4개 StatCard를 렌더링한다.
- * 데이터 패칭은 useStats()에 위임하여 컴포넌트 코드를 단순하게 유지한다.
- */
-export default function StatCardGroup() {
+export interface StatCardGroupProps {
+  /** 라인·기종 필터 (빈 문자열이면 전체) */
+  lineFilter: LineFilter
+  allLogs: InspectionLog[]
+}
+
+export default function StatCardGroup({ lineFilter, allLogs }: StatCardGroupProps) {
   const { formatRatePercent } = useDashboardSettings()
   const { data: stats, isLoading, isError } = useStats()
+  const navigate = useNavigate()
 
-  /* 로딩 중: 스켈레톤 4개 표시 */
+  const useBackendStats =
+    !(lineFilter.deviceId?.trim()) && !(lineFilter.board?.trim())
+
+  const scopedLogs = allLogs
+
+  const today = getLocalDateString()
+  const sod = startOfLocalDay()
+  const sodMs = sod.getTime()
+  const yStart = new Date(sodMs - 86400000)
+  const yEnd = new Date(sodMs - 1)
+  const now = Date.now()
+  const w1Start = sodMs - 7 * 86400000
+  const w2Start = sodMs - 14 * 86400000
+  const w2End = sodMs - 7 * 86400000 - 1
+
+  const todayLogs = logsBetween(scopedLogs, sodMs, now)
+  const yLogs = logsBetween(scopedLogs, yStart.getTime(), yEnd.getTime())
+  const wCurr = logsBetween(scopedLogs, w1Start, now)
+  const wPrev = logsBetween(scopedLogs, w2Start, w2End)
+
+  const tK = summarize(todayLogs)
+  const yK = summarize(yLogs)
+  const wK = summarize(wCurr)
+  const wP = summarize(wPrev)
+
+  const lineQ = {
+    device: lineFilter.deviceId?.trim() || undefined,
+    board: lineFilter.board?.trim() || undefined,
+  }
+
+  const go = (extra: Parameters<typeof buildHistoryPath>[0]) => {
+    navigate(buildHistoryPath({ to: today, ...lineQ, ...extra }))
+  }
+
+  const goToday = (extra: Parameters<typeof buildHistoryPath>[0]) => {
+    navigate(buildHistoryPath({ from: today, to: today, ...lineQ, ...extra }))
+  }
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -91,7 +190,6 @@ export default function StatCardGroup() {
     )
   }
 
-  /* 오류 시: 안내 메시지 */
   if (isError || !stats) {
     return (
       <div className="col-span-4 text-center py-8 text-[var(--dash-text-secondary)] text-sm">
@@ -100,36 +198,48 @@ export default function StatCardGroup() {
     )
   }
 
+  const total = useBackendStats ? stats.totalCount : summarize(scopedLogs).total
+  const pass = useBackendStats ? stats.passCount : summarize(scopedLogs).pass
+  const fail = useBackendStats ? stats.failCount : summarize(scopedLogs).fail
+  const failRate = useBackendStats ? stats.failRate : (total ? (fail / total) * 100 : 0)
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
         title="전체 검사"
-        value={stats.totalCount.toLocaleString()}
+        value={total.toLocaleString()}
         icon={Activity}
         theme="indigo"
         caption="누적 검사 건수"
+        delta={formatCountDelta(wK.total, wP.total)}
+        onNavigate={() => go({})}
       />
       <StatCard
         title="합격 (PASS)"
-        value={stats.passCount.toLocaleString()}
+        value={pass.toLocaleString()}
         icon={CheckCircle}
         theme="green"
-        caption={`전체의 ${formatRatePercent(100 - stats.failRate)}%`}
+        caption={`전체의 ${formatRatePercent(total ? (pass / total) * 100 : 0)}%`}
+        delta={formatDayDelta(tK.pass, yK.pass)}
+        onNavigate={() => goToday({ result: 'PASS' })}
       />
       <StatCard
         title="불합격 (FAIL)"
-        value={stats.failCount.toLocaleString()}
+        value={fail.toLocaleString()}
         icon={XCircle}
         theme="red"
-        caption={`전체의 ${formatRatePercent(stats.failRate)}%`}
+        caption={`전체의 ${formatRatePercent(total ? (fail / total) * 100 : 0)}%`}
+        delta={formatDayDelta(tK.fail, yK.fail)}
+        onNavigate={() => goToday({ result: 'FAIL' })}
       />
       <StatCard
         title="불량률"
-        value={`${formatRatePercent(stats.failRate)}%`}
+        value={`${formatRatePercent(failRate)}%`}
         icon={AlertTriangle}
-        /* 불량률 3% 이상이면 빨간색, 미만이면 노란색 */
-        theme={stats.failRate >= 3 ? 'red' : 'yellow'}
+        theme={failRate >= 3 ? 'red' : 'yellow'}
         caption="FAIL / 전체 검사"
+        delta={formatRateDelta(tK.failRate, yK.failRate)}
+        onNavigate={() => goToday({ result: 'FAIL' })}
       />
     </div>
   )

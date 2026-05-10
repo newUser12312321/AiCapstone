@@ -1,23 +1,18 @@
 /**
- * 시간대별 검사 추이 차트 컴포넌트
- *
- * Recharts의 BarChart를 사용하여 최근 24시간 동안의 시간대별
- * PASS/FAIL 건수를 스택(누적) 막대 그래프로 시각화한다.
- *
- * 데이터는 useTrendData() 훅이 전체 이력에서 시간 단위로 집계하여 제공한다.
+ * 시간대별 검사 추이 — 막대 클릭 시 해당 일·시간대 이력으로 이동
  */
 
 import {
   BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
+import { useNavigate } from 'react-router-dom'
 import { useTrendData } from '@/hooks/useInspectionData'
+import { buildHistoryPath, getLocalDateString } from '@/utils/historyNavigation'
+import type { LineFilter } from '@/utils/inspectionFilters'
 
-/* 색상 상수 */
 const PASS_COLOR = '#34d399'
 const FAIL_COLOR = '#fb7185'
-
-// ── 커스텀 툴팁 ───────────────────────────────────────────────────────────────
 
 function CustomTooltip({
   active, payload, label,
@@ -46,16 +41,42 @@ function CustomTooltip({
       <div className="border-t border-[var(--dash-border)] mt-1.5 pt-1.5 text-[var(--dash-text-tertiary)]">
         합계: <span className="text-[var(--dash-text-primary)]">{total}건</span>
       </div>
+      <p className="text-[var(--dash-text-tertiary)] mt-1">막대 클릭 시 이력 필터</p>
     </div>
   )
 }
 
-// ── 메인 컴포넌트 ─────────────────────────────────────────────────────────────
+export interface TrendChartProps {
+  lineFilter: LineFilter
+}
 
-export default function TrendChart() {
-  const { data: trendData, isLoading } = useTrendData()
+export default function TrendChart({ lineFilter }: TrendChartProps) {
+  const { data: trendData, isLoading } = useTrendData(lineFilter)
+  const navigate = useNavigate()
+  const today = getLocalDateString()
 
-  /* 로딩 스켈레톤 */
+  const lineQ = {
+    device: lineFilter.deviceId?.trim() || undefined,
+    board: lineFilter.board?.trim() || undefined,
+  }
+
+  const handleBarClick = (raw: unknown) => {
+    const rec = raw as { payload?: { label: string; anchorDate?: string } }
+    const pl = rec?.payload
+    if (!pl?.label) return
+    const hour = Number.parseInt(pl.label.split(':')[0], 10)
+    if (Number.isNaN(hour)) return
+    const anchor = pl.anchorDate ?? today
+    navigate(
+      buildHistoryPath({
+        from: anchor,
+        to: anchor,
+        hour,
+        ...lineQ,
+      })
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-[22px] p-5">
@@ -65,7 +86,6 @@ export default function TrendChart() {
     )
   }
 
-  /* 데이터 없음 안내 */
   if (!trendData.length) {
     return (
       <div className="glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[22px] p-5">
@@ -88,14 +108,12 @@ export default function TrendChart() {
           margin={{ top: 4, right: 8, left: -16, bottom: 0 }}
           barSize={14}
         >
-          {/* 배경 그리드 */}
           <CartesianGrid
             strokeDasharray="3 3"
             stroke="rgba(152,160,200,0.22)"
             vertical={false}
           />
 
-          {/* X축: 시간 레이블 */}
           <XAxis
             dataKey="label"
             tick={{ fill: '#c7cdef', fontSize: 12 }}
@@ -103,7 +121,6 @@ export default function TrendChart() {
             tickLine={false}
           />
 
-          {/* Y축: 건수 */}
           <YAxis
             tick={{ fill: '#c7cdef', fontSize: 12 }}
             axisLine={false}
@@ -111,24 +128,36 @@ export default function TrendChart() {
             allowDecimals={false}
           />
 
-          {/* 호버 툴팁 */}
           <Tooltip
             content={<CustomTooltip />}
             cursor={{ fill: 'rgba(139,92,246,0.16)' }}
           />
 
-          {/* 범례 */}
           <Legend
             formatter={(value) => (
               <span style={{ color: '#c7cdef', fontSize: '0.8125rem' }}>{value}</span>
             )}
           />
 
-          {/* PASS 막대 (스택 하단) */}
-          <Bar dataKey="pass" name="PASS" stackId="stack" fill={PASS_COLOR} radius={[0, 0, 0, 0]} />
+          <Bar
+            dataKey="pass"
+            name="PASS"
+            stackId="stack"
+            fill={PASS_COLOR}
+            radius={[0, 0, 0, 0]}
+            onClick={handleBarClick}
+            cursor="pointer"
+          />
 
-          {/* FAIL 막대 (스택 상단) — 상단 모서리만 둥글게 */}
-          <Bar dataKey="fail" name="FAIL" stackId="stack" fill={FAIL_COLOR} radius={[3, 3, 0, 0]} />
+          <Bar
+            dataKey="fail"
+            name="FAIL"
+            stackId="stack"
+            fill={FAIL_COLOR}
+            radius={[3, 3, 0, 0]}
+            onClick={handleBarClick}
+            cursor="pointer"
+          />
         </BarChart>
         </ResponsiveContainer>
       </div>

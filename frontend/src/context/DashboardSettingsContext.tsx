@@ -17,6 +17,9 @@ import {
   saveDashboardSettings,
   clampRecentFeedLimit,
   clampDecimalPlaces,
+  clampAlertFailRate,
+  clampAlertConsecutiveFail,
+  clampAlertInferenceMs,
   isValidPollingInterval,
 } from '@/settings/dashboardSettings'
 import {
@@ -53,6 +56,18 @@ export function DashboardSettingsProvider({ children }: { children: ReactNode })
       }
       if (patch.decimalPlaces != null) {
         next.decimalPlaces = clampDecimalPlaces(patch.decimalPlaces)
+      }
+      if (patch.alertsEnabled !== undefined) {
+        next.alertsEnabled = patch.alertsEnabled
+      }
+      if (patch.alertMinFailRatePct != null) {
+        next.alertMinFailRatePct = clampAlertFailRate(patch.alertMinFailRatePct)
+      }
+      if (patch.alertMinConsecutiveFail != null) {
+        next.alertMinConsecutiveFail = clampAlertConsecutiveFail(patch.alertMinConsecutiveFail)
+      }
+      if (patch.alertMaxAvgInferenceMs != null) {
+        next.alertMaxAvgInferenceMs = clampAlertInferenceMs(patch.alertMaxAvgInferenceMs)
       }
       saveDashboardSettings(next)
       return next

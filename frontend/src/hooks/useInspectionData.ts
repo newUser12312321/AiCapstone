@@ -18,6 +18,9 @@ import {
 } from '@/api/inspectionApi'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import type { TrendDataPoint } from '@/types/inspection'
+import type { LineFilter } from '@/utils/inspectionFilters'
+import { filterByLine } from '@/utils/inspectionFilters'
+import { getLocalDateString } from '@/utils/historyNavigation'
 
 /** React Query 캐시 키 상수 — 오타 방지를 위해 중앙 관리 */
 export const QUERY_KEYS = {
@@ -129,7 +132,7 @@ export function useInspectionsByPeriod(from: string, to: string) {
  * 예시 반환값:
  *   [{ label: "09:00", pass: 12, fail: 2 }, ...]
  */
-export function useTrendData(): { data: TrendDataPoint[]; isLoading: boolean } {
+export function useTrendData(lineFilter?: LineFilter): { data: TrendDataPoint[]; isLoading: boolean } {
   const { settings } = useDashboardSettings()
   const { data: logs = [], isLoading } = useAllInspections()
 
@@ -137,29 +140,47 @@ export function useTrendData(): { data: TrendDataPoint[]; isLoading: boolean } {
     return { data: [], isLoading }
   }
 
+  const scoped = filterByLine(logs, {
+    deviceId: lineFilter?.deviceId,
+    board: lineFilter?.board,
+  })
+
   // 최근 24시간 데이터만 필터링
   const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000)
-  const recent = logs.filter((l) => new Date(l.inspectedAt) >= cutoff)
+  const recent = scoped.filter((l) => new Date(l.inspectedAt) >= cutoff)
 
-  // 시간(HH:00) 단위로 그룹핑 (표시 시간대 설정과 맞춤)
-  const grouped: Record<string, { pass: number; fail: number }> = {}
+  const grouped: Record<string, { pass: number; fail: number; latestTs: number; anchorDate: string }> = {}
 
   recent.forEach((log) => {
     const d = new Date(log.inspectedAt)
-    const hour =
-      settings.timeZoneMode === 'utc' ? d.getUTCHours() : d.getHours()
+    const utc = settings.timeZoneMode === 'utc'
+    const hour = utc ? d.getUTCHours() : d.getHours()
     const label = `${String(hour).padStart(2, '0')}:00`
+    const dayStr = utc
+      ? `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`
+      : getLocalDateString(d)
+    const ts = d.getTime()
 
-    if (!grouped[label]) grouped[label] = { pass: 0, fail: 0 }
-
-    if (log.result === 'PASS') grouped[label].pass++
-    else                       grouped[label].fail++
+    if (!grouped[label]) {
+      grouped[label] = { pass: 0, fail: 0, latestTs: -1, anchorDate: dayStr }
+    }
+    const g = grouped[label]
+    if (log.result === 'PASS') g.pass++
+    else g.fail++
+    if (ts >= g.latestTs) {
+      g.latestTs = ts
+      g.anchorDate = dayStr
+    }
   })
 
-  // 시간 오름차순 정렬
   const trendData: TrendDataPoint[] = Object.entries(grouped)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([label, counts]) => ({ label, ...counts }))
+    .map(([label, g]) => ({
+      label,
+      pass: g.pass,
+      fail: g.fail,
+      anchorDate: g.anchorDate,
+    }))
 
   return { data: trendData, isLoading }
 }

@@ -2,32 +2,28 @@
  * 검사 이력 페이지
  *
  * 전체 검사 이력을 조회하고 날짜 기간 필터 및 결과(PASS/FAIL) 필터를 제공한다.
- *
- * 기능:
- * - 날짜 범위 선택 (from ~ to)
- * - 결과 필터 버튼 그룹 (전체 / PASS / FAIL)
- * - 총 건수 / 합격 / 불합격 미니 통계
- * - InspectionTable 렌더링 (행 클릭 → DefectViewer)
+ * 쿼리스트링(from, to, result, device, board, defect, hour, open)으로 대시보드·차트와 연동한다.
  */
 
-import { useState, useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { Search, Filter, Download } from 'lucide-react'
 import clsx from 'clsx'
+import { useSearchParams } from 'react-router-dom'
 import InspectionTable from '@/components/inspection/InspectionTable'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useAllInspections } from '@/hooks/useInspectionData'
 import type { InspectionResultType } from '@/types/inspection'
+import {
+  buildHistorySearchString,
+  getLocalDateString,
+  parseHistoryQuery,
+  type HistoryQuery,
+} from '@/utils/historyNavigation'
+import { logMatchesDefectDisplayLabel } from '@/utils/inspectionFilters'
 
 // ── 결과 필터 버튼 ────────────────────────────────────────────────────────────
 
 type ResultFilter = 'ALL' | InspectionResultType
-
-function getLocalDateString(date = new Date()): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
 
 interface FilterButtonProps {
   label:    string
@@ -60,34 +56,93 @@ function FilterButton({ label, value, current, count, onClick }: FilterButtonPro
   )
 }
 
+function logHour(iso: string, timeZoneMode: 'local' | 'utc'): number {
+  const d = new Date(iso)
+  return timeZoneMode === 'utc' ? d.getUTCHours() : d.getHours()
+}
+
 // ── 메인 컴포넌트 ─────────────────────────────────────────────────────────────
 
 export default function HistoryPage() {
-  const { formatFullDateTime, formatRatePercent } = useDashboardSettings()
+  const { formatFullDateTime, formatRatePercent, settings } = useDashboardSettings()
   const { data: allLogs = [], isLoading } = useAllInspections()
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  /* 결과 필터 상태 */
-  const [resultFilter, setResultFilter] = useState<ResultFilter>('ALL')
-
-  /* 날짜 범위 필터 상태 (YYYY-MM-DD 형식) */
   const today = getLocalDateString()
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo,   setDateTo]   = useState(today)
+  const q = useMemo(() => parseHistoryQuery(searchParams), [searchParams])
 
-  /* 필터 적용된 데이터 계산 (useMemo로 불필요한 재연산 방지) */
+  const dateFrom = q.from ?? ''
+  const dateTo = q.to !== undefined && q.to !== '' ? q.to : today
+
+  const patchQuery = useCallback(
+    (patch: Partial<HistoryQuery>) => {
+      setSearchParams(
+        (prev) => {
+          const current = parseHistoryQuery(prev)
+          const merged: HistoryQuery = { ...current, ...patch }
+          if (merged.result === 'ALL') {
+            delete merged.result
+          }
+          const s = buildHistorySearchString(merged)
+          return s ? new URLSearchParams(s) : new URLSearchParams()
+        },
+        { replace: true }
+      )
+    },
+    [setSearchParams]
+  )
+
+  const deviceOptions = useMemo(() => {
+    const s = new Set<string>()
+    allLogs.forEach((l) => {
+      if (l.deviceId) s.add(l.deviceId)
+    })
+    return Array.from(s).sort()
+  }, [allLogs])
+
+  const boardOptions = useMemo(() => {
+    const s = new Set<string>()
+    allLogs.forEach((l) => {
+      const b = (l.silkBoardName ?? '').trim()
+      if (b) s.add(b)
+    })
+    return Array.from(s).sort()
+  }, [allLogs])
+
   const filteredLogs = useMemo(() => {
     return allLogs.filter((log) => {
-      /* 결과 필터 */
-      if (resultFilter !== 'ALL' && log.result !== resultFilter) return false
+      if (q.result && q.result !== 'ALL' && log.result !== q.result) return false
 
-      /* 날짜 범위 필터 */
       const logDate = log.inspectedAt.slice(0, 10)
       if (dateFrom && logDate < dateFrom) return false
-      if (dateTo   && logDate > dateTo)   return false
+      if (dateTo && logDate > dateTo) return false
+
+      if (q.device && log.deviceId !== q.device) return false
+      if (q.board && (log.silkBoardName ?? '').trim() !== q.board) return false
+
+      if (q.hour != null && logHour(log.inspectedAt, settings.timeZoneMode) !== q.hour) {
+        return false
+      }
+
+      if (q.defect && !logMatchesDefectDisplayLabel(log, q.defect)) return false
 
       return true
     })
-  }, [allLogs, resultFilter, dateFrom, dateTo])
+  }, [allLogs, q, dateFrom, dateTo, settings.timeZoneMode])
+
+  const resultFilter: ResultFilter = q.result ?? 'ALL'
+
+  const effectiveOpenId = useMemo(() => {
+    if (q.open != null && filteredLogs.some((l) => l.id === q.open)) return q.open
+    if (q.defect) {
+      const sorted = [...filteredLogs].sort(
+        (a, b) => new Date(b.inspectedAt).getTime() - new Date(a.inspectedAt).getTime()
+      )
+      const hit = sorted.find((l) => logMatchesDefectDisplayLabel(l, q.defect!))
+      return hit?.id
+    }
+    return undefined
+  }, [q.open, q.defect, filteredLogs])
 
   const downloadCsv = () => {
     if (!filteredLogs.length) return
@@ -115,7 +170,6 @@ export default function HistoryPage() {
     URL.revokeObjectURL(url)
   }
 
-  /* 필터 결과 미니 통계 */
   const passCount = filteredLogs.filter((l) => l.result === 'PASS').length
   const failCount = filteredLogs.filter((l) => l.result === 'FAIL').length
 
@@ -123,14 +177,12 @@ export default function HistoryPage() {
     <div className="p-6 space-y-5 overflow-y-auto h-full bg-[var(--dash-bg-secondary)]">
       <div className="max-w-[1280px] mx-auto space-y-5">
 
-        {/* 페이지 제목 */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold tracking-tight text-[var(--dash-text-primary)]">검사 이력</h2>
             <p className="text-sm text-[var(--dash-text-secondary)] mt-0.5">전체 검사 기록 조회 및 결함 상세 확인</p>
           </div>
 
-          {/* CSV 내보내기 버튼 */}
           <button
             onClick={downloadCsv}
             className="flex items-center gap-2 px-4 py-2.5 bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] rounded-xl text-sm font-medium transition-colors shadow-[var(--dash-shadow-soft)]"
@@ -140,11 +192,9 @@ export default function HistoryPage() {
           </button>
         </div>
 
-        {/* 필터 영역 */}
         <div className="bg-[var(--dash-surface)] rounded-2xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
           <div className="flex flex-wrap gap-4 items-end">
 
-          {/* 날짜 범위 필터 */}
           <div className="flex items-center gap-2">
             <Filter size={14} className="text-[var(--dash-text-tertiary)] shrink-0" />
             <div className="flex items-center gap-2">
@@ -153,7 +203,7 @@ export default function HistoryPage() {
                 <input
                   type="date"
                   value={dateFrom}
-                  onChange={(e) => setDateFrom(e.target.value)}
+                  onChange={(e) => patchQuery({ from: e.target.value || undefined })}
                   max={dateTo || today}
                   className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
                 />
@@ -164,7 +214,7 @@ export default function HistoryPage() {
                 <input
                   type="date"
                   value={dateTo}
-                  onChange={(e) => setDateTo(e.target.value)}
+                  onChange={(e) => patchQuery({ to: e.target.value || undefined })}
                   min={dateFrom}
                   max={today}
                   className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
@@ -173,17 +223,91 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {/* 결과 필터 버튼 그룹 */}
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-[var(--dash-text-tertiary)]">디바이스</label>
+              <select
+                value={q.device ?? ''}
+                onChange={(e) =>
+                  patchQuery({ device: e.target.value || undefined, open: undefined })
+                }
+                className="min-w-[140px] rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
+              >
+                <option value="">전체</option>
+                {deviceOptions.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-[var(--dash-text-tertiary)]">기판명(실크)</label>
+              <select
+                value={q.board ?? ''}
+                onChange={(e) =>
+                  patchQuery({ board: e.target.value || undefined, open: undefined })
+                }
+                className="min-w-[160px] rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
+              >
+                <option value="">전체</option>
+                {boardOptions.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+            {q.hour != null && (
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[var(--dash-text-tertiary)]">시간대 필터</label>
+                <button
+                  type="button"
+                  onClick={() => patchQuery({ hour: undefined, open: undefined })}
+                  className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2 text-xs text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)]"
+                >
+                  {String(q.hour).padStart(2, '0')}:00 해제
+                </button>
+              </div>
+            )}
+            {q.defect && (
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[var(--dash-text-tertiary)]">결함 필터</label>
+                <button
+                  type="button"
+                  onClick={() => patchQuery({ defect: undefined, open: undefined })}
+                  className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2 text-xs text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)] max-w-[220px] truncate"
+                  title={q.defect}
+                >
+                  「{q.defect}」 해제
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center gap-2 ml-auto">
             <Search size={14} className="text-[var(--dash-text-tertiary)]" />
-            <FilterButton label="전체"  value="ALL"  current={resultFilter} count={allLogs.length}                        onClick={setResultFilter} />
-            <FilterButton label="PASS"  value="PASS" current={resultFilter} count={allLogs.filter(l => l.result==='PASS').length} onClick={setResultFilter} />
-            <FilterButton label="FAIL"  value="FAIL" current={resultFilter} count={allLogs.filter(l => l.result==='FAIL').length} onClick={setResultFilter} />
+            <FilterButton
+              label="전체"
+              value="ALL"
+              current={resultFilter}
+              count={allLogs.length}
+              onClick={(v) => patchQuery({ result: v, open: undefined })}
+            />
+            <FilterButton
+              label="PASS"
+              value="PASS"
+              current={resultFilter}
+              count={allLogs.filter((l) => l.result === 'PASS').length}
+              onClick={(v) => patchQuery({ result: v, open: undefined })}
+            />
+            <FilterButton
+              label="FAIL"
+              value="FAIL"
+              current={resultFilter}
+              count={allLogs.filter((l) => l.result === 'FAIL').length}
+              onClick={(v) => patchQuery({ result: v, open: undefined })}
+            />
           </div>
         </div>
       </div>
 
-        {/* 필터 결과 미니 통계 바 */}
         <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--dash-text-secondary)]">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
             조회 결과 <span className="text-[var(--dash-text-primary)] font-semibold">{filteredLogs.length}건</span>
@@ -203,10 +327,10 @@ export default function HistoryPage() {
           )}
         </div>
 
-        {/* 검사 이력 테이블 */}
         <InspectionTable
           logs={filteredLogs}
           isLoading={isLoading}
+          initialOpenLogId={effectiveOpenId ?? null}
         />
       </div>
     </div>

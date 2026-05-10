@@ -97,6 +97,8 @@ export interface TrendDataPoint {
   label: string    // X축 레이블 (예: "14:30", "03/31")
   pass:  number
   fail:  number
+  /** 해당 버킷에서 가장 최근 검사의 로컬 기준일 (YYYY-MM-DD) — 이력 필터 연동용 */
+  anchorDate?: string
 }
 
 /** PassFailChart에서 사용하는 도넛 차트 데이터 */

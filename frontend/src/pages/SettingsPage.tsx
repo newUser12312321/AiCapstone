@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
   ArrowLeft,
+  Bell,
   Clock,
   Globe,
   Loader2,
@@ -263,6 +264,74 @@ export default function SettingsPage() {
           >
             표시·동작 설정을 기본값으로 되돌리기
           </button>
+        </section>
+
+        {/* 임계값 알림 */}
+        <section className="glass-panel rounded-[22px] p-5">
+          <SectionTitle
+            icon={Bell}
+            title="운영 알림 (임계값)"
+            description="조건을 넘으면 헤더에 배지가 뜨고 짧은 토스트가 표시됩니다. 값은 설정에 저장됩니다."
+          />
+          <label className="flex items-center gap-2 text-sm text-[var(--dash-text-secondary)] mb-4">
+            <input
+              type="checkbox"
+              checked={settings.alertsEnabled}
+              onChange={(e) => setSettings({ alertsEnabled: e.target.checked })}
+              className="rounded border-[var(--dash-border)]"
+            />
+            알림 사용
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
+                불량률 알림 기준 (%)
+              </span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                step={0.1}
+                value={settings.alertMinFailRatePct}
+                onChange={(e) =>
+                  setSettings({ alertMinFailRatePct: Number(e.target.value) })
+                }
+                className="mt-1.5 w-full max-w-xs rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
+                연속 FAIL 알림 (건)
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={50}
+                step={1}
+                value={settings.alertMinConsecutiveFail}
+                onChange={(e) =>
+                  setSettings({ alertMinConsecutiveFail: Number(e.target.value) })
+                }
+                className="mt-1.5 w-full max-w-xs rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
+              />
+            </label>
+            <label className="block sm:col-span-2">
+              <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
+                평균 추론 시간 상한 (ms) — 최근 피드 기준, 0이면 이 조건 끔
+              </span>
+              <input
+                type="number"
+                min={0}
+                max={600000}
+                step={500}
+                value={settings.alertMaxAvgInferenceMs}
+                onChange={(e) =>
+                  setSettings({ alertMaxAvgInferenceMs: Number(e.target.value) })
+                }
+                className="mt-1.5 w-full max-w-md rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
+              />
+            </label>
+          </div>
         </section>
 
         {/* 위험 구역 */}

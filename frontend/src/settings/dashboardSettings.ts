@@ -19,6 +19,15 @@ export interface DashboardSettings {
   /** 불량률·비율 소수 자릿수 (0~4) */
   decimalPlaces: number
   colorScheme: DashboardColorScheme
+
+  /** 임계값 알림(헤더·토스트) 사용 */
+  alertsEnabled: boolean
+  /** 불량률(%)가 이 값 이상이면 알림 */
+  alertMinFailRatePct: number
+  /** 최근 피드에서 연속 FAIL 이 횟수 이상이면 알림 */
+  alertMinConsecutiveFail: number
+  /** 평균 추론 시간(ms)이 이 값 초과면 알림 (0이면 비활성) */
+  alertMaxAvgInferenceMs: number
 }
 
 export const DASHBOARD_SETTINGS_STORAGE_KEY = 'pcb-dashboard-settings-v1'
@@ -30,6 +39,10 @@ export const DEFAULT_DASHBOARD_SETTINGS: DashboardSettings = {
   dateStyle: 'compact',
   decimalPlaces: 2,
   colorScheme: 'dark',
+  alertsEnabled: true,
+  alertMinFailRatePct: 5,
+  alertMinConsecutiveFail: 3,
+  alertMaxAvgInferenceMs: 20_000,
 }
 
 const POLLING_OPTIONS_MS = [5_000, 10_000, 30_000] as const
@@ -45,6 +58,18 @@ export function clampRecentFeedLimit(n: number): number {
 
 export function clampDecimalPlaces(n: number): number {
   return Math.min(4, Math.max(0, Math.round(n)))
+}
+
+export function clampAlertFailRate(n: number): number {
+  return Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
+}
+
+export function clampAlertConsecutiveFail(n: number): number {
+  return Math.min(50, Math.max(1, Math.round(Number.isFinite(n) ? n : 1)))
+}
+
+export function clampAlertInferenceMs(n: number): number {
+  return Math.min(600_000, Math.max(0, Math.round(Number.isFinite(n) ? n : 0)))
 }
 
 export function loadDashboardSettings(): DashboardSettings {
@@ -75,6 +100,19 @@ export function loadDashboardSettings(): DashboardSettings {
       ),
       colorScheme:
         parsed.colorScheme === 'light' ? 'light' : 'dark',
+      alertsEnabled:
+        typeof parsed.alertsEnabled === 'boolean'
+          ? parsed.alertsEnabled
+          : DEFAULT_DASHBOARD_SETTINGS.alertsEnabled,
+      alertMinFailRatePct: clampAlertFailRate(
+        parsed.alertMinFailRatePct ?? DEFAULT_DASHBOARD_SETTINGS.alertMinFailRatePct
+      ),
+      alertMinConsecutiveFail: clampAlertConsecutiveFail(
+        parsed.alertMinConsecutiveFail ?? DEFAULT_DASHBOARD_SETTINGS.alertMinConsecutiveFail
+      ),
+      alertMaxAvgInferenceMs: clampAlertInferenceMs(
+        parsed.alertMaxAvgInferenceMs ?? DEFAULT_DASHBOARD_SETTINGS.alertMaxAvgInferenceMs
+      ),
     }
   } catch {
     return { ...DEFAULT_DASHBOARD_SETTINGS }

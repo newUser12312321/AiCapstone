@@ -11,7 +11,7 @@
  * - 클릭으로 상세 DefectViewer 연동
  */
 
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { ChevronRight, AlertCircle } from 'lucide-react'
 import clsx from 'clsx'
 import type { InspectionLog } from '@/types/inspection'
@@ -136,12 +136,15 @@ interface InspectionTableProps {
   isLoading?: boolean
   /** 결과 필터 (undefined이면 전체 표시) */
   resultFilter?: 'PASS' | 'FAIL' | undefined
+  /** URL·대시보드 연동: 마운트 시 해당 행 상세를 연다 */
+  initialOpenLogId?: number | null
 }
 
 export default function InspectionTable({
   logs,
   isLoading = false,
   resultFilter,
+  initialOpenLogId,
 }: InspectionTableProps) {
   const { formatSplitDateTime } = useDashboardSettings()
   /* 클릭된 검사 ID — DefectViewer에 전달 */
@@ -151,6 +154,12 @@ export default function InspectionTable({
   const filtered = resultFilter
     ? logs.filter((l) => l.result === resultFilter)
     : logs
+
+  useEffect(() => {
+    if (initialOpenLogId == null) return
+    if (!filtered.some((l) => l.id === initialOpenLogId)) return
+    setSelectedId(initialOpenLogId)
+  }, [initialOpenLogId, filtered])
 
   return (
     <>
