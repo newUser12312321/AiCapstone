@@ -1,8 +1,8 @@
 /**
  * 검사 이력 테이블 컴포넌트
  *
- * 검사 이력 목록을 테이블로 표시하며, 행 클릭 시 DefectViewer를 열어
- * 바운딩박스 상세 정보를 확인할 수 있다.
+ * 검사 이력 목록을 테이블로 표시하며, 행 클릭 시 검사 상세(`/inspection/:id`)로 이동하거나
+ * (inline 모드) 테이블 아래에 DefectViewer를 펼친다.
  *
  * 기능:
  * - PASS/FAIL 뱃지 색상 구분
@@ -12,12 +12,14 @@
  */
 
 import { Fragment, useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronRight, AlertCircle } from 'lucide-react'
 import clsx from 'clsx'
 import type { InspectionLog } from '@/types/inspection'
 import { defectDisplayName, DEFECT_COLOR } from '@/types/inspection'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import DefectViewer from './DefectViewer'
+import { inspectionDetailPath } from '@/utils/historyNavigation'
 
 // ── 보조 컴포넌트 ─────────────────────────────────────────────────────────────
 
@@ -136,8 +138,10 @@ interface InspectionTableProps {
   isLoading?: boolean
   /** 결과 필터 (undefined이면 전체 표시) */
   resultFilter?: 'PASS' | 'FAIL' | undefined
-  /** URL·대시보드 연동: 마운트 시 해당 행 상세를 연다 */
+  /** inline 모드 전용: 마운트 시 해당 행 상세를 펼친다 */
   initialOpenLogId?: number | null
+  /** route(기본): 상세 페이지로 이동 / inline: 아래 행에 DefectViewer */
+  detailMode?: 'inline' | 'route'
 }
 
 export default function InspectionTable({
@@ -145,9 +149,12 @@ export default function InspectionTable({
   isLoading = false,
   resultFilter,
   initialOpenLogId,
+  detailMode = 'route',
 }: InspectionTableProps) {
   const { formatSplitDateTime } = useDashboardSettings()
-  /* 클릭된 검사 ID — DefectViewer에 전달 */
+  const navigate = useNavigate()
+  const location = useLocation()
+  /* 클릭된 검사 ID — inline DefectViewer에만 사용 */
   const [selectedId, setSelectedId] = useState<number | undefined>()
 
   /* 결과 필터 적용 */
@@ -156,10 +163,11 @@ export default function InspectionTable({
     : logs
 
   useEffect(() => {
+    if (detailMode !== 'inline') return
     if (initialOpenLogId == null) return
     if (!filtered.some((l) => l.id === initialOpenLogId)) return
     setSelectedId(initialOpenLogId)
-  }, [initialOpenLogId, filtered])
+  }, [detailMode, initialOpenLogId, filtered])
 
   return (
     <>
@@ -198,10 +206,19 @@ export default function InspectionTable({
                     <tr
                       className={clsx(
                         'bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] cursor-pointer transition-colors',
-                        /* 선택된 행: 인디고 좌측 테두리 강조 */
-                        selectedId === log.id && 'ring-1 ring-inset ring-[var(--dash-accent)]/40'
+                        detailMode === 'inline' &&
+                          selectedId === log.id &&
+                          'ring-1 ring-inset ring-[var(--dash-accent)]/40'
                       )}
-                      onClick={() => setSelectedId((prev) => (prev === log.id ? undefined : log.id))}
+                      onClick={() => {
+                        if (detailMode === 'route') {
+                          navigate(inspectionDetailPath(log.id), {
+                            state: { returnTo: `${location.pathname}${location.search}` },
+                          })
+                          return
+                        }
+                        setSelectedId((prev) => (prev === log.id ? undefined : log.id))
+                      }}
                     >
                       {/* ID */}
                       <td className="px-4 py-3 font-mono text-[13px] text-[var(--dash-text-tertiary)]">
@@ -267,12 +284,14 @@ export default function InspectionTable({
                           size={16}
                           className={clsx(
                             'transition-colors',
-                            selectedId === log.id ? 'text-[var(--dash-accent)]' : 'text-[var(--dash-text-tertiary)]'
+                            detailMode === 'inline' && selectedId === log.id
+                              ? 'text-[var(--dash-accent)]'
+                              : 'text-[var(--dash-text-tertiary)]'
                           )}
                         />
                       </td>
                     </tr>
-                    {selectedId === log.id && (
+                    {detailMode === 'inline' && selectedId === log.id && (
                       <tr key={`detail-${log.id}`} className="bg-[var(--dash-bg-primary)]">
                         <td colSpan={9} className="px-4 py-3">
                           <DefectViewer

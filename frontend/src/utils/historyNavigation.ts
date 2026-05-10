@@ -54,6 +54,11 @@ export function buildHistoryPath(q: HistoryQuery): string {
   return s ? `/history?${s}` : '/history'
 }
 
+/** 단일 검사 상세 화면 — React Router `state.returnTo`로 닫기 시 복귀 경로 전달 권장 */
+export function inspectionDetailPath(inspectionId: number): string {
+  return `/inspection/${inspectionId}`
+}
+
 export function parseHistoryQuery(searchParams: URLSearchParams): HistoryQuery {
   const from = searchParams.get('from') ?? undefined
   const to = searchParams.get('to') ?? undefined

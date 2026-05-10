@@ -21,6 +21,7 @@ import DashboardPage from '@/pages/DashboardPage'
 import HistoryPage from '@/pages/HistoryPage'
 import BoardReferencePage from '@/pages/BoardReferencePage'
 import SettingsPage from '@/pages/SettingsPage'
+import InspectionDetailPage from '@/pages/InspectionDetailPage'
 import KioskPage from '@/pages/KioskPage'
 import KioskInspectionCompletePage from '@/pages/KioskInspectionCompletePage'
 
@@ -63,6 +64,9 @@ export default function App() {
 
               {/* 검사 이력 */}
               <Route path="/history"  element={<HistoryPage />} />
+
+              {/* 검사 상세 (피듀셜·결함 오버레이) */}
+              <Route path="/inspection/:inspectionId" element={<InspectionDetailPage />} />
 
               {/* 보드 기준(정상 이미지/기대 개수) */}
               <Route path="/board-reference" element={<BoardReferencePage />} />

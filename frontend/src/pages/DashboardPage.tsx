@@ -1,17 +1,18 @@
 import { useMemo } from 'react'
 import { ArrowRight, CheckCircle2, Settings } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import HourlyInspectionVolumeChart from '@/components/dashboard/HourlyInspectionVolumeChart'
 import StatCardGroup from '@/components/dashboard/StatCard'
 import PassFailChart from '@/components/dashboard/PassFailChart'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useAllInspections, useRecentInspections, useStats } from '@/hooks/useInspectionData'
 import { defectDisplayName } from '@/types/inspection'
-import { buildHistoryPath, getLocalDateString } from '@/utils/historyNavigation'
+import { buildHistoryPath, getLocalDateString, inspectionDetailPath } from '@/utils/historyNavigation'
 
 export default function DashboardPage() {
   const { settings, formatSplitDateTime } = useDashboardSettings()
   const navigate = useNavigate()
+  const location = useLocation()
   const { data: allLogs = [] } = useAllInspections()
   const { data: recentLogs = [], isLoading: isRecentLoading } = useRecentInspections(
     settings.recentFeedLimit
@@ -154,15 +155,11 @@ export default function DashboardPage() {
                         type="button"
                         key={log.id}
                         onClick={() =>
-                          navigate(
-                            buildHistoryPath({
-                              from: today,
-                              to: today,
-                              result: 'FAIL',
-                              open: log.id,
-                              ...lineQ,
-                            })
-                          )
+                          navigate(inspectionDetailPath(log.id), {
+                            state: {
+                              returnTo: `${location.pathname}${location.search}` || '/',
+                            },
+                          })
                         }
                         className="glass-panel-subtle w-full rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-[var(--dash-bg-secondary)]"
                       >

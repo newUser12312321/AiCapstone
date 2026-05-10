@@ -5,17 +5,19 @@
  * 쿼리스트링(from, to, result, device, board, defect, hour, open)으로 대시보드·차트와 연동한다.
  */
 
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useEffect } from 'react'
 import { Search, Filter, Download } from 'lucide-react'
 import clsx from 'clsx'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import InspectionTable from '@/components/inspection/InspectionTable'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useAllInspections } from '@/hooks/useInspectionData'
 import type { InspectionResultType } from '@/types/inspection'
 import {
+  buildHistoryPath,
   buildHistorySearchString,
   getLocalDateString,
+  inspectionDetailPath,
   parseHistoryQuery,
   type HistoryQuery,
 } from '@/utils/historyNavigation'
@@ -67,6 +69,7 @@ export default function HistoryPage() {
   const { formatFullDateTime, formatRatePercent, settings } = useDashboardSettings()
   const { data: allLogs = [], isLoading } = useAllInspections()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
 
   const today = getLocalDateString()
   const q = useMemo(() => parseHistoryQuery(searchParams), [searchParams])
@@ -132,17 +135,14 @@ export default function HistoryPage() {
 
   const resultFilter: ResultFilter = q.result ?? 'ALL'
 
-  const effectiveOpenId = useMemo(() => {
-    if (q.open != null && filteredLogs.some((l) => l.id === q.open)) return q.open
-    if (q.defect) {
-      const sorted = [...filteredLogs].sort(
-        (a, b) => new Date(b.inspectedAt).getTime() - new Date(a.inspectedAt).getTime()
-      )
-      const hit = sorted.find((l) => logMatchesDefectDisplayLabel(l, q.defect!))
-      return hit?.id
-    }
-    return undefined
-  }, [q.open, q.defect, filteredLogs])
+  /* `?open=` 딥링크 → 상세 페이지로 이동(닫기 시 동일 필터의 이력으로 복귀) */
+  useEffect(() => {
+    const parsed = parseHistoryQuery(searchParams)
+    if (parsed.open == null) return
+    if (!filteredLogs.some((l) => l.id === parsed.open)) return
+    const returnTo = buildHistoryPath({ ...parsed, open: undefined })
+    navigate(inspectionDetailPath(parsed.open), { replace: true, state: { returnTo } })
+  }, [searchParams, filteredLogs, navigate])
 
   const downloadCsv = () => {
     if (!filteredLogs.length) return
@@ -327,11 +327,7 @@ export default function HistoryPage() {
           )}
         </div>
 
-        <InspectionTable
-          logs={filteredLogs}
-          isLoading={isLoading}
-          initialOpenLogId={effectiveOpenId ?? null}
-        />
+        <InspectionTable logs={filteredLogs} isLoading={isLoading} />
       </div>
     </div>
   )
