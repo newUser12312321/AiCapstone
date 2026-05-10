@@ -160,7 +160,7 @@ function buildFiducialClassDistanceRows(
   })
 }
 
-/** 굵은 외곽 + 밝은 점선 — PCB 배경 위 대비 */
+/** 얇은 헤일로 + 가는 점선 — PCB 위 과밀 완화 */
 function FiducialDistanceRayLines(props: {
   x1: number
   y1: number
@@ -179,7 +179,7 @@ function FiducialDistanceRayLines(props: {
         x2={x2}
         y2={y2}
         stroke={outerStroke}
-        strokeWidth={9}
+        strokeWidth={4}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray={dash}
@@ -190,7 +190,7 @@ function FiducialDistanceRayLines(props: {
         x2={x2}
         y2={y2}
         stroke={innerStroke}
-        strokeWidth={3.5}
+        strokeWidth={1.35}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray={dash}
@@ -199,7 +199,10 @@ function FiducialDistanceRayLines(props: {
   )
 }
 
-/** 보정 후 오버레이 SVG 안 — 피듀셜 중심 ↔ 검출 박스 중심 연결선 (마커·박스보다 위 레이어에서 렌더) */
+/** 거리 레이 선 생략 — 고정홀 등 대량 클래스가 선을 과도하게 늘릴 때 (표에는 그대로 유지) */
+const FIDUCIAL_RAY_SKIP_DEFECT_TYPES = new Set<string>(['mount_hole', 'fiducial'])
+
+/** 보정 후 오버레이 SVG 안 — 최단 피듀셜 ↔ 박스 중심만 연결 (F1+F2 동시 연결 생략으로 선 수 절반) */
 function FiducialToClassDistanceLines({
   log,
   defects,
@@ -224,43 +227,53 @@ function FiducialToClassDistanceLines({
       : null
 
   return (
-    <g aria-hidden className="pointer-events-none">
+    <g aria-hidden className="pointer-events-none opacity-[0.92]">
       {defects.map((d, i) => {
+        if (FIDUCIAL_RAY_SKIP_DEFECT_TYPES.has(d.defectType)) return null
+
         const cx = (d.bboxX + d.bboxWidth / 2) * scaleX
         const cy = (d.bboxY + d.bboxHeight / 2) * scaleY
+
+        const distF1 = f1 != null ? Math.hypot(cx - f1.x, cy - f1.y) : Number.POSITIVE_INFINITY
+        const distF2 = f2 != null ? Math.hypot(cx - f2.x, cy - f2.y) : Number.POSITIVE_INFINITY
+
+        let from: { x: number; y: number } | null = null
+        let innerStroke = '#94a3b8'
+        let dash = '10 8'
+        if (f1 != null && f2 != null) {
+          if (distF1 <= distF2) {
+            from = f1
+            innerStroke = '#fcd34d'
+            dash = '10 8'
+          } else {
+            from = f2
+            innerStroke = '#d8b4fe'
+            dash = '6 7'
+          }
+        } else if (f1 != null) {
+          from = f1
+          innerStroke = '#fcd34d'
+          dash = '10 8'
+        } else if (f2 != null) {
+          from = f2
+          innerStroke = '#d8b4fe'
+          dash = '6 7'
+        }
+
+        if (from == null) return null
+
         return (
           <g key={`fid-dist-${d.defectType}-${d.bboxX}-${i}`}>
-            {f1 != null && (
-              <FiducialDistanceRayLines
-                x1={f1.x}
-                y1={f1.y}
-                x2={cx}
-                y2={cy}
-                outerStroke="rgba(15, 23, 42, 0.92)"
-                innerStroke="#fbbf24"
-                dash="12 10"
-              />
-            )}
-            {f2 != null && (
-              <FiducialDistanceRayLines
-                x1={f2.x}
-                y1={f2.y}
-                x2={cx}
-                y2={cy}
-                outerStroke="rgba(15, 23, 42, 0.92)"
-                innerStroke="#c084fc"
-                dash="6 8 2 8"
-              />
-            )}
-            <circle
-              cx={cx}
-              cy={cy}
-              r={5}
-              fill="rgba(15,23,42,0.75)"
-              stroke="#f8fafc"
-              strokeWidth={1.5}
+            <FiducialDistanceRayLines
+              x1={from.x}
+              y1={from.y}
+              x2={cx}
+              y2={cy}
+              outerStroke="rgba(15, 23, 42, 0.42)"
+              innerStroke={innerStroke}
+              dash={dash}
             />
-            <circle cx={cx} cy={cy} r={2.5} fill="#f8fafc" />
+            <circle cx={cx} cy={cy} r={3} fill="rgba(15,23,42,0.55)" stroke="#f8fafc" strokeWidth={0.9} />
           </g>
         )
       })}
@@ -277,6 +290,7 @@ function FiducialMarker({
   confidence,
   scaleX,
   scaleY,
+  compact = false,
 }: {
   x: number
   y: number
@@ -284,12 +298,14 @@ function FiducialMarker({
   confidence: number | null | undefined
   scaleX: number
   scaleY: number
+  /** 거리 레이 등 다른 요소와 겹칠 때 좌표 패널·십자 크기 축소 */
+  compact?: boolean
 }) {
   const sx = x * scaleX
   const sy = y * scaleY
   const color = '#38bdf8'
-  const gap = 5
-  const arm = 16
+  const gap = compact ? 4 : 5
+  const arm = compact ? 12 : 16
   const cap =
     confidence != null && !Number.isNaN(confidence)
       ? `${label} ${(confidence * 100).toFixed(0)}%`
@@ -336,7 +352,7 @@ function FiducialMarker({
         strokeWidth={1.75}
         strokeLinecap="round"
       />
-      <circle cx={sx} cy={sy} r={11} fill="none" stroke={color} strokeWidth={1.75} />
+      <circle cx={sx} cy={sy} r={compact ? 9 : 11} fill="none" stroke={color} strokeWidth={compact ? 1.35 : 1.75} />
       {/* 라벨·신뢰도 — 마크 위쪽으로만 배치 (마크 가리지 않음) */}
       <rect
         x={sx - tw / 2}
@@ -361,20 +377,20 @@ function FiducialMarker({
       </text>
       {/* 중심 좌표 (원본 픽셀) — 배경·큰 글자 */}
       <rect
-        x={sx - 88}
+        x={sx - (compact ? 72 : 88)}
         y={sy + arm + 2}
-        width={176}
-        height={28}
-        rx={6}
-        fill="rgba(15,23,42,0.95)"
-        stroke="rgba(56,189,248,0.85)"
-        strokeWidth={1.5}
+        width={compact ? 144 : 176}
+        height={compact ? 22 : 28}
+        rx={compact ? 4 : 6}
+        fill="rgba(15,23,42,0.92)"
+        stroke="rgba(56,189,248,0.75)"
+        strokeWidth={compact ? 1.1 : 1.5}
       />
       <text
         x={sx}
-        y={sy + arm + 21}
+        y={sy + arm + (compact ? 16 : 21)}
         fill="#f0f9ff"
-        fontSize={14}
+        fontSize={compact ? 11 : 14}
         fontWeight={700}
         textAnchor="middle"
         fontFamily="ui-monospace, monospace"
@@ -416,13 +432,13 @@ function DefectBox({
 
   return (
     <g>
-      <rect x={sx} y={sy} width={sw} height={sh} rx={2} fill="none" stroke={color} strokeWidth={2} />
-      <rect x={sx} y={ty} width={tw} height={17} rx={4} fill="rgba(15,23,42,0.86)" stroke={color} strokeWidth={1.1} />
+      <rect x={sx} y={sy} width={sw} height={sh} rx={2} fill="none" stroke={color} strokeWidth={1.45} opacity={0.92} />
+      <rect x={sx} y={ty} width={tw} height={16} rx={4} fill="rgba(15,23,42,0.82)" stroke={color} strokeWidth={0.95} />
       <text
-        x={sx + 6}
-        y={ty + 12}
+        x={sx + 5}
+        y={ty + 11}
         fill={color}
-        fontSize={11}
+        fontSize={10}
         fontWeight={700}
         fontFamily="ui-monospace, monospace"
       >
@@ -817,6 +833,11 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
                     ))}
                   </tbody>
                 </table>
+                <p className="px-3 py-2 text-[10px] leading-snug text-[var(--dash-text-tertiary)] border-t border-[var(--dash-border)]">
+                  이미지 위 선은 각 박스에서{' '}
+                  <strong className="text-[var(--dash-text-secondary)]">더 가까운 피듀셜</strong>으로만 연결합니다.
+                  고정홀·피듀셜 클래스는 선 밀도를 줄이기 위해 생략합니다(표에는 그대로).
+                </p>
               </div>
             )}
 
@@ -882,6 +903,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
                             confidence={log.fiducial1Confidence ?? null}
                             scaleX={scaleX}
                             scaleY={scaleY}
+                            compact={showFiducialClassDistances}
                           />
                         )}
                         {log.fiducial2X != null && log.fiducial2Y != null && (
@@ -892,6 +914,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
                             confidence={log.fiducial2Confidence ?? null}
                             scaleX={scaleX}
                             scaleY={scaleY}
+                            compact={showFiducialClassDistances}
                           />
                         )}
                         {overlayDefects.map((d, i) => (
@@ -954,6 +977,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
                       confidence={log.fiducial1Confidence ?? null}
                       scaleX={scaleX}
                       scaleY={scaleY}
+                      compact={showFiducialClassDistances}
                     />
                   )}
                   {log.fiducial2X != null && log.fiducial2Y != null && (
@@ -964,6 +988,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
                       confidence={log.fiducial2Confidence ?? null}
                       scaleX={scaleX}
                       scaleY={scaleY}
+                      compact={showFiducialClassDistances}
                     />
                   )}
                   {overlayDefects.map((d, i) => (
