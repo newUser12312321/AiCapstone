@@ -1,12 +1,12 @@
 /**
- * 최근 24시간 · 1시간 단위 검사 건수 — 영역+라인(주식형 느낌), 점 클릭 시 해당 시각 이력
+ * 최근 24시간 · 1시간 단위 정상/불량 스택 막대 — 막대 클릭 시 해당 구간 이력
  */
 
-import { useId } from 'react'
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
+  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -19,23 +19,34 @@ import type { HourlyVolumePoint } from '@/types/inspection'
 import { buildHistoryPath } from '@/utils/historyNavigation'
 import type { LineFilter } from '@/utils/inspectionFilters'
 
-const STROKE = '#a78bfa'
-const STROKE_DIM = 'rgba(167, 139, 250, 0.45)'
+const PASS_COLOR = '#34d399'
+const FAIL_COLOR = '#fb7185'
 
-function VolumeTooltip({
+function PassFailTooltip({
   active,
   payload,
 }: {
   active?: boolean
-  payload?: { payload: HourlyVolumePoint }[]
+  payload?: { name: string; value: number; fill: string }[]
 }) {
   if (!active || !payload?.length) return null
-  const p = payload[0].payload
+  const total = payload.reduce((sum, p) => sum + (p.value ?? 0), 0)
+  const title = (payload[0] as { payload?: HourlyVolumePoint }).payload?.tooltipTitle
+
   return (
     <div className="glass-panel-subtle rounded-lg px-3 py-2 text-xs">
-      <p className="text-[var(--dash-text-tertiary)] mb-1">{p.tooltipTitle}</p>
-      <p className="text-[var(--dash-text-primary)] font-bold text-sm">{p.count}건</p>
-      <p className="text-[var(--dash-text-tertiary)] mt-1">점 클릭 시 이력으로 이동</p>
+      {title && <p className="mb-1.5 text-[var(--dash-text-tertiary)]">{title}</p>}
+      {payload.map((p) => (
+        <div key={p.name} className="flex items-center gap-2">
+          <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: p.fill }} />
+          <span className="text-[var(--dash-text-secondary)]">{p.name}:</span>
+          <span className="font-bold text-[var(--dash-text-primary)]">{p.value}건</span>
+        </div>
+      ))}
+      <div className="mt-1.5 border-t border-[var(--dash-border)] pt-1.5 text-[var(--dash-text-tertiary)]">
+        합계: <span className="text-[var(--dash-text-primary)]">{total}건</span>
+      </div>
+      <p className="mt-1 text-[var(--dash-text-tertiary)]">막대 클릭 시 해당 시간대 이력</p>
     </div>
   )
 }
@@ -45,7 +56,6 @@ export interface HourlyInspectionVolumeChartProps {
 }
 
 export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspectionVolumeChartProps) {
-  const gradId = useId().replace(/:/g, '')
   const { settings } = useDashboardSettings()
   const { data, isLoading } = useHourlyInspectionVolume(lineFilter)
   const navigate = useNavigate()
@@ -66,11 +76,17 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
     )
   }
 
+  const handleBarClick = (raw: unknown) => {
+    const rec = raw as { payload?: HourlyVolumePoint }
+    const pl = rec?.payload
+    if (pl?.anchorDate != null && pl.hour != null) goBucket(pl)
+  }
+
   if (isLoading) {
     return (
       <div className="glass-panel flex min-h-[420px] flex-1 animate-pulse flex-col rounded-[22px] p-5">
         <div className="mb-4 flex shrink-0 items-center justify-between">
-          <div className="h-4 w-48 rounded bg-[var(--dash-bg-secondary)]" />
+          <div className="h-4 w-56 rounded bg-[var(--dash-bg-secondary)]" />
           <div className="h-3 w-24 rounded bg-[var(--dash-bg-secondary)]" />
         </div>
         <div className="h-[360px] rounded bg-[var(--dash-bg-secondary)]" />
@@ -81,21 +97,17 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
   return (
     <div className="glass-panel flex min-h-[420px] flex-1 flex-col rounded-[22px] p-5">
       <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-2">
-        <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 건수</h2>
+        <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">
+          시간대별 검사 정상·불량
+        </h2>
         <span className="text-xs text-[var(--dash-text-tertiary)]">
           최근 24시간 · 1시간 단위 · {settings.timeZoneMode === 'utc' ? 'UTC' : '로컬'}
         </span>
       </div>
 
-      <div className="w-full h-[360px] shrink-0">
+      <div className="h-[360px] w-full shrink-0">
         <ResponsiveContainer width="100%" height={360}>
-          <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-            <defs>
-              <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={STROKE} stopOpacity={0.35} />
-                <stop offset="100%" stopColor={STROKE} stopOpacity={0.02} />
-              </linearGradient>
-            </defs>
+          <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }} barCategoryGap="12%">
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(152,160,200,0.18)" vertical={false} />
             <XAxis
               dataKey="label"
@@ -111,37 +123,34 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
               allowDecimals={false}
               width={36}
             />
-            <Tooltip content={<VolumeTooltip />} cursor={{ stroke: STROKE_DIM, strokeWidth: 1 }} />
-            <Area
-              type="monotone"
-              dataKey="count"
-              stroke={STROKE}
-              strokeWidth={2}
-              fill={`url(#${gradId})`}
-              activeDot={{ r: 6, strokeWidth: 0, fill: STROKE }}
-              dot={(dotProps) => {
-                const { cx, cy, payload } = dotProps as {
-                  cx?: number
-                  cy?: number
-                  payload?: HourlyVolumePoint
-                }
-                if (cx == null || cy == null || !payload) return <g />
-                return (
-                  <circle
-                    cx={cx}
-                    cy={cy}
-                    r={payload.count > 0 ? 4 : 2}
-                    fill={payload.count > 0 ? STROKE : 'rgba(167,139,250,0.35)'}
-                    className="cursor-pointer"
-                    onClick={() => goBucket(payload)}
-                  />
-                )
-              }}
+            <Tooltip content={<PassFailTooltip />} cursor={{ fill: 'rgba(139,92,246,0.12)' }} />
+            <Legend
+              formatter={(value) => (
+                <span style={{ color: '#c7cdef', fontSize: '0.8125rem' }}>{value}</span>
+              )}
             />
-          </AreaChart>
+            <Bar
+              dataKey="pass"
+              name="정상"
+              stackId="hour"
+              fill={PASS_COLOR}
+              radius={[0, 0, 0, 0]}
+              onClick={handleBarClick}
+              cursor="pointer"
+            />
+            <Bar
+              dataKey="fail"
+              name="불량"
+              stackId="hour"
+              fill={FAIL_COLOR}
+              radius={[4, 4, 0, 0]}
+              onClick={handleBarClick}
+              cursor="pointer"
+            />
+          </BarChart>
         </ResponsiveContainer>
       </div>
-      {data.length > 0 && data.every((p) => p.count === 0) && (
+      {data.length > 0 && data.every((p) => p.pass === 0 && p.fail === 0) && (
         <p className="mt-2 text-center text-xs text-[var(--dash-text-tertiary)]">
           최근 24시간 구간에 집계된 검사가 없습니다.
         </p>

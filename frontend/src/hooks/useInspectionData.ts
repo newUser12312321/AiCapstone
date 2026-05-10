@@ -248,8 +248,8 @@ export function useHourlyInspectionVolume(lineFilter?: LineFilter): {
     bucketStarts.push(endBucket - i * 3600000)
   }
 
-  const counts = new Map<number, number>()
-  bucketStarts.forEach((ms) => counts.set(ms, 0))
+  const counts = new Map<number, { pass: number; fail: number }>()
+  bucketStarts.forEach((ms) => counts.set(ms, { pass: 0, fail: 0 }))
 
   const windowStart = bucketStarts[0]!
   const windowEndExclusive = bucketStarts[23]! + 3600000
@@ -258,16 +258,22 @@ export function useHourlyInspectionVolume(lineFilter?: LineFilter): {
     const t = new Date(log.inspectedAt).getTime()
     if (t < windowStart || t >= windowEndExclusive) return
     const b = floorToHourStartMs(t, utc)
-    if (counts.has(b)) counts.set(b, (counts.get(b) ?? 0) + 1)
+    const cell = counts.get(b)
+    if (!cell) return
+    if (log.result === 'PASS') cell.pass++
+    else cell.fail++
   })
 
   const data: HourlyVolumePoint[] = bucketStarts.map((bucketStartMs) => {
     const { shortLabel, tooltipTitle, anchorDate, hour } = formatHourlyLabels(bucketStartMs, utc)
+    const { pass, fail } = counts.get(bucketStartMs) ?? { pass: 0, fail: 0 }
     return {
       bucketStartMs,
       label: shortLabel,
       tooltipTitle,
-      count: counts.get(bucketStartMs) ?? 0,
+      count: pass + fail,
+      pass,
+      fail,
       anchorDate,
       hour,
     }

@@ -69,7 +69,7 @@ export default function DashboardPage() {
   return (
     <div className="flex h-full min-h-0 flex-col bg-transparent px-5 pt-5 pb-4">
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1320px] flex-1 flex-col">
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-start">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-stretch">
           <div className="flex h-full min-h-0 flex-col gap-4 xl:col-span-8">
             <div className="glass-panel shrink-0 rounded-[26px] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -134,7 +134,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-1 xl:col-span-4">
-            <div className="glass-panel flex min-h-0 flex-[2] flex-col rounded-[24px] p-[18px]">
+            <div className="glass-panel flex shrink-0 flex-col rounded-[24px] p-[18px]">
               <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">
                 최근 검사 내역
               </h3>
@@ -147,7 +147,7 @@ export default function DashboardPage() {
                   검사 내역이 없습니다.
                 </div>
               ) : (
-                <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-1">
+                <div className="space-y-2.5 pr-1">
                   {recentLogs.slice(0, 5).map((log) => {
                     const { date, time } = formatSplitDateTime(log.inspectedAt)
                     const pass = log.result === 'PASS'
@@ -204,7 +204,9 @@ export default function DashboardPage() {
             <div className="glass-panel flex min-h-0 flex-1 flex-col rounded-[24px] p-[18px]">
               <h3 className="mb-3 shrink-0 text-base font-semibold text-[var(--dash-text-primary)]">주요 불량 유형</h3>
               {topDefects.length === 0 ? (
-                <p className="text-sm text-[var(--dash-text-secondary)]">최근 불량 데이터가 없어 집계할 수 없습니다.</p>
+                <p className="min-h-0 flex-1 text-sm leading-relaxed text-[var(--dash-text-secondary)]">
+                  최근 불량 데이터가 없어 집계할 수 없습니다.
+                </p>
               ) : (
                 <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                   {topDefects.map(([label, count]) => (

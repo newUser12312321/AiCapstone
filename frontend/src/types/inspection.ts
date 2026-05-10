@@ -119,7 +119,7 @@ export interface TrendDataPoint {
   anchorDate?: string
 }
 
-/** 1시간 단위 검사 건수 추이(대시보드 영역 차트) */
+/** 1시간 단위 검사 건수·정상/불량 추이(대시보드 시간대 차트) */
 export interface HourlyVolumePoint {
   /** 버킷 시작 시각(ms) */
   bucketStartMs: number
@@ -127,7 +127,10 @@ export interface HourlyVolumePoint {
   label: string
   /** 툴팁 제목(날짜·시간) */
   tooltipTitle: string
+  /** 합계(정상+불량) */
   count: number
+  pass: number
+  fail: number
   /** 이력 페이지 from/to·hour 연동 */
   anchorDate: string
   hour: number
