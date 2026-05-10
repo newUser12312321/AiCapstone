@@ -386,14 +386,14 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
           데이터를 불러올 수 없습니다.
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row lg:items-start gap-0">
+        <div className="flex flex-col gap-0">
 
-          {/* 좌: 보정 전 / 우: 보정 후(+오버레이) — 또는 단일 이미지 */}
+          {/* 상단: 보정 전 / 보정 후(+오버레이) — 또는 단일 이미지 */}
           <div
             className={
               showSideBySide
-                ? 'flex flex-col sm:flex-row flex-1 min-w-0 border-b lg:border-b-0 lg:border-r border-[var(--dash-border)]'
-                : 'relative flex-1 bg-[var(--dash-overlay-bg)] min-h-48 border-b lg:border-b-0 lg:border-r border-[var(--dash-border)]'
+                ? 'flex flex-col sm:flex-row flex-1 min-w-0 w-full border-b border-[var(--dash-border)]'
+                : 'relative flex-1 w-full bg-[var(--dash-overlay-bg)] min-h-48 border-b border-[var(--dash-border)]'
             }
           >
             {showSideBySide ? (
@@ -560,8 +560,8 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
             )}
           </div>
 
-          {/* 우측: 검사 메타데이터 패널 */}
-          <div className="w-full lg:w-64 border-t lg:border-t-0 lg:border-l border-[var(--dash-border)] p-4 shrink-0 lg:max-h-[72vh] lg:overflow-y-auto">
+          {/* 하단: 검사 메타데이터·좌표·검출 목록 */}
+          <div className="w-full p-4 pb-6 shrink-0 bg-[var(--dash-bg-secondary)]/40">
             <h3 className="text-xs font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider mb-3">
               검사 정보
             </h3>
