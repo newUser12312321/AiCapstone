@@ -3,10 +3,10 @@
  */
 
 import { useRef, useState, useEffect, type ReactNode } from 'react'
-import { X, ImageOff, AlertCircle } from 'lucide-react'
+import { X, ImageOff, AlertCircle, Ruler } from 'lucide-react'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useInspectionById } from '@/hooks/useInspectionData'
-import type { InspectionLog } from '@/types/inspection'
+import type { DefectDetail, InspectionLog } from '@/types/inspection'
 import { DEFECT_COLOR, defectDisplayName, deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 
 // ── 이미지 로드 전 기본값 (로드 후 naturalWidth/Height 사용) ───────────────
@@ -74,6 +74,132 @@ function formatFiducialYoloOrPlaceholder(
 function isFiducialAlignmentSentinel(log: InspectionLog): boolean {
   const a = log.angleErrorDeg
   return a != null && a >= 500
+}
+
+/** 검출 박스 중심 (픽셀, 정합 후 좌표계와 동일 기준) */
+function defectBoxCenter(d: DefectDetail): { cx: number; cy: number } {
+  return {
+    cx: d.bboxX + d.bboxWidth / 2,
+    cy: d.bboxY + d.bboxHeight / 2,
+  }
+}
+
+type FiducialClassDistanceRow = {
+  key: string
+  index: number
+  label: string
+  cx: number
+  cy: number
+  distF1: number | null
+  distF2: number | null
+  minPx: number | null
+  nearest: 'F1' | 'F2' | '—'
+}
+
+function buildFiducialClassDistanceRows(
+  log: InspectionLog,
+  defects: DefectDetail[],
+): FiducialClassDistanceRow[] {
+  const f1 =
+    log.fiducial1X != null && log.fiducial1Y != null
+      ? { x: log.fiducial1X, y: log.fiducial1Y }
+      : null
+  const f2 =
+    log.fiducial2X != null && log.fiducial2Y != null
+      ? { x: log.fiducial2X, y: log.fiducial2Y }
+      : null
+
+  return defects.map((d, i) => {
+    const { cx, cy } = defectBoxCenter(d)
+    const distF1 = f1 != null ? Math.hypot(cx - f1.x, cy - f1.y) : null
+    const distF2 = f2 != null ? Math.hypot(cx - f2.x, cy - f2.y) : null
+    let minPx: number | null = null
+    let nearest: 'F1' | 'F2' | '—' = '—'
+    if (distF1 != null && distF2 != null) {
+      minPx = Math.min(distF1, distF2)
+      nearest = distF1 <= distF2 ? 'F1' : 'F2'
+    } else if (distF1 != null) {
+      minPx = distF1
+      nearest = 'F1'
+    } else if (distF2 != null) {
+      minPx = distF2
+      nearest = 'F2'
+    }
+    return {
+      key: `${d.defectType}-${d.bboxX}-${d.bboxY}-${i}`,
+      index: i + 1,
+      label: defectDisplayName(d.defectType, d.detail),
+      cx,
+      cy,
+      distF1,
+      distF2,
+      minPx,
+      nearest,
+    }
+  })
+}
+
+/** 보정 후 오버레이 SVG 안 — 피듀셜 중심 ↔ 검출 박스 중심 연결선 */
+function FiducialToClassDistanceLines({
+  log,
+  defects,
+  scaleX,
+  scaleY,
+  visible,
+}: {
+  log: InspectionLog
+  defects: DefectDetail[]
+  scaleX: number
+  scaleY: number
+  visible: boolean
+}) {
+  if (!visible) return null
+  const f1 =
+    log.fiducial1X != null && log.fiducial1Y != null
+      ? { x: log.fiducial1X * scaleX, y: log.fiducial1Y * scaleY }
+      : null
+  const f2 =
+    log.fiducial2X != null && log.fiducial2Y != null
+      ? { x: log.fiducial2X * scaleX, y: log.fiducial2Y * scaleY }
+      : null
+  return (
+    <g aria-hidden>
+      {defects.map((d, i) => {
+        const cx = (d.bboxX + d.bboxWidth / 2) * scaleX
+        const cy = (d.bboxY + d.bboxHeight / 2) * scaleY
+        const strokeF1 = 'rgba(251, 191, 36, 0.95)'
+        const strokeF2 = 'rgba(167, 139, 250, 0.95)'
+        return (
+          <g key={`fid-dist-${d.defectType}-${d.bboxX}-${i}`}>
+            {f1 != null && (
+              <line
+                x1={f1.x}
+                y1={f1.y}
+                x2={cx}
+                y2={cy}
+                stroke={strokeF1}
+                strokeWidth={1.25}
+                strokeDasharray="5 4"
+                opacity={0.9}
+              />
+            )}
+            {f2 != null && (
+              <line
+                x1={f2.x}
+                y1={f2.y}
+                x2={cx}
+                y2={cy}
+                stroke={strokeF2}
+                strokeWidth={1.25}
+                strokeDasharray="3 5"
+                opacity={0.9}
+              />
+            )}
+          </g>
+        )
+      })}
+    </g>
+  )
 }
 
 // ── 피듀셜/결함 오버레이 ───────────────────────────────────────────────────────
@@ -313,12 +439,29 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
   const [refPixels, setRefPixels] = useState({ w: DEFAULT_REF_WIDTH, h: DEFAULT_REF_HEIGHT })
   const [deskewLoadError, setDeskewLoadError] = useState(false)
   const [rawLoadError, setRawLoadError] = useState(false)
+  const [showFiducialClassDistances, setShowFiducialClassDistances] = useState(false)
 
   useEffect(() => {
     setDeskewLoadError(false)
     setRawLoadError(false)
     setRefPixels({ w: DEFAULT_REF_WIDTH, h: DEFAULT_REF_HEIGHT })
   }, [inspectionId, deskewSrc, rawSrc])
+
+  useEffect(() => {
+    setShowFiducialClassDistances(false)
+  }, [inspectionId])
+
+  const distanceRows =
+    log != null ? buildFiducialClassDistanceRows(log, overlayDefects) : []
+  const hasFiducialPair =
+    log != null &&
+    ((log.fiducial1X != null && log.fiducial1Y != null) ||
+      (log.fiducial2X != null && log.fiducial2Y != null))
+  const canShowDistanceTool =
+    Boolean(log) &&
+    !deskewLoadError &&
+    Boolean(deskewSrc) &&
+    hasFiducialPair
 
   /* 이미지가 로드되거나 창 크기가 변경되면 실제 크기 재측정 (보정 후 패널만) */
   useEffect(() => {
@@ -387,6 +530,82 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
         </div>
       ) : (
         <div className="flex flex-col gap-0">
+          {canShowDistanceTool && log && (
+            <div className="border-b border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/55 px-3 py-2.5 shrink-0">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                <button
+                  type="button"
+                  disabled={overlayDefects.length === 0}
+                  onClick={() => setShowFiducialClassDistances((v) => !v)}
+                  className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-colors border ${
+                    overlayDefects.length === 0
+                      ? 'cursor-not-allowed border-[var(--dash-border)] text-[var(--dash-text-tertiary)] opacity-60'
+                      : showFiducialClassDistances
+                        ? 'border-[var(--dash-accent)] bg-[var(--dash-accent)]/15 text-[var(--dash-accent)]'
+                        : 'border-[var(--dash-border)] bg-[var(--dash-surface)] text-[var(--dash-text-primary)] hover:bg-[var(--dash-bg-secondary)]'
+                  }`}
+                >
+                  <Ruler size={16} className="shrink-0 opacity-90" aria-hidden />
+                  피듀셜 마크와 클래스간의 거리 확인
+                </button>
+                {overlayDefects.length === 0 ? (
+                  <span className="text-[11px] text-[var(--dash-text-tertiary)]">
+                    검출된 클래스(바운딩 박스)가 없어 거리를 계산할 수 없습니다.
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-[var(--dash-text-tertiary)]">
+                    정합 후 이미지 기준 · 피듀셜 중심 ↔ 각 검출 박스 중심 유클리드 거리(px)
+                  </span>
+                )}
+              </div>
+              {showFiducialClassDistances && overlayDefects.length > 0 && (
+                <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] shadow-sm">
+                  <table className="min-w-[640px] w-full text-left text-[11px]">
+                    <thead>
+                      <tr className="border-b border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]/80">
+                        <th className="px-2 py-2 font-semibold text-[var(--dash-text-tertiary)]">#</th>
+                        <th className="px-2 py-2 font-semibold text-[var(--dash-text-tertiary)]">클래스</th>
+                        <th className="px-2 py-2 font-semibold text-[var(--dash-text-tertiary)] whitespace-nowrap">
+                          박스 중심 (px)
+                        </th>
+                        <th className="px-2 py-2 font-semibold text-[var(--dash-text-tertiary)] whitespace-nowrap">
+                          → F1 (px)
+                        </th>
+                        <th className="px-2 py-2 font-semibold text-[var(--dash-text-tertiary)] whitespace-nowrap">
+                          → F2 (px)
+                        </th>
+                        <th className="px-2 py-2 font-semibold text-[var(--dash-text-tertiary)] whitespace-nowrap">
+                          최단
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--dash-border)]">
+                      {distanceRows.map((row) => (
+                        <tr key={row.key} className="hover:bg-[var(--dash-bg-secondary)]/40">
+                          <td className="px-2 py-1.5 font-mono text-[var(--dash-text-secondary)]">{row.index}</td>
+                          <td className="px-2 py-1.5 font-medium text-[var(--dash-text-primary)] max-w-[220px] truncate">
+                            {row.label}
+                          </td>
+                          <td className="px-2 py-1.5 font-mono tabular-nums text-[var(--dash-text-secondary)] whitespace-nowrap">
+                            ({row.cx.toFixed(2)}, {row.cy.toFixed(2)})
+                          </td>
+                          <td className="px-2 py-1.5 font-mono tabular-nums text-[var(--dash-text-secondary)]">
+                            {row.distF1 != null ? row.distF1.toFixed(2) : '—'}
+                          </td>
+                          <td className="px-2 py-1.5 font-mono tabular-nums text-[var(--dash-text-secondary)]">
+                            {row.distF2 != null ? row.distF2.toFixed(2) : '—'}
+                          </td>
+                          <td className="px-2 py-1.5 font-mono tabular-nums text-[var(--dash-accent)] font-semibold whitespace-nowrap">
+                            {row.minPx != null ? `${row.minPx.toFixed(2)} (${row.nearest})` : '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* 상단: 보정 전 / 보정 후(+오버레이) — 또는 단일 이미지 */}
           <div
@@ -437,6 +656,13 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
                         className="absolute inset-0 w-full h-full pointer-events-none"
                         viewBox={`0 0 ${imgSize.w} ${imgSize.h}`}
                       >
+                        <FiducialToClassDistanceLines
+                          log={log}
+                          defects={overlayDefects}
+                          scaleX={scaleX}
+                          scaleY={scaleY}
+                          visible={showFiducialClassDistances && overlayDefects.length > 0}
+                        />
                         {log.fiducial1X != null && log.fiducial1Y != null && (
                           <FiducialMarker
                             x={log.fiducial1X}
@@ -502,6 +728,13 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
                   className="absolute inset-0 w-full h-full pointer-events-none"
                   viewBox={`0 0 ${imgSize.w} ${imgSize.h}`}
                 >
+                  <FiducialToClassDistanceLines
+                    log={log}
+                    defects={overlayDefects}
+                    scaleX={scaleX}
+                    scaleY={scaleY}
+                    visible={showFiducialClassDistances && overlayDefects.length > 0}
+                  />
                   {log.fiducial1X != null && log.fiducial1Y != null && (
                     <FiducialMarker
                       x={log.fiducial1X}
