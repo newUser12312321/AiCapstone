@@ -1,6 +1,6 @@
-# Desktop Edge Vision Inspection Station
+# 라즈베리파이 기반 PCB 비전 검사 시스템
 
-라즈베리파이(또는 Docker)에서 **PCB 이미지를 검사**하고, **Spring Boot + MySQL**에 이력을 저장한 뒤 **React**로 대시보드와 **현장 터치 키오스크**를 제공하는 모노레포입니다. 키오스크는 `frontend` 앱의 **`/kiosk`** 경로를 사용합니다.
+라즈베리파이에 연결된 현장 터치 키오스크 를 통해 **PCB 이미지를 검사**하고, **Spring Boot + MySQL**에 이력을 저장한 뒤 **React**로 대시보드를 통해 확인합니다
 
 ## 바로 따라하기
 
