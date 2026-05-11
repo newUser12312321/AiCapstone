@@ -7,6 +7,9 @@ __pycache__/
 venv/
 edge/.env
 edge/weights/*.pt
+!edge/weights/gn948x_best.pt
+!edge/weights/GT_125A_bestV2.pt
+!edge/weights/gt125a_best.pt
 edge/weights/*.onnx
 
 # ===== Java / Maven (Backend) =====
