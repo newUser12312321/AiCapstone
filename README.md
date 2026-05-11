@@ -1,15 +1,15 @@
 # 라즈베리파이 기반 PCB 비전 검사 시스템
 
 
-라즈베리파이에 연결된 **USB 웹캠**으로 PCB를 촬영하고, **엣지 PC(`edge`)**에서 YOLO 기반 비전 파이프라인으로 정렬·결함 판정을 수행합니다. 검사 결과는 **중앙 서버(`backend`, Spring Boot + MySQL)** 로 전송되어 저장되며, **React 웹 앱(`frontend`)** 의 대시보드와 **현장 터치 키오스크**(`/kiosk`)에서 이력과 통계를 확인합니다.
+라즈베리파이에 연결된 **현장 터치 키오스크**를 통해 **USB 웹캠**으로 PCB를 촬영하고, **라즈베리파이 내부**에서 YOLO 기반 비전 파이프라인으로 정렬·결함 판정을 수행합니다. 검사 결과는 **중앙 서버(`backend`, Spring Boot + MySQL)** 로 전송되어 저장되며, **React 웹 앱(`frontend`)** 의 대시보드를 통해 이력과 통계를 확인합니다.
 
-운영 환경에서는 보통 **엣지가 라즈베리파이**, 백엔드·DB·대시보드는 **사무실 PC 또는 서버**에 두고, Docker 또는 개별 프로세스로 기동합니다. 클론 후 설치·실행 순서는 **[docs/getting-started.md](docs/getting-started.md)** 에 정리되어 있습니다.
+운영 환경은 **라즈베리파이**, 백엔드·DB·대시보드는 **사무실 PC 또는 서버**에 두고, Docker 또는 개별 프로세스로 기동합니다. 클론 후 설치·실행 순서는 **[docs/getting-started.md](docs/getting-started.md)** 에 정리되어 있습니다.
 
 ---
 
 ## 사용 소프트웨어
 
-### 엣지 (`edge/`)
+### 엣지(**라즈베리파이**) (`edge/`)
 
 | 구분 | 소프트웨어·버전(대표) |
 |------|------------------------|
@@ -42,9 +42,9 @@
 
 | 구분 | 설명 |
 |------|------|
-| 컨테이너 | Docker Compose로 MySQL·백엔드·엣지·프론트를 한 번에 기동 가능(`docker-compose.yml` 등) |
+| 컨테이너 | Docker Compose로 MySQL·백엔드·프론트를 한 번에 기동 가능(`docker-compose.pc.yml`) |
 | 선택 | 실크 스크린 검증 등에 **Google Gemini API** 를 쓰는 경로가 있으며, 키 없이 쓰려면 설정으로 게이트를 끌 수 있음(`docs/getting-started.md` 참고) |
-| 참고 | `frontend-kiosk/` 는 Blazor 예제 코드로, **현장 키오스크는 `frontend`의 React `/kiosk`** 를 사용함 |
+| 참고 | `frontend-kiosk/` 는 Blazor 테스트용 코드로, **현장 키오스크는 `frontend`의 React `/kiosk`** 를 사용함 |
 
 ---
 
