@@ -6,7 +6,7 @@
 
 ## 1. 이 프로젝트가 하는 일 (한 줄)
 
-**엣지**가 이미지를 분석하고 → **백엔드**가 DB에 저장하고 → **프론트**가 브라우저에서 이력·차트를 보여 줍니다.
+**엣지**가 이미지를 분석하고 → **백엔드**가 DB에 저장하고 → **React 프론트**가 브라우저에서 이력·차트와 **터치 키오스크**(`/kiosk`)를 보여 줍니다.
 
 ---
 
@@ -80,7 +80,7 @@ services:
 
 | 무엇 | 주소 |
 |------|------|
-| 대시보드 (React) | http://localhost:5173 |
+| 대시보드·키오스크 (React) | http://localhost:5173 — 키오스크: http://localhost:5173/kiosk |
 | 백엔드 API | http://localhost:8080 |
 | 엣지 API | http://localhost:8000 |
 | MySQL (호스트에서 접속 시) | `localhost:3307` , 사용자 `root` , 비밀번호 `your_password` (compose 기본값) |
@@ -147,7 +147,7 @@ npm install
 npm run dev
 ```
 
-터미널에 나온 주소(보통 http://localhost:5173 )로 접속합니다.
+터미널에 나온 주소(보통 http://localhost:5173 )로 접속합니다. **현장 키오스크 UI**는 같은 개발 서버에서 **http://localhost:5173/kiosk** 입니다.
 
 프론트는 `vite.config.ts` 의 프록시로 `/api` → 백엔드, `/edge` 등 → 엣지로 넘깁니다. **엣지를 아직 안 띄운 상태**면 캡처·엣지 전용 기능만 실패할 수 있으니, 전체를 보려면 아래 엣지도 실행합니다.
 
@@ -192,17 +192,25 @@ python main.py
 
 ---
 
-## 7. 키오스크 (Blazor, `frontend-kiosk`)
+## 7. 키오스크 (React, `frontend`)
 
-로컬에서 빌드만 확인:
+현장에서 쓰는 키오스크는 **Blazor가 아니라 React**입니다. 라우트는 `frontend/src/App.tsx` 에 정의되어 있으며, 메인 화면은 **`/kiosk`** (`KioskPage.tsx`), 완료 화면은 **`/kiosk/complete/:inspectionId`** 입니다.
 
-```powershell
-cd C:\Projects\AiCapstone\frontend-kiosk\PcbKiosk
-dotnet restore
-dotnet run
-```
+### 로컬에서 확인
 
-실행 후 터미널에 나온 URL(예: http://localhost:5xxx )으로 접속합니다. Pi 부팅 시 자동 실행·Chromium 전체 화면은 `frontend-kiosk/deploy/raspberry-pi/` 의 systemd 예제와 스크립트를 참고해 경로만 본인 환경에 맞게 수정하면 됩니다.
+위 **5-3**처럼 `npm run dev` 로 Vite를 띄운 뒤 브라우저에서:
+
+- http://localhost:5173/kiosk
+
+백엔드·엣지가 켜져 있어야 검사 트리거·이력이 정상 동작합니다.
+
+### 라즈베리파이에서 전체 화면(운영)
+
+1. Pi에서도 `frontend` 를 빌드해 정적 파일을 서빙하거나, 개발 서버를 쓰지 말고 **`npm run build` + `vite preview`** 또는 Nginx 등으로 `5173`과 동일한 앱을 제공합니다.  
+2. Chromium 키오스크 모드·부팅 시 자동 실행·systemd 예시는 **`frontend/deploy/raspberry-pi/`** 에 있습니다.  
+3. 단계별 설명: **[frontend/deploy/raspberry-pi/DESKTOP_SHORTCUT_SETUP.md](../frontend/deploy/raspberry-pi/DESKTOP_SHORTCUT_SETUP.md)** (`REPO_HOME` 등 경로만 본인 clone 위치에 맞게 수정).
+
+> **`frontend-kiosk/`** 는 Blazor 예제로 남아 있을 수 있으나, **이 문서와 운영 기준의 키오스크는 React**입니다.
 
 ---
 
@@ -228,7 +236,7 @@ docker compose logs -f edge
 
 - REST 엔드포인트: `backend/src/main/java/.../controller/`  
 - 엣지 라우트: `edge/main.py`, `edge/api/`  
-- 대시보드 페이지: `frontend/src/pages/`  
+- 대시보드·키오스크 페이지: `frontend/src/pages/` (`KioskPage.tsx`, `KioskInspectionCompletePage.tsx`)  
 - YOLO 가중치: `edge/weights/` (용량 때문에 Git에 없을 수 있음)
 
 이 문서는 **실행 경로**에만 집중했습니다. 학습 파이프라인·하드웨어 배선은 코드와 `edge/tools/` 주석을 참고하면 됩니다.
