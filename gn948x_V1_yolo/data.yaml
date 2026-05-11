@@ -1,9 +1,0 @@
-path: C:/Projects/AiCapstoneV2/gn948x_V1_yolo
-train: images/train
-val: images/val
-nc: 4
-names:
-  0: connector
-  1: fiducial
-  2: group_connector
-  3: mount_hole

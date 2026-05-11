@@ -23,6 +23,12 @@ frontend/dist/
 frontend/.env
 frontend/.env.local
 
+# ===== Local venv (repo root experiments) =====
+.venv-deskew/
+
+# ===== YOLO base weights (Ultralytics auto-download) =====
+/yolov8n.pt
+
 # ===== OS / IDE =====
 .DS_Store
 .idea/
