@@ -65,8 +65,8 @@ mysql --version
 cd C:\
 mkdir Projects
 cd Projects
-git clone https://github.com/newUser12312321/AiCapstoneV2.git
-cd AiCapstoneV2
+git clone https://github.com/newUser12312321/AiCapstone.git
+cd AiCapstone
 ```
 
 ---
@@ -105,7 +105,7 @@ EXIT;
 `backend/src/main/resources/application.yml` 열기:
 
 ```powershell
-notepad C:\Projects\AiCapstoneV2\backend\src\main\resources\application.yml
+notepad C:\Projects\AiCapstone\backend\src\main\resources\application.yml
 ```
 
 프로젝트는 `DB_PASSWORD` 환경변수를 우선 사용합니다.
@@ -160,7 +160,7 @@ Windows Terminal에서 탭 3개를 열어 각각 실행합니다.
 ### 탭 1 — Spring Boot 백엔드
 
 ```powershell
-cd C:\Projects\AiCapstoneV2\backend
+cd C:\Projects\AiCapstone\backend
 $env:DB_PASSWORD="여기에_MySQL_root_비밀번호"   # 방법 A 선택 시
 mvn spring-boot:run
 ```
@@ -176,7 +176,7 @@ Tomcat started on port(s): 8080
 ### 탭 2 — React 프론트엔드
 
 ```powershell
-cd C:\Projects\AiCapstoneV2\frontend
+cd C:\Projects\AiCapstone\frontend
 npm install        # 최초 1회만
 npm run dev
 ```

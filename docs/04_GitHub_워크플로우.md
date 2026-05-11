@@ -9,7 +9,7 @@
 git add . && git commit -m "설명" && git push
     │
     ▼
-GitHub 원격 저장소 (https://github.com/newUser12312321/AiCapstoneV2)
+GitHub 원격 저장소 (https://github.com/newUser12312321/AiCapstone)
     │
     ▼
 집 Windows PC에서 git pull
@@ -23,7 +23,7 @@ Spring Boot 재시작 / React 자동 반영
 ## 맥북에서 코드 수정 후 업로드
 
 ```bash
-cd /Users/user/Documents/AiCapstoneV2
+cd /Users/user/Documents/AiCapstone
 
 # 변경된 파일 확인
 git status
@@ -53,7 +53,7 @@ git push origin main
 ## 집 Windows PC에서 최신 코드 받기
 
 ```powershell
-cd C:\Projects\AiCapstoneV2
+cd C:\Projects\AiCapstone
 
 # 최신 코드 가져오기
 git pull origin main
@@ -138,6 +138,6 @@ git fetch origin
 
 ## GitHub 저장소 정보
 
-- **URL:** https://github.com/newUser12312321/AiCapstoneV2
+- **URL:** https://github.com/newUser12312321/AiCapstone
 - **기본 브랜치:** main
 - **접근:** Public
