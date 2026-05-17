@@ -1,13 +1,12 @@
 import clsx from 'clsx'
-import { Activity, AlertTriangle, Clock } from 'lucide-react'
 import type { InspectionLineStatus } from '@/types/inspection'
 import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 
 function formatElapsed(seconds: number): string {
-  if (seconds < 0) return '—'
-  if (seconds < 60) return `${seconds}초 전`
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}분 전`
-  return `${Math.floor(seconds / 3600)}시간 전`
+  if (seconds < 0) return '?'
+  if (seconds < 60) return `${seconds}?`
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}?`
+  return `${Math.floor(seconds / 3600)}??`
 }
 
 export default function DashboardLineStatus({
@@ -18,15 +17,15 @@ export default function DashboardLineStatus({
   isLoading?: boolean
 }) {
   if (isLoading) {
-    return (
-      <div className="h-14 rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] animate-pulse" />
-    )
+    return <div className="hmi-panel h-9 animate-pulse bg-[var(--dash-bg-secondary)]" />
   }
+
   if (!status?.lastInspectedAt) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-3 text-xs text-[var(--dash-text-secondary)]">
-        <Activity size={16} className="text-[var(--dash-text-tertiary)]" />
-        검사 이력 없음 — 라인 대기 중
+      <div className="hmi-panel flex items-center gap-2 px-2 py-1.5 text-[11px] text-[var(--dash-text-secondary)]">
+        <span className="inline-block w-2 h-2 bg-[var(--dash-text-tertiary)]" />
+        <span className="font-semibold text-[var(--dash-text-primary)]">??</span>
+        <span>?? ?? ?? ? ??</span>
       </div>
     )
   }
@@ -37,49 +36,54 @@ export default function DashboardLineStatus({
   return (
     <div
       className={clsx(
-        'flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border px-4 py-3 text-xs',
-        stale
-          ? 'border-[var(--dash-warning)]/50 bg-[var(--dash-warning)]/8'
-          : 'border-[var(--dash-border)] bg-[var(--dash-surface)]'
+        'hmi-panel flex flex-wrap items-center gap-x-4 gap-y-1 px-2 py-1.5 text-[11px]',
+        stale && 'border-[var(--dash-warning)] bg-[var(--dash-warning)]/10'
       )}
     >
-      <div className="flex items-center gap-2">
+      <span className="flex items-center gap-1.5 shrink-0">
         <span
           className={clsx(
-            'inline-flex h-2 w-2 rounded-full',
+            'inline-block w-2 h-2',
             stale ? 'bg-[var(--dash-warning)] animate-pulse' : 'bg-[var(--dash-success)]'
           )}
         />
-        <span className="font-semibold text-[var(--dash-text-primary)]">
+        <span className="font-bold text-[var(--dash-text-primary)]">
           {deviceDisplayLabel(status.deviceId ?? '')}
         </span>
-        <span className="text-[var(--dash-text-tertiary)]">라인</span>
-      </div>
-      <div className="flex items-center gap-1.5 text-[var(--dash-text-secondary)]">
-        <Clock size={14} />
-        마지막 검사 {formatElapsed(status.secondsSinceLastInspection)}
+      </span>
+
+      <span className="text-[var(--dash-text-secondary)]">
+        ????{' '}
+        <span className="dash-num text-[var(--dash-text-primary)]">
+          {formatElapsed(status.secondsSinceLastInspection)} ?
+        </span>
         {status.lastResult && (
           <span
             className={clsx(
-              'ml-1 font-semibold',
+              'ml-1 font-bold',
               status.lastResult === 'PASS' ? 'text-[var(--dash-success)]' : 'text-[var(--dash-danger)]'
             )}
           >
             {inspectionResultLabel(status.lastResult)}
           </span>
         )}
-      </div>
+      </span>
+
       {lastFail && (
-        <div className="flex items-center gap-1.5 text-[var(--dash-danger)]">
-          <AlertTriangle size={14} />
-          최근 FAIL {new Date(lastFail).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+        <span className="text-[var(--dash-danger)] font-semibold">
+          FAIL {new Date(lastFail).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
           {status.lastFailId != null && (
-            <span className="text-[var(--dash-text-tertiary)]">#{status.lastFailId}</span>
+            <span className="dash-num font-normal text-[var(--dash-text-tertiary)] ml-1">
+              #{status.lastFailId}
+            </span>
           )}
-        </div>
+        </span>
       )}
+
       {stale && (
-        <span className="text-[var(--dash-warning)] font-medium">5분 이상 신규 검사 없음</span>
+        <span className="text-[var(--dash-warning)] font-bold border border-[var(--dash-warning)] px-1.5 py-0.5">
+          5?+ ???
+        </span>
       )}
     </div>
   )

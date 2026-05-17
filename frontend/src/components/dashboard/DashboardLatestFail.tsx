@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom'
-import clsx from 'clsx'
-import { ChevronRight } from 'lucide-react'
 import InspectionThumbnail from '@/components/inspection/InspectionThumbnail'
 import type { InspectionLog } from '@/types/inspection'
 import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
@@ -18,13 +16,12 @@ export default function DashboardLatestFail({
   formatSplitDateTime,
 }: DashboardLatestFailProps) {
   if (isLoading) {
-    return (
-      <div className="min-h-[140px] rounded-lg border border-[var(--dash-danger)]/30 bg-[var(--dash-surface)] animate-pulse" />
-    )
+    return <div className="hmi-panel h-[100px] animate-pulse bg-[var(--dash-bg-secondary)] shrink-0" />
   }
+
   if (!log) {
     return (
-      <div className="rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-6 text-center text-sm text-[var(--dash-text-secondary)]">
+      <div className="hmi-panel shrink-0 px-2 py-3 text-center text-[11px] text-[var(--dash-text-secondary)]">
         당일 FAIL 없음
       </div>
     )
@@ -36,38 +33,29 @@ export default function DashboardLatestFail({
   return (
     <Link
       to={buildHistoryPath({ from: log.inspectedAt.slice(0, 10), result: 'FAIL', open: log.id })}
-      className={clsx(
-        'group flex gap-4 rounded-lg border border-[var(--dash-danger)]/45 bg-[var(--dash-danger)]/6 p-3',
-        'hover:bg-[var(--dash-danger)]/10 transition-colors'
-      )}
+      className="hmi-panel shrink-0 flex gap-2 p-2 border-[var(--dash-danger)] bg-[var(--dash-danger)]/8 hover:bg-[var(--dash-danger)]/12"
     >
-      <div className="shrink-0 w-28 h-28 rounded-md overflow-hidden border border-[var(--dash-border)] bg-black/5">
+      <div className="shrink-0 w-20 h-20 overflow-hidden border border-[var(--dash-border)] bg-black/10">
         <InspectionThumbnail
           imagePath={log.imagePath}
           result={log.result}
-          size={112}
+          size={80}
           className="!w-full !h-full !max-w-none"
         />
       </div>
-      <div className="min-w-0 flex-1 flex flex-col justify-center gap-1">
-        <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--dash-danger)]">
-          최신 FAIL — 리뷰 대기
-        </p>
-        <p className="text-lg font-bold text-[var(--dash-text-primary)] tabular-nums">
+      <div className="min-w-0 flex-1 text-[11px] leading-snug">
+        <p className="font-bold text-[var(--dash-danger)]">최신 FAIL</p>
+        <p className="dash-num text-[15px] font-bold text-[var(--dash-text-primary)]">
           #{log.id}{' '}
-          <span className="text-sm font-semibold text-[var(--dash-danger)]">
-            {inspectionResultLabel(log.result)}
-          </span>
+          <span className="text-[var(--dash-danger)]">{inspectionResultLabel(log.result)}</span>
         </p>
-        <p className="text-xs text-[var(--dash-text-secondary)]">
-          {deviceDisplayLabel(log.deviceId)} · {(log.silkBoardName ?? '').trim() || '보드 미식별'}
+        <p className="text-[var(--dash-text-secondary)] truncate">
+          {deviceDisplayLabel(log.deviceId)} · {(log.silkBoardName ?? '').trim() || '—'}
         </p>
-        <p className="text-xs text-[var(--dash-text-tertiary)]">
-          {date} {time} · 리뷰 {review}
+        <p className="text-[var(--dash-text-tertiary)] tabular-nums">
+          {date} {time} · {review}
         </p>
-        <p className="text-xs text-[var(--dash-accent)] group-hover:underline inline-flex items-center gap-0.5 mt-1">
-          FAIL 리뷰 열기 <ChevronRight size={14} />
-        </p>
+        <p className="text-[var(--dash-accent)] font-semibold mt-0.5">리뷰 →</p>
       </div>
     </Link>
   )

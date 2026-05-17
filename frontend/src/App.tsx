@@ -2,14 +2,6 @@
  * 루트 애플리케이션 컴포넌트
  *
  * React Router의 라우팅 트리와 전체 레이아웃(Header + Sidebar + 콘텐츠)을 정의한다.
- *
- * 레이아웃 구조:
- * ┌──────────────────────────── Header (h-16) ──────────────────────────────┐
- * │ ┌─ Sidebar ─┐  ┌──────────── <Outlet /> ──────────────────────────────┐ │
- * │ │  (w-56)   │  │  DashboardPage / HistoryPage / SettingsPage           │ │
- * │ │           │  │                                                        │ │
- * │ └───────────┘  └────────────────────────────────────────────────────────┘ │
- * └─────────────────────────────────────────────────────────────────────────┘
  */
 
 import clsx from 'clsx'
@@ -39,42 +31,26 @@ export default function App() {
   }
 
   return (
-    /* 전체 화면을 채우는 flex 컨테이너 */
     <div
       className={clsx(
-        'dashboard-theme h-screen text-[var(--dash-text-primary)] p-3 md:p-4 overflow-hidden',
+        'dashboard-theme h-screen text-[var(--dash-text-primary)] overflow-hidden',
         settings.colorScheme === 'dark' && 'dashboard-theme--dark'
       )}
     >
-      <div className="glass-panel h-full w-full max-w-[1600px] mx-auto rounded-xl overflow-hidden shadow-[var(--dash-shadow-soft)]">
-        {/* 상단 고정 헤더 */}
+      <div className="hmi-shell h-full w-full flex flex-col overflow-hidden">
         <Header />
 
-        {/* 헤더 아래 본문 영역: 사이드바 + 페이지 */}
-        <div className="flex h-[calc(100%-64px)] overflow-hidden">
-
-          {/* 좌측 고정 사이드바 */}
+        <div className="flex flex-1 min-h-0 overflow-hidden">
           <Sidebar />
 
-          {/* 우측 페이지 콘텐츠 (스크롤 가능) */}
-          <main className="min-h-0 flex-1 overflow-hidden bg-transparent">
+          <main className="min-h-0 flex-1 overflow-hidden bg-[var(--dash-bg-deep)]">
             <Routes>
-              {/* 기본 경로: 대시보드 */}
-              <Route path="/"         element={<DashboardPage />} />
-
-              {/* 검사 이력 */}
-              <Route path="/history"  element={<HistoryPage />} />
-
-              {/* 검사 상세 (피듀셜·결함 오버레이) */}
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/history" element={<HistoryPage />} />
               <Route path="/inspection/:inspectionId" element={<InspectionDetailPage />} />
-
-              {/* 보드 기준(정상 이미지/기대 개수) */}
               <Route path="/board-reference" element={<BoardReferencePage />} />
-
               <Route path="/settings" element={<SettingsPage />} />
-
-              {/* 정의되지 않은 경로는 루트로 리다이렉트 */}
-              <Route path="*"         element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
         </div>

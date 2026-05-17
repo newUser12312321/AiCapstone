@@ -31,23 +31,22 @@ interface KpiCellProps {
 
 function KpiCell({ label, value, sub, tone = 'default' }: KpiCellProps) {
   return (
-    <div className="px-4 py-3 min-w-0">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--dash-text-tertiary)]">
-        {label}
-      </p>
-      <p
-        className={clsx(
-          'mt-1 text-2xl font-bold tabular-nums leading-none',
-          tone === 'ok' && 'text-[var(--dash-success)]',
-          tone === 'ng' && 'text-[var(--dash-danger)]',
-          tone === 'warn' && 'text-[var(--dash-warning)]',
-          tone === 'default' && 'text-[var(--dash-text-primary)]'
-        )}
-      >
-        {value}
-      </p>
-      {sub && <p className="mt-1.5 text-xs text-[var(--dash-text-secondary)]">{sub}</p>}
-    </div>
+    <td className="px-3 py-1.5 align-middle border-r border-[var(--dash-border)] last:border-r-0">
+      <div className="text-[10px] text-[var(--dash-text-tertiary)]">{label}</div>
+      <div className="text-[18px] font-bold dash-num leading-tight">
+        <span
+          className={clsx(
+            tone === 'default' && 'text-[var(--dash-text-primary)]',
+            tone === 'ok' && 'text-[var(--dash-success)]',
+            tone === 'ng' && 'text-[var(--dash-danger)]',
+            tone === 'warn' && 'text-[var(--dash-warning)]'
+          )}
+        >
+          {value}
+        </span>
+      </div>
+      {sub ? <div className="text-[10px] text-[var(--dash-text-tertiary)] mt-0.5">{sub}</div> : null}
+    </td>
   )
 }
 
@@ -67,7 +66,7 @@ export default function DashboardKpiStrip({
   cumulative,
 }: DashboardKpiStripProps) {
   if (isLoading) {
-    return <div className="h-[120px] rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] animate-pulse" />
+    return <div className="hmi-panel h-12 animate-pulse bg-[var(--dash-bg-secondary)]" />
   }
 
   const day = statsToDay(dayStats)
@@ -88,48 +87,53 @@ export default function DashboardKpiStrip({
           : 'ng'
 
   return (
-    <div className="border border-[var(--dash-border)] bg-[var(--dash-surface)] rounded-lg overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-4 py-2">
-        <div>
-          <h2 className="text-sm font-semibold text-[var(--dash-text-primary)]">검사 현황</h2>
-          <p className="text-xs text-[var(--dash-text-tertiary)]">{dateLabel} · 당일 집계</p>
-        </div>
-        {cumulative != null && cumulative.total > 0 && (
-          <p className="text-xs text-[var(--dash-text-secondary)] tabular-nums">
-            누적 {cumulative.total.toLocaleString()}건 · PASS {cumulative.pass.toLocaleString()} · FAIL{' '}
-            {cumulative.fail.toLocaleString()} (불량률 {formatRate(cumulative.failRate)})
-          </p>
-        )}
+    <div className="hmi-panel overflow-hidden">
+      <div className="hmi-panel__head">
+        <span className="hmi-panel__title">?? KPI</span>
+        <span className="hmi-panel__meta">
+          {dateLabel}
+          {cumulative != null && cumulative.total > 0 && (
+            <>
+              {' ? '}
+              ?? {cumulative.total.toLocaleString()}? FAIL {cumulative.fail.toLocaleString()} (
+              {formatRate(cumulative.failRate)})
+            </>
+          )}
+        </span>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[var(--dash-border)]">
-        <KpiCell
-          label="당일 수율"
-          value={day.yieldPct != null ? formatRate(day.yieldPct) : '—'}
-          sub={`목표 ${formatRate(targetYieldPct)}`}
-          tone={yieldTone}
-        />
-        <KpiCell
-          label="당일 검사"
-          value={day.total.toLocaleString()}
-          sub={`PASS ${day.pass} · FAIL ${day.fail}`}
-        />
-        <KpiCell
-          label="당일 FAIL"
-          value={day.fail.toLocaleString()}
-          sub={day.failRate != null ? `불량률 ${formatRate(day.failRate)}` : undefined}
-          tone={day.fail > 0 ? 'ng' : 'ok'}
-        />
-        <KpiCell
-          label="목표 대비"
-          value={
-            day.yieldPct != null
-              ? `${day.yieldPct >= targetYieldPct ? '+' : ''}${(day.yieldPct - targetYieldPct).toFixed(1)}%p`
-              : '—'
-          }
-          sub={day.yieldPct != null && day.yieldPct < targetYieldPct ? '목표 미달' : '목표 충족'}
-          tone={yieldTone}
-        />
-      </div>
+      <table className="w-full border-collapse">
+        <tbody>
+          <tr className="bg-[var(--dash-surface)]">
+            <KpiCell
+              label="??"
+              value={day.yieldPct != null ? formatRate(day.yieldPct) : '?'}
+              sub={`?? ${formatRate(targetYieldPct)}`}
+              tone={yieldTone}
+            />
+            <KpiCell
+              label="????"
+              value={day.total.toLocaleString()}
+              sub={`P ${day.pass} / F ${day.fail}`}
+            />
+            <KpiCell
+              label="FAIL"
+              value={day.fail.toLocaleString()}
+              sub={day.failRate != null ? formatRate(day.failRate) : undefined}
+              tone={day.fail > 0 ? 'ng' : 'ok'}
+            />
+            <KpiCell
+              label="????"
+              value={
+                day.yieldPct != null
+                  ? `${day.yieldPct >= targetYieldPct ? '+' : ''}${(day.yieldPct - targetYieldPct).toFixed(1)}%p`
+                  : '?'
+              }
+              sub={day.yieldPct != null && day.yieldPct < targetYieldPct ? '??' : '??'}
+              tone={yieldTone}
+            />
+          </tr>
+        </tbody>
+      </table>
     </div>
   )
 }

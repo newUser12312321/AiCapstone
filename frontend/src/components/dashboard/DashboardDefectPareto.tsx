@@ -7,12 +7,12 @@ export default function DashboardDefectPareto({ items, onSelect }: DashboardDefe
   const max = items.length ? Math.max(...items.map(([, c]) => c)) : 0
 
   return (
-    <div className="flex min-h-0 flex-col border border-[var(--dash-border)] bg-[var(--dash-surface)] rounded-lg overflow-hidden h-full">
-      <div className="border-b border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2 shrink-0">
-        <h3 className="text-sm font-semibold text-[var(--dash-text-primary)]">FAIL 유형 (당일·최근)</h3>
-        <p className="text-xs text-[var(--dash-text-tertiary)]">클릭 시 해당 유형 이력</p>
+    <div className="hmi-panel flex min-h-0 flex-col overflow-hidden h-full">
+      <div className="hmi-panel__head shrink-0">
+        <span className="hmi-panel__title">FAIL 유형</span>
+        <span className="hmi-panel__meta">당일 · 클릭→이력</span>
       </div>
-      <div className="flex-1 overflow-y-auto p-3 space-y-2.5 min-h-0">
+      <div className="flex-1 overflow-y-auto p-2 space-y-2 min-h-0">
         {items.length === 0 ? (
           <p className="text-sm text-[var(--dash-text-secondary)] py-4 text-center">
             집계할 FAIL 데이터가 없습니다.
@@ -35,9 +35,9 @@ export default function DashboardDefectPareto({ items, onSelect }: DashboardDefe
                     {count}
                   </span>
                 </div>
-                <div className="h-2 rounded-sm bg-[var(--dash-bg-secondary)] overflow-hidden">
+                <div className="h-1.5 bg-[var(--dash-bg-secondary)] overflow-hidden">
                   <div
-                    className="h-full bg-[var(--dash-danger)]/80 rounded-sm"
+                    className="h-full bg-[var(--dash-danger)]"
                     style={{ width: `${pct}%` }}
                   />
                 </div>

@@ -28,22 +28,22 @@ export default function DashboardRecentFeed({
   const rows = logs.slice(0, maxRows)
 
   return (
-    <div className="flex min-h-0 flex-col border border-[var(--dash-border)] bg-[var(--dash-surface)] rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between border-b border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2">
-        <h3 className="text-sm font-semibold text-[var(--dash-text-primary)]">최근 검사</h3>
-        <span className="text-xs text-[var(--dash-text-tertiary)]">최근 {maxRows}건</span>
+    <div className="hmi-panel flex min-h-0 flex-1 flex-col overflow-hidden h-full">
+      <div className="hmi-panel__head">
+        <span className="hmi-panel__title">최근 검사</span>
+        <span className="hmi-panel__meta">최근 {maxRows}건 · 행 클릭→상세</span>
       </div>
 
       <div className="overflow-x-auto overflow-y-auto min-h-0 flex-1">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-[var(--dash-bg-secondary)] z-[1]">
-            <tr className="text-left text-[11px] font-semibold uppercase tracking-wide text-[var(--dash-text-tertiary)]">
-              <th className="w-14 px-2 py-2" />
-              <th className="px-2 py-2">ID</th>
-              <th className="px-2 py-2">시각</th>
-              <th className="px-2 py-2 hidden sm:table-cell">기종</th>
-              <th className="px-2 py-2 hidden md:table-cell">보드</th>
-              <th className="px-2 py-2">판정</th>
+        <table className="w-full text-[12px]">
+          <thead className="sticky top-0 bg-[var(--dash-bg-secondary)] z-[1] border-b border-[var(--dash-border)]">
+            <tr className="text-left text-[10px] font-bold text-[var(--dash-text-tertiary)]">
+              <th className="w-12 px-1.5 py-1" />
+              <th className="px-1.5 py-1">ID</th>
+              <th className="px-1.5 py-1">시각</th>
+              <th className="px-1.5 py-1 hidden sm:table-cell">기종</th>
+              <th className="px-1.5 py-1 hidden md:table-cell">보드</th>
+              <th className="px-1.5 py-1">판정</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--dash-border)]">
@@ -75,10 +75,10 @@ export default function DashboardRecentFeed({
                     }
                     className="cursor-pointer hover:bg-[var(--dash-bg-secondary)]/80"
                   >
-                    <td className="px-2 py-2">
-                      <InspectionThumbnail imagePath={log.imagePath} result={log.result} size={40} />
+                    <td className="px-1.5 py-1">
+                      <InspectionThumbnail imagePath={log.imagePath} result={log.result} size={32} />
                     </td>
-                    <td className="px-2 py-2 font-mono text-xs text-[var(--dash-text-secondary)]">
+                    <td className="px-1.5 py-1 dash-num text-[11px] text-[var(--dash-text-secondary)]">
                       #{log.id}
                     </td>
                     <td className="px-2 py-2 text-xs tabular-nums whitespace-nowrap">
@@ -96,10 +96,10 @@ export default function DashboardRecentFeed({
                     <td className="px-2 py-2">
                       <span
                         className={clsx(
-                          'inline-block px-2 py-0.5 rounded text-xs font-semibold',
+                          'inline-block px-1.5 py-px text-[10px] font-bold border',
                           fail
-                            ? 'bg-[var(--dash-danger)]/12 text-[var(--dash-danger)] border border-[var(--dash-danger)]/40'
-                            : 'bg-[var(--dash-success)]/12 text-[var(--dash-success)] border border-[var(--dash-success)]/40'
+                            ? 'text-[var(--dash-danger)] border-[var(--dash-danger)] bg-[var(--dash-danger)]/10'
+                            : 'text-[var(--dash-success)] border-[var(--dash-success)] bg-[var(--dash-success)]/10'
                         )}
                       >
                         {inspectionResultLabel(log.result)}

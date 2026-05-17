@@ -1,14 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 /* Tailwind CSS 세 가지 레이어를 전역으로 주입 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 부드러운 화면 전환 */
-* {
+/* 부드러운 화면 전환 (대시보드 HMI는 최소화) */
+.dashboard-theme * {
   transition-property: background-color, border-color, color;
-  transition-duration: 150ms;
+  transition-duration: 80ms;
 }
 
 /* Kiosk-only tokens */
@@ -27,40 +25,49 @@
   --kiosk-shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.05), 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
-/* Dashboard — light industrial (default, 키오스크와 동일 계열) */
+/* Dashboard — MES/AOI HMI (light industrial) */
 .dashboard-theme {
-  --dash-bg-deep: #eceef2;
-  --dash-bg-primary: #f4f6f9;
-  --dash-bg-secondary: #eef1f6;
-  --dash-surface: #ffffff;
-  --dash-surface-strong: #ffffff;
-  --dash-border: #e5e7eb;
-  --dash-border-soft: #e2e8f0;
-  --dash-text-primary: #111827;
-  --dash-text-secondary: #4b5563;
-  --dash-text-tertiary: #6b7280;
-  --dash-accent: #2563eb;
-  --dash-accent-hover: #1d4ed8;
-  --dash-success: #16a34a;
-  --dash-danger: #dc2626;
-  --dash-warning: #d97706;
-  --dash-info: #0284c7;
-  --dash-shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.05), 0 4px 14px rgba(15, 23, 42, 0.06);
-  --dash-shadow-card: 0 1px 3px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.04);
-  --dash-glow: 0 4px 16px rgba(37, 99, 235, 0.1);
-  --dash-overlay-bg: #f8fafc;
-  --dash-overlay-soft: #f1f5f9;
+  --dash-bg-deep: #d8dce3;
+  --dash-bg-primary: #e4e7ec;
+  --dash-bg-secondary: #eceff3;
+  --dash-surface: #f7f8fa;
+  --dash-surface-strong: #2a3038;
+  --dash-border: #b8bec8;
+  --dash-border-soft: #c8ced6;
+  --dash-text-primary: #1a1f26;
+  --dash-text-secondary: #3d4654;
+  --dash-text-tertiary: #5c6675;
+  --dash-accent: #1e5a9e;
+  --dash-accent-hover: #164a82;
+  --dash-success: #15803d;
+  --dash-danger: #b91c1c;
+  --dash-warning: #b45309;
+  --dash-info: #0369a1;
+  --dash-shadow-soft: none;
+  --dash-shadow-card: none;
+  --dash-glow: none;
+  --dash-overlay-bg: #dfe3e8;
+  --dash-overlay-soft: #e8ebef;
+  --dash-font-mono: 'Consolas', 'Dubai', 'Courier New', ui-monospace, monospace;
+  --dash-header-h: 40px;
 }
 
 .dashboard-theme,
 .dashboard-theme * {
-  font-family: 'Inter', 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 13px;
 }
 
 .dashboard-theme {
   position: relative;
-  background-color: var(--dash-bg-primary);
-  background-image: linear-gradient(180deg, #f8fafc 0%, var(--dash-bg-primary) 48%, #eef1f6 100%);
+  background-color: var(--dash-bg-deep);
+  background-image: none;
+}
+
+.dashboard-theme .dash-num {
+  font-family: var(--dash-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .dashboard-theme ::-webkit-scrollbar {
@@ -78,31 +85,31 @@
   background: #6b7280;
 }
 
-/* 설정에서 선택 가능한 다크 산업형 (퍼플 글로우 없음) */
+/* 설정: 제어실형 다크 HMI */
 .dashboard-theme.dashboard-theme--dark {
-  --dash-bg-deep: #0f1115;
-  --dash-bg-primary: #14171c;
-  --dash-bg-secondary: #1a1e26;
-  --dash-surface: #1f2430;
-  --dash-surface-strong: #232936;
-  --dash-border: #2d3544;
-  --dash-border-soft: #252b38;
-  --dash-text-primary: #f3f4f6;
-  --dash-text-secondary: #9ca3af;
-  --dash-text-tertiary: #6b7280;
-  --dash-accent: #3b82f6;
-  --dash-accent-hover: #2563eb;
-  --dash-success: #22c55e;
-  --dash-danger: #ef4444;
-  --dash-warning: #f59e0b;
-  --dash-info: #38bdf8;
-  --dash-shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --dash-shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 8px 20px rgba(0, 0, 0, 0.25);
-  --dash-glow: 0 4px 20px rgba(59, 130, 246, 0.15);
-  --dash-overlay-bg: #111318;
-  --dash-overlay-soft: #1a1e26;
-  background-color: var(--dash-bg-primary);
-  background-image: linear-gradient(180deg, #12151a 0%, var(--dash-bg-primary) 100%);
+  --dash-bg-deep: #0a0c0e;
+  --dash-bg-primary: #101214;
+  --dash-bg-secondary: #161a1f;
+  --dash-surface: #1c2128;
+  --dash-surface-strong: #252b33;
+  --dash-border: #3a424e;
+  --dash-border-soft: #2e353f;
+  --dash-text-primary: #e8eaed;
+  --dash-text-secondary: #a8b0bb;
+  --dash-text-tertiary: #7a8494;
+  --dash-accent: #4a9eed;
+  --dash-accent-hover: #3a8ad4;
+  --dash-success: #3dba5c;
+  --dash-danger: #e85c5c;
+  --dash-warning: #e0a030;
+  --dash-info: #5eb8e8;
+  --dash-shadow-soft: none;
+  --dash-shadow-card: none;
+  --dash-glow: none;
+  --dash-overlay-bg: #12161c;
+  --dash-overlay-soft: #181d24;
+  background-color: var(--dash-bg-deep);
+  background-image: none;
 }
 
 .dashboard-theme.dashboard-theme--dark ::-webkit-scrollbar-track {
@@ -112,12 +119,14 @@
   background: #4b5563;
 }
 
-/* 산업형 패널 — 글래스모피즘 대신 단색 카드 */
+/* HMI 패널 (단색·직각·무그림자) */
+.hmi-shell,
 .glass-panel {
   position: relative;
-  background: var(--dash-surface);
+  background: var(--dash-bg-primary);
   border: 1px solid var(--dash-border);
-  box-shadow: var(--dash-shadow-card);
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .glass-panel::before,
@@ -125,19 +134,45 @@
   content: none;
 }
 
+.hmi-panel {
+  background: var(--dash-surface);
+  border: 1px solid var(--dash-border);
+  border-radius: 0;
+}
+
+.hmi-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--dash-bg-secondary);
+  border-bottom: 1px solid var(--dash-border);
+  min-height: 28px;
+}
+
+.hmi-panel__title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dash-text-primary);
+  letter-spacing: 0.02em;
+}
+
+.hmi-panel__meta {
+  font-size: 11px;
+  color: var(--dash-text-tertiary);
+}
+
 .glass-panel-subtle {
   position: relative;
   background: var(--dash-bg-secondary);
-  border: 1px solid var(--dash-border-soft);
+  border: 1px solid var(--dash-border);
   box-shadow: none;
+  border-radius: 0;
 }
 
 .glass-panel-subtle::before {
   content: none;
-}
-
-.dashboard-theme.dashboard-theme--dark .glass-panel-subtle {
-  background: var(--dash-bg-secondary);
 }
 
 /* Right-side kiosk panel: swipe-to-scroll without visible bar */

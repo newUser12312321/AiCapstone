@@ -930,6 +930,7 @@ def _run_production_vision_pipeline(
 async def run_inspection_pipeline_from_source_file(
     relative_path: str,
     stage2_source_mode: Optional[str] = None,
+    kiosk_preset: Optional[str] = None,
 ) -> Optional[InspectionPacket]:
     """
     edge/captures 또는 edge/demo_samples 아래 저장된 이미지로 동일 파이프라인 실행.
@@ -962,6 +963,7 @@ async def run_inspection_pipeline_from_source_file(
         pipeline_start,
         stage2_source_mode=mode,
         debug_imshow=False,
+        kiosk_preset=kiosk_preset,
     )
 
 

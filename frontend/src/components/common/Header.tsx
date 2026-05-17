@@ -1,15 +1,9 @@
 /**
- * 상단 헤더 컴포넌트
- *
- * 서비스명, 라이브 상태 표시 인디케이터, 마지막 갱신 시각을 표시한다.
- * useStats()의 isLoading/isFetching 상태로 실시간 갱신 여부를 시각화한다.
- * 임계값 알림 시 배지·토스트를 표시한다.
+ * 상단 HMI 헤더 — 시스템명, LIVE, 갱신 시각, 운영 알림
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { Activity, Bell } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import raspberryPiIcon from '@/assets/raspberry-pi-icon.webp'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useStats } from '@/hooks/useInspectionData'
 import { useDashboardAlerts } from '@/hooks/useDashboardAlerts'
@@ -38,75 +32,68 @@ export default function Header() {
   const lastUpdated =
     dataUpdatedAt != null
       ? (() => {
-          const { date, time } = formatSplitDateTime(
-            new Date(dataUpdatedAt).toISOString()
-          )
+          const { date, time } = formatSplitDateTime(new Date(dataUpdatedAt).toISOString())
           return time ? `${date} ${time}` : date
         })()
       : '--'
 
   return (
     <>
-      <header className="h-16 bg-[var(--dash-surface-strong)] border-b border-[var(--dash-border)] flex items-center px-6 shrink-0">
+      <header className="h-[var(--dash-header-h)] shrink-0 flex items-stretch border-b border-[var(--dash-border)] bg-[var(--dash-surface-strong)] text-[#e8eaed]">
+        <Link
+          to="/"
+          className="flex items-center px-3 border-r border-[#3a424e] hover:bg-[#323840] focus:outline-none focus:bg-[#323840]"
+          title="라인 모니터"
+        >
+          <span className="text-[13px] font-bold tracking-tight whitespace-nowrap">
+            AOI 라인 모니터
+          </span>
+        </Link>
 
-        <div className="flex items-center gap-3.5 min-w-0">
-          <Link
-            to="/"
-            title="메인 대시보드로 이동"
-            className="w-10 h-10 shrink-0 rounded-lg flex items-center justify-center overflow-hidden bg-white p-1.5 shadow-[var(--dash-shadow-soft)] ring-1 ring-[var(--dash-border)] transition-colors hover:ring-[var(--dash-accent)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/40"
-          >
-            <img
-              src={raspberryPiIcon}
-              alt=""
-              width={28}
-              height={28}
-              className="h-7 w-7 object-contain select-none pointer-events-none"
-              draggable={false}
-            />
-          </Link>
-          <div className="min-w-0 py-0.5">
-            <h1 className="text-xl sm:text-2xl font-bold leading-tight tracking-tight text-[var(--dash-text-primary)]">
-              PCB 비전 검사 시스템
-            </h1>
-          </div>
-        </div>
-
-        <div className="ml-auto flex items-center gap-3">
-
-          {alerts.length > 0 && (
-            <div
-              className="glass-panel-subtle flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[var(--dash-warning)]"
-              title={alerts.join('\n')}
-            >
-              <Bell size={14} className="shrink-0" />
-              <span className="text-xs font-semibold">알림 {alerts.length}</span>
-            </div>
-          )}
-
-          <div className="glass-panel-subtle flex items-center gap-2 rounded-full px-3 py-1.5">
+        <div className="flex-1 flex items-center min-w-0 px-3 gap-4 text-[11px]">
+          <span className="flex items-center gap-1.5 shrink-0">
             <span
-              className={`w-2 h-2 rounded-full ${
+              className={`inline-block w-2 h-2 ${
                 isFetching ? 'bg-[var(--dash-warning)] animate-pulse' : 'bg-[var(--dash-success)]'
               }`}
             />
-            <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
-              {isFetching ? '갱신 중...' : 'LIVE'}
+            <span className="font-semibold">{isFetching ? '갱신중' : 'LIVE'}</span>
+          </span>
+          <span className="text-[#a8b0bb] tabular-nums shrink-0">
+            갱신 <span className="dash-num text-[#e8eaed]">{lastUpdated}</span>
+          </span>
+          {alerts.length > 0 && (
+            <span
+              className="truncate text-[var(--dash-warning)] font-semibold border-l border-[#3a424e] pl-3"
+              title={alerts.join('\n')}
+            >
+              ALM {alerts.length}: {alerts.join(' · ')}
             </span>
-          </div>
+          )}
+        </div>
 
-          <div className="glass-panel-subtle flex items-center gap-1.5 text-xs text-[var(--dash-text-tertiary)] rounded-full px-3 py-1.5">
-            <Activity size={12} />
-            <span>최종 갱신: {lastUpdated}</span>
-          </div>
+        <div className="flex items-stretch border-l border-[#3a424e] text-[11px]">
+          <Link
+            to="/history"
+            className="px-3 flex items-center hover:bg-[#323840] text-[#c8ced6]"
+          >
+            검사로그
+          </Link>
+          <Link
+            to="/settings"
+            className="px-3 flex items-center border-l border-[#3a424e] hover:bg-[#323840] text-[#c8ced6]"
+          >
+            설정
+          </Link>
         </div>
       </header>
 
       {toast && (
         <div
           role="status"
-          className="fixed bottom-4 right-4 z-[200] max-w-md rounded-2xl border border-[var(--dash-warning)]/40 bg-[var(--dash-surface-strong)] px-4 py-3 text-sm text-[var(--dash-text-primary)] shadow-[var(--dash-shadow-soft)]"
+          className="fixed bottom-2 right-2 z-[200] max-w-md border border-[var(--dash-warning)] bg-[var(--dash-surface)] px-3 py-2 text-[12px] text-[var(--dash-text-primary)]"
         >
-          <p className="text-xs font-semibold text-[var(--dash-warning)] mb-1">운영 알림</p>
+          <p className="font-bold text-[var(--dash-warning)] mb-0.5">운영 알림</p>
           <p className="text-[var(--dash-text-secondary)] leading-snug">{toast}</p>
         </div>
       )}

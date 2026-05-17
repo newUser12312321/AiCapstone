@@ -53,9 +53,14 @@ function PassFailTooltip({
 
 export interface HourlyInspectionVolumeChartProps {
   lineFilter?: LineFilter
+  /** 대시보드 하단 슬림 차트 */
+  compact?: boolean
 }
 
-export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspectionVolumeChartProps) {
+export default function HourlyInspectionVolumeChart({
+  lineFilter,
+  compact = false,
+}: HourlyInspectionVolumeChartProps) {
   const { settings } = useDashboardSettings()
   const { data, isLoading } = useHourlyInspectionVolume(lineFilter)
   const navigate = useNavigate()
@@ -82,31 +87,30 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
     if (pl?.anchorDate != null && pl.hour != null) goBucket(pl)
   }
 
+  const chartH = compact ? 150 : 360
+
   if (isLoading) {
     return (
-      <div className="flex min-h-[420px] flex-1 animate-pulse flex-col rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4">
-        <div className="mb-4 flex shrink-0 items-center justify-between">
-          <div className="h-4 w-56 rounded bg-[var(--dash-bg-secondary)]" />
-          <div className="h-3 w-24 rounded bg-[var(--dash-bg-secondary)]" />
+      <div className="hmi-panel h-full animate-pulse flex flex-col">
+        <div className="hmi-panel__head">
+          <div className="h-3 w-40 bg-[var(--dash-bg-primary)]" />
         </div>
-        <div className="h-[360px] rounded bg-[var(--dash-bg-secondary)]" />
+        <div className="flex-1 m-1 bg-[var(--dash-bg-secondary)]" style={{ minHeight: chartH }} />
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-[420px] h-full flex-1 flex-col rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4">
-      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--dash-border)] pb-2">
-        <h2 className="text-sm font-semibold text-[var(--dash-text-primary)]">
-          시간대별 검사량 (PASS / FAIL)
-        </h2>
-        <span className="text-xs text-[var(--dash-text-tertiary)]">
-          최근 24시간 · 1시간 단위 · {settings.timeZoneMode === 'utc' ? 'UTC' : '로컬'}
+    <div className="hmi-panel h-full flex flex-col overflow-hidden">
+      <div className="hmi-panel__head">
+        <span className="hmi-panel__title">시간대별 검사량</span>
+        <span className="hmi-panel__meta">
+          PASS/FAIL · 24h · 1h · {settings.timeZoneMode === 'utc' ? 'UTC' : '로컬'}
         </span>
       </div>
 
-      <div className="h-[360px] w-full shrink-0">
-        <ResponsiveContainer width="100%" height={360}>
+      <div className="flex-1 w-full min-h-0 px-1 pb-1" style={{ height: chartH }}>
+        <ResponsiveContainer width="100%" height={chartH}>
           <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }} barCategoryGap="12%">
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
             <XAxis

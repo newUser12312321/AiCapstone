@@ -346,6 +346,7 @@ async def inspect_from_uploaded_file(
     background_tasks: BackgroundTasks,
     image: UploadFile = File(..., description="검사할 이미지 파일 (.jpg/.jpeg/.png/.bmp/.webp)"),
     stage2Source: Optional[str] = None,
+    kioskPreset: Optional[str] = None,
 ) -> dict[str, str]:
     """
     브라우저에서 업로드한 이미지를 edge/captures 에 저장한 뒤 동일 검사 파이프라인을 실행한다.
@@ -386,9 +387,15 @@ async def inspect_from_uploaded_file(
     from main import run_inspection_pipeline_from_source_file
 
     mode = _normalize_stage2_mode(stage2Source)
-    background_tasks.add_task(run_inspection_pipeline_from_source_file, save_name, mode)
+    background_tasks.add_task(
+        run_inspection_pipeline_from_source_file,
+        save_name,
+        mode,
+        kioskPreset,
+    )
+    preset_note = f", board={kioskPreset}" if kioskPreset else ""
     return {
-        "message": f"업로드 이미지 검사를 시작했습니다: {save_name} (stage2={mode})",
+        "message": f"업로드 이미지 검사를 시작했습니다: {save_name} (stage2={mode}{preset_note})",
     }
 
 
@@ -413,6 +420,7 @@ async def inspect_from_file(
     body: InspectFromFileBody,
     background_tasks: BackgroundTasks,
     stage2Source: Optional[str] = None,
+    kioskPreset: Optional[str] = None,
 ) -> dict[str, str]:
     """
     카메라 대신 edge/captures 또는 edge/demo_samples 아래 파일로 동일 검사 파이프라인을 실행한다.
@@ -444,9 +452,15 @@ async def inspect_from_file(
     from main import run_inspection_pipeline_from_source_file
 
     mode = _normalize_stage2_mode(stage2Source)
-    background_tasks.add_task(run_inspection_pipeline_from_source_file, body.path.strip(), mode)
+    background_tasks.add_task(
+        run_inspection_pipeline_from_source_file,
+        body.path.strip(),
+        mode,
+        kioskPreset,
+    )
+    preset_note = f", board={kioskPreset}" if kioskPreset else ""
     return {
-        "message": f"파일 검사를 시작했습니다: {body.path.strip()} (stage2={mode})",
+        "message": f"파일 검사를 시작했습니다: {body.path.strip()} (stage2={mode}{preset_note})",
     }
 
 

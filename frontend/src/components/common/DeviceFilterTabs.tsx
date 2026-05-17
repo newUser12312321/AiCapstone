@@ -12,13 +12,23 @@ interface DeviceFilterTabsProps {
   className?: string
 }
 
-export default function DeviceFilterTabs({ logs = [], devices: devicesProp, value, onChange, className }: DeviceFilterTabsProps) {
+export default function DeviceFilterTabs({
+  logs = [],
+  devices: devicesProp,
+  value,
+  onChange,
+  className,
+}: DeviceFilterTabsProps) {
   const devices = devicesProp ?? uniqueDeviceIds(logs)
 
   if (devices.length === 0) return null
 
   return (
-    <div className={clsx('flex flex-wrap items-center gap-1', className)} role="tablist" aria-label="기종 필터">
+    <div
+      className={clsx('flex flex-wrap items-center gap-0', className)}
+      role="tablist"
+      aria-label="기종 필터"
+    >
       <TabButton active={!value} onClick={() => onChange('')}>
         전체
       </TabButton>
@@ -47,10 +57,10 @@ function TabButton({
       aria-selected={active}
       onClick={onClick}
       className={clsx(
-        'px-3 py-1.5 text-xs font-medium rounded border transition-colors',
+        'px-2.5 py-1 text-[11px] font-medium border border-[var(--dash-border)] -ml-px first:ml-0',
         active
-          ? 'bg-[var(--dash-accent)] text-white border-[var(--dash-accent)]'
-          : 'bg-[var(--dash-surface)] text-[var(--dash-text-secondary)] border-[var(--dash-border)] hover:bg-[var(--dash-bg-secondary)]'
+          ? 'bg-[var(--dash-accent)] text-white border-[var(--dash-accent)] z-[1] relative'
+          : 'bg-[var(--dash-surface)] text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)]'
       )}
     >
       {children}
