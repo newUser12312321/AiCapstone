@@ -113,14 +113,14 @@ export default function DashboardPage() {
             onClick={() => navigate(dashboardTodayHistoryPath('FAIL'))}
             className="px-2.5 py-1.5 font-semibold border border-[var(--dash-border)] bg-[var(--dash-danger)]/12 text-[var(--dash-danger)] hover:bg-[var(--dash-danger)]/20"
           >
-            FAIL ?�력
+            FAIL {'\uC774\uB825'}
           </button>
           <button
             type="button"
             onClick={() => navigate(dashboardTodayHistoryPath())}
             className="px-2.5 py-1.5 border border-[var(--dash-border)] -ml-px bg-[var(--dash-surface)] text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)]"
           >
-            ?�체 ?�력
+            {'\uC804\uCCB4'} {'\uC774\uB825'}
           </button>
         </div>
       </div>

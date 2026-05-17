@@ -4,14 +4,16 @@
 
 import { Fragment, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronRight, AlertCircle } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import clsx from 'clsx'
 import type { InspectionLog } from '@/types/inspection'
-import { defectDisplayName, DEFECT_COLOR, deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
+import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import InspectionThumbnail from '@/components/inspection/InspectionThumbnail'
 import DefectViewer from './DefectViewer'
+import DefectTags from './DefectTags'
 import { inspectionDetailPath } from '@/utils/historyNavigation'
+import { formatInspectionId } from '@/utils/inspectionDisplay'
 
 function ResultBadge({ result, compact }: { result: 'PASS' | 'FAIL'; compact?: boolean }) {
   return (
@@ -29,34 +31,6 @@ function ResultBadge({ result, compact }: { result: 'PASS' | 'FAIL'; compact?: b
   )
 }
 
-function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
-  if (!defects.length) return <span className="text-xs text-[var(--dash-text-tertiary)]">—</span>
-  const grouped = new Map<string, { count: number; color: string; label: string }>()
-  defects.forEach((d) => {
-    const key = `${d.defectType}\0${d.detail?.trim() ?? ''}`
-    const label = defectDisplayName(d.defectType, d.detail)
-    const prev = grouped.get(key)
-    if (prev) {
-      prev.count += 1
-      return
-    }
-    grouped.set(key, { count: 1, color: DEFECT_COLOR[d.defectType] ?? '#9ca3af', label })
-  })
-  return (
-    <div className="flex flex-wrap gap-1">
-      {Array.from(grouped.entries()).map(([tagKey, meta]) => (
-        <span
-          key={tagKey}
-          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium"
-          style={{ backgroundColor: `${meta.color}22`, color: meta.color }}
-        >
-          <AlertCircle size={10} />
-          {`${meta.label} X${meta.count}`}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 function SilkOcrCell({
   silkBoardName,
@@ -200,7 +174,9 @@ export default function InspectionTable({
                         <InspectionThumbnail imagePath={log.imagePath} result={log.result} size={40} />
                       </td>
                     )}
-                    <td className="px-2 py-2 font-mono text-xs text-[var(--dash-text-tertiary)]">#{log.id}</td>
+                    <td className="px-2 py-2 dash-num text-xs text-[var(--dash-text-tertiary)] whitespace-nowrap">
+                      {formatInspectionId(log.id)}
+                    </td>
                     <td className="px-2 py-2 text-xs">
                       {splitMode ? (
                         <>
@@ -229,13 +205,13 @@ export default function InspectionTable({
                     <td className="px-2 py-2">
                       <ResultBadge result={log.result} compact={splitMode} />
                     </td>
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-2 align-top max-w-[15rem]">
                       {splitMode ? (
                         <span className="text-xs text-[var(--dash-text-secondary)]">
                           {log.defects.length ? `${log.defects.length}건` : '—'}
                         </span>
                       ) : (
-                        <DefectTags defects={log.defects} />
+                        <DefectTags defects={log.defects} variant="table" />
                       )}
                     </td>
                     {!splitMode && (

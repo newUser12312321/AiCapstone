@@ -4,6 +4,7 @@ import InspectionThumbnail from '@/components/inspection/InspectionThumbnail'
 import type { InspectionLog } from '@/types/inspection'
 import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 import { inspectionDetailPath } from '@/utils/historyNavigation'
+import { formatInspectionId } from '@/utils/inspectionDisplay'
 import { primaryFailReason } from '@/utils/dashboardDefectSummary'
 
 interface DashboardRecentFeedProps {
@@ -105,7 +106,7 @@ export default function DashboardRecentFeed({
                       <InspectionThumbnail imagePath={log.imagePath} result={log.result} size={thumbSize} />
                     </td>
                     <td className={clsx('px-1.5 font-mono tabular-nums text-[var(--dash-text-secondary)] whitespace-nowrap', rowPad, sparse ? 'text-[12px]' : 'text-[11px]')}>
-                      No.{log.id}
+                      {formatInspectionId(log.id)}
                     </td>
                     <td className={clsx('px-2 text-xs tabular-nums whitespace-nowrap', rowPad)}>
                       <span className="text-[var(--dash-text-primary)]">{time || date}</span>

@@ -14,6 +14,7 @@ import {
   imageLoadErrorHint,
   resolveImageSrc,
 } from '@/utils/inspectionImage'
+import { formatInspectionId } from '@/utils/inspectionDisplay'
 
 // ── 이미지 로드 전 기본값 (로드 후 naturalWidth/Height 사용) ───────────────
 const DEFAULT_REF_WIDTH = 1920
@@ -679,7 +680,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
             검사 상세 (피듀셜)
             {log && (
               <span className="ml-2 text-xs text-[var(--dash-text-tertiary)] font-normal">
-                #{log.id} — {log.result === 'PASS' ? '✅ PASS' : `❌ ${inspectionResultLabel(log.result)}`}
+                {formatInspectionId(log.id)} — {log.result === 'PASS' ? '✅ PASS' : `❌ ${inspectionResultLabel(log.result)}`}
               </span>
             )}
           </span>
@@ -1036,7 +1037,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
             </h3>
 
             <dl className="space-y-2.5 text-xs">
-              <MetaRow label="검사 ID"     value={`#${log.id}`}              />
+              <MetaRow label="검사 ID"     value={formatInspectionId(log.id)}              />
               <MetaRow label="디바이스"    value={deviceDisplayLabel(log.deviceId)}              />
               <MetaRow label="검사 시각"   value={formatFullDateTime(log.inspectedAt)} />
               <MetaRow

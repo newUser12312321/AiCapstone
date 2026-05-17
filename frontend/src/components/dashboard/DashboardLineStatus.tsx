@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import type { InspectionLineStatus } from '@/types/inspection'
 import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
+import { formatInspectionId } from '@/utils/inspectionDisplay'
 
 function formatElapsed(seconds: number): string {
   if (seconds < 0) return '\u2014'
@@ -12,9 +13,12 @@ function formatElapsed(seconds: number): string {
 export default function DashboardLineStatus({
   status,
   isLoading,
+  /** ?? ALM·FAIL ??? ???? ??? FAIL? ?? ?? */
+  hideRecentFailDetail = true,
 }: {
   status?: InspectionLineStatus
   isLoading?: boolean
+  hideRecentFailDetail?: boolean
 }) {
   if (isLoading) {
     return <div className="hmi-panel h-9 animate-pulse bg-[var(--dash-bg-secondary)]" />
@@ -31,7 +35,7 @@ export default function DashboardLineStatus({
   }
 
   const stale = status.stale
-  const lastFail = status.lastFailAt
+  const lastFail = hideRecentFailDetail ? undefined : status.lastFailAt
   const elapsed = formatElapsed(status.secondsSinceLastInspection)
   const result = status.lastResult
 
@@ -83,7 +87,7 @@ export default function DashboardLineStatus({
           {new Date(lastFail).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
           {status.lastFailId != null && (
             <span className="dash-num font-normal text-[var(--dash-text-tertiary)] ml-1">
-              #{status.lastFailId}
+              {formatInspectionId(status.lastFailId)}
             </span>
           )}
         </span>
