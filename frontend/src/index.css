@@ -48,7 +48,7 @@
   --dash-glow: none;
   --dash-overlay-bg: #dfe3e8;
   --dash-overlay-soft: #e8ebef;
-  --dash-font-mono: 'Consolas', 'Dubai', 'Courier New', ui-monospace, monospace;
+  --dash-font-mono: 'Consolas', 'Courier New', ui-monospace, monospace;
   --dash-header-h: 40px;
 }
 
@@ -67,7 +67,7 @@
 .dashboard-theme .dash-num {
   font-family: var(--dash-font-mono);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .dashboard-theme ::-webkit-scrollbar {

@@ -15,6 +15,8 @@ interface DashboardRecentFeedProps {
   sparse?: boolean
   title?: string
   metaLabel?: string
+  /** 우측 FAIL 패널 등에서 사유는 별도 표시 — 테이블 행 높이·줄바꿈 방지 */
+  hideInlineFailReason?: boolean
 }
 
 function boardLabel(log: InspectionLog): string {
@@ -28,8 +30,9 @@ export default function DashboardRecentFeed({
   formatSplitDateTime,
   maxRows = 8,
   sparse = false,
-  title = '\uCD5C\uADFC \uAC80\uC0AC',
+  title = '당일 검사',
   metaLabel,
+  hideInlineFailReason = false,
 }: DashboardRecentFeedProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -49,10 +52,9 @@ export default function DashboardRecentFeed({
       <div className="hmi-panel__head">
         <span className="hmi-panel__title">{title}</span>
         <span className="hmi-panel__meta">
-          {metaLabel ?? `\uCD5C\uB300 ${maxRows}\uAC74`}
-          {' \u00b7 '}
-          {'\uD589 \uD074\uB9AD\u2192\uC0C1\uC138'}
-          {sparse && rows.length > 0 ? ' \u00b7 \uC18C\uB7C9 \uD45C\uC2DC' : ''}
+          {metaLabel ?? `상위 ${maxRows}건`}
+          {' · 행 클릭→상세'}
+          {sparse && rows.length > 0 ? ' · 소량 표시' : ''}
         </span>
       </div>
 
@@ -91,18 +93,19 @@ export default function DashboardRecentFeed({
                 return (
                   <tr
                     key={log.id}
+                    title={failReason ?? undefined}
                     onClick={() =>
                       navigate(inspectionDetailPath(log.id), {
                         state: { returnTo: `${location.pathname}${location.search}` || '/' },
                       })
                     }
-                    className="cursor-pointer hover:bg-[var(--dash-bg-secondary)]/80"
+                    className="cursor-pointer hover:bg-[var(--dash-bg-secondary)]/80 align-middle"
                   >
                     <td className={clsx('px-1.5', rowPad)}>
                       <InspectionThumbnail imagePath={log.imagePath} result={log.result} size={thumbSize} />
                     </td>
-                    <td className={clsx('px-1.5 dash-num text-[var(--dash-text-secondary)]', rowPad, sparse ? 'text-[12px]' : 'text-[11px]')}>
-                      #{log.id}
+                    <td className={clsx('px-1.5 font-mono tabular-nums text-[var(--dash-text-secondary)] whitespace-nowrap', rowPad, sparse ? 'text-[12px]' : 'text-[11px]')}>
+                      No.{log.id}
                     </td>
                     <td className={clsx('px-2 text-xs tabular-nums whitespace-nowrap', rowPad)}>
                       <span className="text-[var(--dash-text-primary)]">{time || date}</span>
@@ -118,21 +121,21 @@ export default function DashboardRecentFeed({
                         {boardLabel(log)}
                       </td>
                     )}
-                    <td className={clsx('px-2', rowPad)}>
+                    <td className={clsx('px-2 whitespace-nowrap', rowPad)}>
                       <span
                         className={clsx(
                           'inline-block px-1.5 py-px font-bold border',
                           sparse ? 'text-[11px]' : 'text-[10px]',
                           fail
                             ? 'text-[var(--dash-danger)] border-[var(--dash-danger)] bg-[var(--dash-danger)]/10'
-                            : 'text-[var(--dash-success)] border-[var(--dash-success)] bg-[var(--dash-success)]/10'
+                            : 'text-[var(--dash-success)] border-[var(--dash-success)]/10'
                         )}
                       >
                         {inspectionResultLabel(log.result)}
                       </span>
-                      {failReason && (
+                      {failReason && !hideInlineFailReason && (
                         <span
-                          className="block mt-0.5 text-[10px] text-[var(--dash-danger)] line-clamp-2 max-w-[min(100%,220px)]"
+                          className="block mt-0.5 text-[10px] text-[var(--dash-danger)] truncate max-w-[200px]"
                           title={failReason}
                         >
                           {failReason}

@@ -46,6 +46,7 @@ export function buildInspectionFormatters(
     /* compact — 기존 테이블과 유사 */
     const date = d.toLocaleDateString('ko-KR', {
       timeZone: tz,
+      year: 'numeric',
       month: '2-digit',
       day: '2-digit',
     })

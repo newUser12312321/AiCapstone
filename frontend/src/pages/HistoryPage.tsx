@@ -1,14 +1,13 @@
-/**
- * 검사 로그 — 서버 페이지·목록/상세 분할
+﻿/**
+ * 검사 로그 — 서버 페이지 목록, 행 클릭 시 /inspection/:id 상세
  */
 
-import { useMemo, useCallback, useEffect, useState } from 'react'
+import { useMemo, useCallback, useEffect } from 'react'
 import { Download, FileSpreadsheet, Filter } from 'lucide-react'
 import clsx from 'clsx'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import DeviceFilterTabs from '@/components/common/DeviceFilterTabs'
 import FilterSummaryStrip from '@/components/dashboard/FilterSummaryStrip'
-import DefectViewer from '@/components/inspection/DefectViewer'
 import InspectionTable from '@/components/inspection/InspectionTable'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useDefectSummary, useFacets, useInspectionSearch, useStats } from '@/hooks/useInspectionData'
@@ -16,7 +15,9 @@ import { type InspectionResultType, type WorkShift } from '@/types/inspection'
 import {
   buildHistorySearchString,
   getLocalDateString,
+  inspectionDetailPath,
   parseHistoryQuery,
+  buildHistoryPath,
   type HistoryQuery,
 } from '@/utils/historyNavigation'
 import { historyToSearchParams, shiftLabel } from '@/utils/inspectionSearchParams'
@@ -67,8 +68,8 @@ function logHour(iso: string, timeZoneMode: 'local' | 'utc'): number {
 
 export default function HistoryPage() {
   const { formatFullDateTime, formatRatePercent, settings } = useDashboardSettings()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [selectedId, setSelectedId] = useState<number | undefined>()
 
   const today = getLocalDateString()
   const q = useMemo(() => parseHistoryQuery(searchParams), [searchParams])
@@ -76,6 +77,7 @@ export default function HistoryPage() {
   const dateFrom = q.from ?? ''
   const dateTo = q.to !== undefined && q.to !== '' ? q.to : today
   const page = q.page ?? 0
+  const openId = q.open
 
   const baseFilter = useMemo(
     () => ({
@@ -140,48 +142,13 @@ export default function HistoryPage() {
 
   const resultFilter: ResultFilter = q.result ?? 'ALL'
 
-  const listIndex = filteredLogs.findIndex((l) => l.id === selectedId)
-
-  const goList = useCallback(
-    (delta: number) => {
-      if (filteredLogs.length === 0) return
-      const idx = listIndex < 0 ? 0 : listIndex + delta
-      const next = filteredLogs[Math.max(0, Math.min(filteredLogs.length - 1, idx))]
-      if (next) setSelectedId(next.id)
-    },
-    [filteredLogs, listIndex]
-  )
-
+  /** ?open=ID — FAIL 링크 등에서 전체 폭 상세 페이지로 이동 */
   useEffect(() => {
-    const parsed = parseHistoryQuery(searchParams)
-    if (parsed.open == null) return
-    setSelectedId(parsed.open)
+    if (openId == null) return
+    const returnTo = buildHistoryPath({ ...parseHistoryQuery(searchParams), open: undefined })
     patchQuery({ open: undefined })
-  }, [searchParams, patchQuery])
-
-  useEffect(() => {
-    if (selectedId != null && filteredLogs.some((l) => l.id === selectedId)) return
-    if (filteredLogs.length > 0) {
-      setSelectedId(filteredLogs[0].id)
-    } else {
-      setSelectedId(undefined)
-    }
-  }, [filteredLogs, selectedId])
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return
-      if (e.key === 'ArrowDown' || e.key === 'j') {
-        e.preventDefault()
-        goList(1)
-      } else if (e.key === 'ArrowUp' || e.key === 'k') {
-        e.preventDefault()
-        goList(-1)
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [goList])
+    navigate(inspectionDetailPath(openId), { state: { returnTo }, replace: true })
+  }, [openId, navigate, patchQuery, searchParams])
 
   const downloadCsv = () => {
     downloadInspectionCsv(
@@ -219,7 +186,7 @@ export default function HistoryPage() {
         <div>
           <h1 className="text-sm font-semibold text-[var(--dash-text-primary)]">검사 로그</h1>
           <p className="text-xs text-[var(--dash-text-tertiary)]">
-            서버 페이지 ({totalElements.toLocaleString()}건)
+            서버 페이지 ({totalElements.toLocaleString()}건) · 행 클릭 시 검사 상세
           </p>
         </div>
         <div className="flex gap-2">
@@ -349,53 +316,33 @@ export default function HistoryPage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 min-h-[480px] border border-[var(--dash-border)] rounded-lg overflow-hidden bg-[var(--dash-surface)]">
-          <div className="lg:col-span-2 min-h-[320px] lg:min-h-0 lg:max-h-[calc(100vh-320px)] flex flex-col border-b lg:border-b-0 lg:border-r border-[var(--dash-border)]">
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <InspectionTable
-                logs={filteredLogs}
-                isLoading={isLoading}
-                detailMode="split"
-                selectedId={selectedId}
-                onSelectId={setSelectedId}
-                embedded
-              />
+        <div className="flex flex-col min-h-[480px] border border-[var(--dash-border)] rounded-lg overflow-hidden bg-[var(--dash-surface)]">
+          <div className="flex-1 min-h-[320px] lg:max-h-[calc(100vh-280px)] overflow-x-auto overflow-y-auto">
+            <InspectionTable logs={filteredLogs} isLoading={isLoading} detailMode="route" embedded />
+          </div>
+          {totalPages > 1 && (
+            <div className="shrink-0 flex items-center justify-between gap-2 border-t border-[var(--dash-border)] px-3 py-2 text-xs">
+              <button
+                type="button"
+                disabled={page <= 0}
+                onClick={() => patchQuery({ page: page - 1 })}
+                className="px-2 py-1 rounded border border-[var(--dash-border)] disabled:opacity-40"
+              >
+                이전
+              </button>
+              <span className="text-[var(--dash-text-tertiary)] tabular-nums">
+                {page + 1} / {totalPages}
+              </span>
+              <button
+                type="button"
+                disabled={page >= totalPages - 1}
+                onClick={() => patchQuery({ page: page + 1 })}
+                className="px-2 py-1 rounded border border-[var(--dash-border)] disabled:opacity-40"
+              >
+                다음
+              </button>
             </div>
-            {totalPages > 1 && (
-              <div className="shrink-0 flex items-center justify-between gap-2 border-t border-[var(--dash-border)] px-3 py-2 text-xs">
-                <button
-                  type="button"
-                  disabled={page <= 0}
-                  onClick={() => patchQuery({ page: page - 1 })}
-                  className="px-2 py-1 rounded border border-[var(--dash-border)] disabled:opacity-40"
-                >
-                  이전
-                </button>
-                <span className="text-[var(--dash-text-tertiary)] tabular-nums">
-                  {page + 1} / {totalPages}
-                </span>
-                <button
-                  type="button"
-                  disabled={page >= totalPages - 1}
-                  onClick={() => patchQuery({ page: page + 1 })}
-                  className="px-2 py-1 rounded border border-[var(--dash-border)] disabled:opacity-40"
-                >
-                  다음
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="lg:col-span-3 min-h-[360px] lg:min-h-0 overflow-y-auto bg-[var(--dash-bg-secondary)] p-3 flex flex-col">
-            {selectedId != null ? (
-              <DefectViewer inspectionId={selectedId} onClose={() => setSelectedId(undefined)} inline />
-            ) : (
-              <div className="h-full min-h-[280px] flex items-center justify-center text-sm text-[var(--dash-text-secondary)] text-center px-6">
-                목록에서 검사를 선택하면 이미지와 결함 오버레이가 표시됩니다.
-                <br />
-                <span className="text-xs text-[var(--dash-text-tertiary)] mt-2">↑↓ 또는 j/k — 목록 이동</span>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>

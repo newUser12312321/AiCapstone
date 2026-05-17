@@ -67,13 +67,9 @@ export default function DashboardFailPanel({
           <DashboardDefectPareto
             items={defectPareto}
             onSelect={onDefectSelect}
-            title="FAIL \uC720\uD615"
-            hint={'\uB2F9\uC77C \u00b7 \uD074\uB9AD\u2192\uC774\uB825'}
+            title="FAIL 유형"
+            hint="당일 · 클릭→이력"
           />
-        </div>
-      ) : latestFail ? (
-        <div className="hmi-panel shrink-0 px-2 py-1.5 text-[10px] text-[var(--dash-text-tertiary)]">
-          FAIL 유형 집계 없음
         </div>
       ) : null}
     </div>

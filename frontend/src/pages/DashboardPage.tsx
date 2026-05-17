@@ -152,8 +152,9 @@ export default function DashboardPage() {
             formatSplitDateTime={formatSplitDateTime}
             maxRows={feedLimit}
             sparse={sparseFeed}
-            title={'\uB2F9\uC77C \uAC80\uC0AC'}
-            metaLabel={`\uC624\uB298 ${dayTotal}\uAC74`}
+            title="당일 검사"
+            metaLabel={`오늘 ${dayTotal}건`}
+            hideInlineFailReason={showFailSidebar}
           />
         </div>
         {showFailSidebar && (
