@@ -86,17 +86,19 @@ export default function DashboardKpiStrip({
           ? 'warn'
           : 'ng'
 
+  const emDash = '\u2014'
+
   return (
     <div className="hmi-panel overflow-hidden">
       <div className="hmi-panel__head">
-        <span className="hmi-panel__title">?? KPI</span>
+        <span className="hmi-panel__title">{'\uB2F9\uC77C KPI'}</span>
         <span className="hmi-panel__meta">
           {dateLabel}
           {cumulative != null && cumulative.total > 0 && (
             <>
-              {' ? '}
-              ?? {cumulative.total.toLocaleString()}? FAIL {cumulative.fail.toLocaleString()} (
-              {formatRate(cumulative.failRate)})
+              {' \u00b7 '}
+              {'\uB204\uC801'} {cumulative.total.toLocaleString()}
+              {'\uAC74'} FAIL {cumulative.fail.toLocaleString()} ({formatRate(cumulative.failRate)})
             </>
           )}
         </span>
@@ -105,13 +107,13 @@ export default function DashboardKpiStrip({
         <tbody>
           <tr className="bg-[var(--dash-surface)]">
             <KpiCell
-              label="??"
-              value={day.yieldPct != null ? formatRate(day.yieldPct) : '?'}
-              sub={`?? ${formatRate(targetYieldPct)}`}
+              label={'\uC218\uC728'}
+              value={day.yieldPct != null ? formatRate(day.yieldPct) : emDash}
+              sub={`\uBAA9\uD45C ${formatRate(targetYieldPct)}`}
               tone={yieldTone}
             />
             <KpiCell
-              label="????"
+              label={'\uAC80\uC0AC\uAC74\uC218'}
               value={day.total.toLocaleString()}
               sub={`P ${day.pass} / F ${day.fail}`}
             />
@@ -122,13 +124,17 @@ export default function DashboardKpiStrip({
               tone={day.fail > 0 ? 'ng' : 'ok'}
             />
             <KpiCell
-              label="????"
+              label={'\uBAA9\uD45C\uB300\uBE44'}
               value={
                 day.yieldPct != null
                   ? `${day.yieldPct >= targetYieldPct ? '+' : ''}${(day.yieldPct - targetYieldPct).toFixed(1)}%p`
-                  : '?'
+                  : emDash
               }
-              sub={day.yieldPct != null && day.yieldPct < targetYieldPct ? '??' : '??'}
+              sub={
+                day.yieldPct != null && day.yieldPct < targetYieldPct
+                  ? '\uBBF8\uB2EC'
+                  : '\uCDA9\uC871'
+              }
               tone={yieldTone}
             />
           </tr>
