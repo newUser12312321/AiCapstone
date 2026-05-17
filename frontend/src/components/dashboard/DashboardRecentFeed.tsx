@@ -13,6 +13,8 @@ interface DashboardRecentFeedProps {
   maxRows?: number
   /** 소량 데이터(데모) 시 행·썸네일 확대 */
   sparse?: boolean
+  title?: string
+  metaLabel?: string
 }
 
 function boardLabel(log: InspectionLog): string {
@@ -26,10 +28,18 @@ export default function DashboardRecentFeed({
   formatSplitDateTime,
   maxRows = 8,
   sparse = false,
+  title = '\uCD5C\uADFC \uAC80\uC0AC',
+  metaLabel,
 }: DashboardRecentFeedProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const rows = logs.slice(0, maxRows)
+  const showBoardCol = rows.some((log) => {
+    const board = boardLabel(log)
+    if (board === '\u2014') return false
+    return board !== deviceDisplayLabel(log.deviceId)
+  })
+  const colSpan = showBoardCol ? 6 : 5
   const thumbSize = sparse ? 48 : 32
   const rowPad = sparse ? 'py-2.5' : 'py-1'
   const tableText = sparse ? 'text-[13px]' : 'text-[12px]'
@@ -37,10 +47,12 @@ export default function DashboardRecentFeed({
   return (
     <div className="hmi-panel flex min-h-0 flex-1 flex-col overflow-hidden h-full">
       <div className="hmi-panel__head">
-        <span className="hmi-panel__title">최근 검사</span>
+        <span className="hmi-panel__title">{title}</span>
         <span className="hmi-panel__meta">
-          최근 {maxRows}건 · 행 클릭→상세
-          {sparse && rows.length > 0 ? ' · 소량 표시' : ''}
+          {metaLabel ?? `\uCD5C\uB300 ${maxRows}\uAC74`}
+          {' \u00b7 '}
+          {'\uD589 \uD074\uB9AD\u2192\uC0C1\uC138'}
+          {sparse && rows.length > 0 ? ' \u00b7 \uC18C\uB7C9 \uD45C\uC2DC' : ''}
         </span>
       </div>
 
@@ -52,7 +64,7 @@ export default function DashboardRecentFeed({
               <th className="px-1.5 py-1">ID</th>
               <th className="px-1.5 py-1">시각</th>
               <th className="px-1.5 py-1 hidden sm:table-cell">기종</th>
-              <th className="px-1.5 py-1 hidden md:table-cell">보드</th>
+              {showBoardCol && <th className="px-1.5 py-1 hidden md:table-cell">보드</th>}
               <th className="px-1.5 py-1">판정</th>
             </tr>
           </thead>
@@ -60,14 +72,14 @@ export default function DashboardRecentFeed({
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
-                  <td colSpan={6} className="px-3 py-3">
+                  <td colSpan={colSpan} className="px-3 py-3">
                     <div className="h-10 bg-[var(--dash-bg-secondary)] rounded" />
                   </td>
                 </tr>
               ))
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-3 py-8 text-center text-sm text-[var(--dash-text-secondary)]">
+                <td colSpan={colSpan} className="px-3 py-8 text-center text-sm text-[var(--dash-text-secondary)]">
                   검사 내역이 없습니다.
                 </td>
               </tr>
@@ -101,9 +113,11 @@ export default function DashboardRecentFeed({
                     <td className={clsx('px-2 text-xs text-[var(--dash-text-secondary)] hidden sm:table-cell', rowPad)}>
                       {deviceDisplayLabel(log.deviceId)}
                     </td>
-                    <td className={clsx('px-2 text-xs text-[var(--dash-text-secondary)] hidden md:table-cell max-w-[120px] truncate', rowPad)}>
-                      {boardLabel(log)}
-                    </td>
+                    {showBoardCol && (
+                      <td className={clsx('px-2 text-xs text-[var(--dash-text-secondary)] hidden md:table-cell max-w-[120px] truncate', rowPad)}>
+                        {boardLabel(log)}
+                      </td>
+                    )}
                     <td className={clsx('px-2', rowPad)}>
                       <span
                         className={clsx(
@@ -118,7 +132,7 @@ export default function DashboardRecentFeed({
                       </span>
                       {failReason && (
                         <span
-                          className="block mt-0.5 text-[10px] text-[var(--dash-danger)] truncate max-w-[140px]"
+                          className="block mt-0.5 text-[10px] text-[var(--dash-danger)] line-clamp-2 max-w-[min(100%,220px)]"
                           title={failReason}
                         >
                           {failReason}

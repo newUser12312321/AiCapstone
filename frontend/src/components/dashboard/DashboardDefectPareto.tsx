@@ -1,4 +1,4 @@
-﻿import type { DefectParetoRow } from '@/utils/dashboardDefectSummary'
+import type { DefectParetoRow } from '@/utils/dashboardDefectSummary'
 
 interface DashboardDefectParetoProps {
   items: DefectParetoRow[]
@@ -10,8 +10,8 @@ interface DashboardDefectParetoProps {
 export default function DashboardDefectPareto({
   items,
   onSelect,
-  title = 'FAIL 유형',
-  hint = '당일 · 클릭→이력',
+  title = 'FAIL ??',
+  hint = '?? ? ?????',
 }: DashboardDefectParetoProps) {
   const max = items.length ? Math.max(...items.map((i) => i.count)) : 0
 
@@ -19,12 +19,12 @@ export default function DashboardDefectPareto({
     <div className="hmi-panel flex min-h-0 flex-col overflow-hidden h-full">
       <div className="hmi-panel__head shrink-0">
         <span className="hmi-panel__title">{title}</span>
-        <span className="hmi-panel__meta">{hint}</span>
+        {hint ? <span className="hmi-panel__meta">{hint}</span> : null}
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-2 min-h-0">
         {items.length === 0 ? (
           <p className="text-sm text-[var(--dash-text-secondary)] py-4 text-center">
-            집계할 FAIL 데이터가 없습니다.
+            ??? FAIL ???? ????.
           </p>
         ) : (
           items.map((row) => {

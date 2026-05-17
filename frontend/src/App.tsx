@@ -9,6 +9,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Header from '@/components/common/Header'
 import Sidebar from '@/components/common/Sidebar'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
+import { DashboardScopeProvider } from '@/context/DashboardScopeContext'
 import DashboardPage from '@/pages/DashboardPage'
 import HistoryPage from '@/pages/HistoryPage'
 import BoardReferencePage from '@/pages/BoardReferencePage'
@@ -37,6 +38,7 @@ export default function App() {
         settings.colorScheme === 'dark' && 'dashboard-theme--dark'
       )}
     >
+      <DashboardScopeProvider>
       <div className="hmi-shell h-full w-full flex flex-col overflow-hidden">
         <Header />
 
@@ -55,6 +57,7 @@ export default function App() {
           </main>
         </div>
       </div>
+      </DashboardScopeProvider>
     </div>
   )
 }

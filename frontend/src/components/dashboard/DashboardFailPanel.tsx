@@ -4,6 +4,7 @@ import DashboardLatestFail from '@/components/dashboard/DashboardLatestFail'
 import type { InspectionLog } from '@/types/inspection'
 import { dashboardTodayHistoryPath } from '@/components/dashboard/DashboardKpiStrip'
 import type { DefectParetoRow } from '@/utils/dashboardDefectSummary'
+import { primaryFailReason } from '@/utils/dashboardDefectSummary'
 
 interface DashboardFailPanelProps {
   latestFail?: InspectionLog
@@ -42,7 +43,15 @@ export default function DashboardFailPanel({
     )
   }
 
-  const hasMissing = defectPareto.some((r) => r.kind === 'missing')
+  const failReason = latestFail ? primaryFailReason(latestFail) : null
+  const showPareto =
+    defectPareto.length > 0 &&
+    !(
+      latestFail &&
+      defectPareto.length === 1 &&
+      failReason &&
+      defectPareto[0].label === failReason
+    )
 
   return (
     <div className="flex flex-col gap-px min-h-0 shrink-0 max-h-[42%]">
@@ -53,13 +62,13 @@ export default function DashboardFailPanel({
           당일 FAIL 0건
         </div>
       )}
-      {defectPareto.length > 0 ? (
+      {showPareto ? (
         <div className="min-h-[120px] max-h-[220px] flex flex-col">
           <DashboardDefectPareto
             items={defectPareto}
             onSelect={onDefectSelect}
-            title={hasMissing ? 'FAIL 판정 원인' : 'FAIL 유형'}
-            hint={hasMissing ? '누락·개수 불일치 판정 (검출 bbox와 구분)' : '당일 · 클릭→이력'}
+            title="FAIL \uC720\uD615"
+            hint={'\uB2F9\uC77C \u00b7 \uD074\uB9AD\u2192\uC774\uB825'}
           />
         </div>
       ) : latestFail ? (

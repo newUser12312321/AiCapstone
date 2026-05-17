@@ -44,10 +44,24 @@ function subpixelF12DistancePx(log: InspectionLog): number | null {
 }
 
 /** 기판별 피듀셜 마크 실측 간격(mm) — 전시·오차 비교용 */
-function truthFiducialSpacingMm(deviceId: string): { mm: number; label: string } | null {
-  const id = (deviceId ?? '').trim()
-  if (id === 'GN_948X') return { mm: 117, label: 'GN-948X (117 mm)' }
-  if (id === 'G_SERIES' || id === 'GT_125A') return { mm: 140, label: 'GT-125A (140 mm)' }
+function truthFiducialSpacingMm(
+  deviceId: string,
+  silkBoardName?: string | null,
+): { mm: number; label: string } | null {
+  const id = (deviceId ?? '').trim().toUpperCase()
+  const silk = (silkBoardName ?? '').toUpperCase()
+  if (id === 'GN_948X' || silk.includes('948') || silk.includes('GN-948')) {
+    return { mm: 117, label: 'GN-948X (117 mm)' }
+  }
+  if (
+    id === 'G_SERIES' ||
+    id === 'GT_125A' ||
+    id.includes('125') ||
+    silk.includes('125') ||
+    silk.includes('GT-125')
+  ) {
+    return { mm: 140, label: 'GT-125A (140 mm)' }
+  }
   return null
 }
 
@@ -491,7 +505,7 @@ function SubpixelScaleCheckPanel({
   }
 
   const derivedMm = distPx / DEFAULT_PX_PER_MM
-  const truth = truthFiducialSpacingMm(log.deviceId)
+  const truth = truthFiducialSpacingMm(log.deviceId, log.silkBoardName)
 
   const fmtPair = (x: number | null | undefined, y: number | null | undefined) =>
     x != null && y != null ? `(${Number(x).toFixed(4)}, ${Number(y).toFixed(4)})` : '—'
@@ -595,6 +609,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
   const rawSrc = rawStored ? resolveImageSrc(rawStored) : null
   const showSideBySide = Boolean(rawSrc && deskewSrc)
   const f12DistancePx = log != null ? fiducialDistancePx(log) : null
+  const scaleTruth = log ? truthFiducialSpacingMm(log.deviceId, log.silkBoardName) : null
   const defects = log?.defects ?? []
   const overlayDefects = defects.filter((d) => !d.defectType.startsWith('MISSING:'))
   const missingReasons = defects.filter((d) => d.defectType.startsWith('MISSING:'))
@@ -758,8 +773,10 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
               {classDistToolEnabled && scaleToolEnabled && (
                 <span>
                   왼쪽: 정합 후 좌표 기준 오버레이 · 오른쪽: 촬영 프레임 서브픽셀 F1–F2 간격과 통합 px/mm{' '}
-                  <span className="font-mono text-[var(--dash-text-secondary)]">{DEFAULT_PX_PER_MM}</span> 로 실측
-                  (GT-125A 140 mm / GN-948X 117 mm) 대비 오차를 확인합니다.
+                  <span className="font-mono text-[var(--dash-text-secondary)]">{DEFAULT_PX_PER_MM}</span> 로{' '}
+                  {scaleTruth
+                    ? `${scaleTruth.label} 실측 대비 오차를 확인합니다.`
+                    : '기판 실측 간격 대비 오차를 확인합니다 (기종 미매핑 시 GT-125A·GN-948X 기준 모두 표시).'}
                 </span>
               )}
             </p>

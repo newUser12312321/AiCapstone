@@ -298,6 +298,25 @@ export default function SettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
               <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
+                불량률 알림 최소 표본 (건)
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={500}
+                step={1}
+                value={settings.alertMinSampleCount}
+                onChange={(e) =>
+                  setSettings({ alertMinSampleCount: Number(e.target.value) })
+                }
+                className="mt-1.5 w-full max-w-xs rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
+              />
+              <p className="mt-1 text-[10px] text-[var(--dash-text-tertiary)]">
+                당일 검사 건수가 이 값 미만이면 불량률 ALM 대신 표본 부족 안내만 표시합니다.
+              </p>
+            </label>
+            <label className="block">
+              <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
                 불량률 알림 기준 (%)
               </span>
               <input

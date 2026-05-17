@@ -1,10 +1,9 @@
 import { useMemo } from 'react'
+import { useDashboardScope } from '@/context/DashboardScopeContext'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useRecentInspections, useStats } from '@/hooks/useInspectionData'
 import type { InspectionSearchParams } from '@/types/inspection'
 import { getLocalDateString } from '@/utils/historyNavigation'
-
-const MIN_SAMPLE_FOR_FAIL_RATE_ALERT = 10
 
 export type DashboardAlertScope = Pick<
   InspectionSearchParams,
@@ -12,18 +11,20 @@ export type DashboardAlertScope = Pick<
 >
 
 /**
- * 설정된 임계값을 넘으면 헤더·토스트에 표시할 메시지 목록 (기본: 당일 집계).
+ * 설정된 임계값을 넘으면 헤더에 표시할 메시지 목록 (기본: 당일 집계).
+ * 라인 모니터 장치 필터가 있으면 동일 범위로 집계한다.
  */
 export function useDashboardAlerts(scope?: DashboardAlertScope): string[] {
   const { settings } = useDashboardSettings()
+  const lineScope = useDashboardScope()
   const today = getLocalDateString()
   const dayParams = useMemo(
     () => ({
       from: scope?.from ?? today,
       to: scope?.to ?? today,
-      deviceId: scope?.deviceId,
+      deviceId: scope?.deviceId ?? (lineScope?.deviceId || undefined),
     }),
-    [scope?.from, scope?.to, scope?.deviceId, today]
+    [scope?.from, scope?.to, scope?.deviceId, lineScope?.deviceId, today]
   )
 
   const { data: stats } = useStats(dayParams)
@@ -31,8 +32,14 @@ export function useDashboardAlerts(scope?: DashboardAlertScope): string[] {
 
   const scopedRecent = useMemo(() => {
     const fromDay = dayParams.from ?? today
-    return recentLogs.filter((l) => l.inspectedAt.slice(0, 10) >= fromDay)
-  }, [recentLogs, dayParams.from, today])
+    let rows = recentLogs.filter((l) => l.inspectedAt.slice(0, 10) >= fromDay)
+    if (dayParams.deviceId) {
+      rows = rows.filter((l) => l.deviceId === dayParams.deviceId)
+    }
+    return rows
+  }, [recentLogs, dayParams.from, dayParams.deviceId, today])
+
+  const minSample = settings.alertMinSampleCount
 
   return useMemo(() => {
     if (!settings.alertsEnabled) return []
@@ -41,20 +48,15 @@ export function useDashboardAlerts(scope?: DashboardAlertScope): string[] {
 
     if (
       stats &&
-      stats.totalCount >= MIN_SAMPLE_FOR_FAIL_RATE_ALERT &&
+      stats.totalCount >= minSample &&
       stats.failRate >= settings.alertMinFailRatePct
     ) {
       out.push(
         `당일 불량률 ${stats.failRate.toFixed(settings.decimalPlaces)}% (임계 ${settings.alertMinFailRatePct}%)`
       )
-    } else if (
-      stats &&
-      stats.failCount > 0 &&
-      stats.totalCount > 0 &&
-      stats.totalCount < MIN_SAMPLE_FOR_FAIL_RATE_ALERT
-    ) {
+    } else if (stats && stats.failCount > 0 && stats.totalCount > 0 && stats.totalCount < minSample) {
       out.push(
-        `당일 FAIL ${stats.failCount}건 / ${stats.totalCount}건 (표본 적음 · 불량률 알림 ${MIN_SAMPLE_FOR_FAIL_RATE_ALERT}건 이상부터)`
+        `당일 FAIL ${stats.failCount}건 / ${stats.totalCount}건 (표본 부족 · 불량률 알림 ${minSample}건 이상)`
       )
     }
 
@@ -84,6 +86,7 @@ export function useDashboardAlerts(scope?: DashboardAlertScope): string[] {
     settings.alertMinConsecutiveFail,
     settings.alertMaxAvgInferenceMs,
     settings.decimalPlaces,
+    minSample,
     stats,
     scopedRecent,
   ])

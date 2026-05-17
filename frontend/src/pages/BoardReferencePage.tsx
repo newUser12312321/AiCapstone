@@ -95,7 +95,10 @@ export default function BoardReferencePage() {
                 <p className="font-mono font-semibold text-[var(--dash-text-primary)]">{selected.fiducialMarkSpacingMm} mm</p>
               </div>
             )}
-            <div className="rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2">
+            <div
+              className="rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2"
+              title={'\uB450 \uAE30\uD310 px/mm \uC0B0\uC220\uD3C9\uADE0 \u00b7 \uAC80\uC0AC \uC2DC \uAE30\uD310\uBCC4 \uAC12 \uC6B0\uC120'}
+            >
               <p className="text-[var(--dash-text-tertiary)]">px/mm (통합)</p>
               <p className="font-mono font-semibold">{calib.default_px_per_mm.toFixed(4)}</p>
             </div>

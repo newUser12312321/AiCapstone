@@ -24,6 +24,8 @@ export interface DashboardSettings {
   alertsEnabled: boolean
   /** 불량률(%)가 이 값 이상이면 알림 */
   alertMinFailRatePct: number
+  /** 당일 검사 건수가 이 값 이상일 때만 불량률 알림 (소량·데모 오탐 방지) */
+  alertMinSampleCount: number
   /** 최근 피드에서 연속 FAIL 이 횟수 이상이면 알림 */
   alertMinConsecutiveFail: number
   /** 평균 추론 시간(ms)이 이 값 초과면 알림 (0이면 비활성) */
@@ -43,6 +45,7 @@ export const DEFAULT_DASHBOARD_SETTINGS: DashboardSettings = {
   colorScheme: 'light',
   alertsEnabled: true,
   alertMinFailRatePct: 5,
+  alertMinSampleCount: 30,
   alertMinConsecutiveFail: 3,
   alertMaxAvgInferenceMs: 20_000,
   targetYieldPct: 97,
@@ -65,6 +68,10 @@ export function clampDecimalPlaces(n: number): number {
 
 export function clampAlertFailRate(n: number): number {
   return Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
+}
+
+export function clampAlertMinSampleCount(n: number): number {
+  return Math.min(500, Math.max(1, Math.round(Number.isFinite(n) ? n : 1)))
 }
 
 export function clampAlertConsecutiveFail(n: number): number {
@@ -113,6 +120,9 @@ export function loadDashboardSettings(): DashboardSettings {
           : DEFAULT_DASHBOARD_SETTINGS.alertsEnabled,
       alertMinFailRatePct: clampAlertFailRate(
         parsed.alertMinFailRatePct ?? DEFAULT_DASHBOARD_SETTINGS.alertMinFailRatePct
+      ),
+      alertMinSampleCount: clampAlertMinSampleCount(
+        parsed.alertMinSampleCount ?? DEFAULT_DASHBOARD_SETTINGS.alertMinSampleCount
       ),
       alertMinConsecutiveFail: clampAlertConsecutiveFail(
         parsed.alertMinConsecutiveFail ?? DEFAULT_DASHBOARD_SETTINGS.alertMinConsecutiveFail

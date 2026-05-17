@@ -18,6 +18,7 @@ import {
   clampRecentFeedLimit,
   clampDecimalPlaces,
   clampAlertFailRate,
+  clampAlertMinSampleCount,
   clampAlertConsecutiveFail,
   clampAlertInferenceMs,
   clampTargetYieldPct,
@@ -63,6 +64,9 @@ export function DashboardSettingsProvider({ children }: { children: ReactNode })
       }
       if (patch.alertMinFailRatePct != null) {
         next.alertMinFailRatePct = clampAlertFailRate(patch.alertMinFailRatePct)
+      }
+      if (patch.alertMinSampleCount != null) {
+        next.alertMinSampleCount = clampAlertMinSampleCount(patch.alertMinSampleCount)
       }
       if (patch.alertMinConsecutiveFail != null) {
         next.alertMinConsecutiveFail = clampAlertConsecutiveFail(patch.alertMinConsecutiveFail)

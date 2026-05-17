@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DeviceFilterTabs from '@/components/common/DeviceFilterTabs'
 import DashboardFailPanel from '@/components/dashboard/DashboardFailPanel'
@@ -6,13 +6,13 @@ import DashboardKpiStrip, { dashboardTodayHistoryPath } from '@/components/dashb
 import DashboardLineStatus from '@/components/dashboard/DashboardLineStatus'
 import DashboardRecentFeed from '@/components/dashboard/DashboardRecentFeed'
 import HourlyInspectionVolumeChart from '@/components/dashboard/HourlyInspectionVolumeChart'
+import { useDashboardScopeRequired } from '@/context/DashboardScopeContext'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import {
   useDefectSummary,
   useFacets,
   useInspectionSearch,
   useLineStatus,
-  useRecentInspections,
   useStats,
 } from '@/hooks/useInspectionData'
 import { buildHistoryPath, getLocalDateString } from '@/utils/historyNavigation'
@@ -20,8 +20,8 @@ import { buildDashboardDefectPareto } from '@/utils/dashboardDefectSummary'
 
 export default function DashboardPage() {
   const { settings, formatSplitDateTime, formatRatePercent } = useDashboardSettings()
+  const { deviceId: deviceFilter, setDeviceId: setDeviceFilter } = useDashboardScopeRequired()
   const navigate = useNavigate()
-  const [deviceFilter, setDeviceFilter] = useState('')
   const today = getLocalDateString()
 
   const dayParams = useMemo(
@@ -33,13 +33,17 @@ export default function DashboardPage() {
     [today, deviceFilter]
   )
 
+  const feedLimit = settings.recentFeedLimit
+
   const { data: dayStats, isLoading: dayStatsLoading } = useStats(dayParams)
   const { data: cumulativeStats } = useStats(deviceFilter ? undefined : {})
   const { data: facets } = useFacets()
   const { data: lineStatus, isLoading: lineLoading } = useLineStatus(deviceFilter || undefined)
-  const { data: recentLogs = [], isLoading: isRecentLoading } = useRecentInspections(
-    settings.recentFeedLimit
-  )
+  const { data: todayPage, isLoading: isTodayLoading } = useInspectionSearch({
+    ...dayParams,
+    page: 0,
+    size: feedLimit,
+  })
   const { data: latestFailPage } = useInspectionSearch({
     ...dayParams,
     result: 'FAIL',
@@ -48,13 +52,11 @@ export default function DashboardPage() {
   })
   const { data: defectItems = [] } = useDefectSummary({ ...dayParams, result: 'FAIL' }, 6)
 
-  const scopedRecent = useMemo(() => {
-    if (!deviceFilter) return recentLogs
-    return recentLogs.filter((l) => l.deviceId === deviceFilter)
-  }, [recentLogs, deviceFilter])
+  const todayLogs = todayPage?.content ?? []
 
   const latestFail = latestFailPage?.content[0]
   const dayFailCount = dayStats?.failCount ?? 0
+  const dayTotal = dayStats?.totalCount ?? 0
 
   const defectPareto = useMemo(
     () => buildDashboardDefectPareto(defectItems, latestFail, dayFailCount),
@@ -89,8 +91,12 @@ export default function DashboardPage() {
 
   const showFailSidebar =
     dayFailCount > 0 || !!latestFail || defectPareto.length > 0
-  const sparseFeed = scopedRecent.length > 0 && scopedRecent.length <= 5
-  const chartCompact = !showFailSidebar
+  const sparseFeed = todayLogs.length > 0 && todayLogs.length <= 5
+  const chartListView = dayTotal > 0 && dayTotal <= 40
+
+  useEffect(() => {
+    return () => setDeviceFilter('')
+  }, [setDeviceFilter])
 
   return (
     <div className="dashboard-hmi flex h-full min-h-0 flex-col gap-px p-px overflow-hidden bg-[var(--dash-border)]">
@@ -107,14 +113,14 @@ export default function DashboardPage() {
             onClick={() => navigate(dashboardTodayHistoryPath('FAIL'))}
             className="px-2.5 py-1.5 font-semibold border border-[var(--dash-border)] bg-[var(--dash-danger)]/12 text-[var(--dash-danger)] hover:bg-[var(--dash-danger)]/20"
           >
-            FAIL 이력
+            FAIL ?�력
           </button>
           <button
             type="button"
             onClick={() => navigate(dashboardTodayHistoryPath())}
             className="px-2.5 py-1.5 border border-[var(--dash-border)] -ml-px bg-[var(--dash-surface)] text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)]"
           >
-            전체 이력
+            ?�체 ?�력
           </button>
         </div>
       </div>
@@ -125,6 +131,7 @@ export default function DashboardPage() {
         targetYieldPct={settings.targetYieldPct}
         formatRate={formatRatePercent}
         cumulative={deviceFilter ? undefined : cumulative}
+        lowSampleThreshold={settings.alertMinSampleCount}
       />
 
       {!showFailSidebar && (
@@ -140,11 +147,13 @@ export default function DashboardPage() {
       <div className="flex flex-1 min-h-0 gap-px">
         <div className={showFailSidebar ? 'flex-[3] min-w-0 min-h-0 flex flex-col' : 'flex-1 min-w-0 min-h-0 flex flex-col'}>
           <DashboardRecentFeed
-            logs={scopedRecent}
-            isLoading={isRecentLoading}
+            logs={todayLogs}
+            isLoading={isTodayLoading}
             formatSplitDateTime={formatSplitDateTime}
-            maxRows={14}
+            maxRows={feedLimit}
             sparse={sparseFeed}
+            title={'\uB2F9\uC77C \uAC80\uC0AC'}
+            metaLabel={`\uC624\uB298 ${dayTotal}\uAC74`}
           />
         </div>
         {showFailSidebar && (
@@ -160,15 +169,16 @@ export default function DashboardPage() {
         )}
       </div>
 
-      <div
-        className={
-          chartCompact
-            ? 'shrink-0 min-h-[120px] max-h-[160px]'
-            : 'shrink-0 h-[200px] min-h-[180px]'
-        }
-      >
-        <HourlyInspectionVolumeChart lineFilter={lineFilter} compact={chartCompact} dayTotal={dayStats?.totalCount} />
+      <div className="shrink-0 h-[200px] min-h-[180px] max-h-[220px]">
+        <HourlyInspectionVolumeChart
+          lineFilter={lineFilter}
+          dayTotal={dayTotal}
+          forceListView={chartListView}
+        />
       </div>
     </div>
   )
 }
+
+
+
