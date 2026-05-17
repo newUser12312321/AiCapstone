@@ -2,6 +2,7 @@
  * 최근 24시간 · 1시간 단위 정상/불량 스택 막대 — 막대 클릭 시 해당 구간 이력
  */
 
+import { useMemo } from 'react'
 import {
   Bar,
   BarChart,
@@ -87,7 +88,17 @@ export default function HourlyInspectionVolumeChart({
     if (pl?.anchorDate != null && pl.hour != null) goBucket(pl)
   }
 
-  const chartH = compact ? 150 : 360
+  const total24h = useMemo(
+    () => (data ?? []).reduce((sum, p) => sum + p.pass + p.fail, 0),
+    [data]
+  )
+  const lowVolume = compact && total24h > 0 && total24h <= 8
+  const activeBuckets = useMemo(
+    () => (data ?? []).filter((p) => p.pass + p.fail > 0),
+    [data]
+  )
+
+  const chartH = lowVolume ? 0 : compact ? 150 : 360
 
   if (isLoading) {
     return (
@@ -96,6 +107,47 @@ export default function HourlyInspectionVolumeChart({
           <div className="h-3 w-40 bg-[var(--dash-bg-primary)]" />
         </div>
         <div className="flex-1 m-1 bg-[var(--dash-bg-secondary)]" style={{ minHeight: chartH }} />
+      </div>
+    )
+  }
+
+  if (lowVolume) {
+    return (
+      <div className="hmi-panel h-full flex flex-col overflow-hidden">
+        <div className="hmi-panel__head">
+          <span className="hmi-panel__title">시간대별 검사량</span>
+          <span className="hmi-panel__meta">
+            최근 24h 합계 {total24h}건 · 소량 · {settings.timeZoneMode === 'utc' ? 'UTC' : '로컬'}
+          </span>
+        </div>
+        <ul className="flex-1 overflow-y-auto px-2 py-1.5 text-[11px] space-y-0.5 min-h-0">
+          {activeBuckets.map((p) => {
+            const n = p.pass + p.fail
+            return (
+              <li key={`${p.anchorDate}-${p.hour}`}>
+                <button
+                  type="button"
+                  onClick={() => goBucket(p)}
+                  className="w-full flex items-center justify-between gap-2 px-2 py-1 text-left border border-[var(--dash-border)] bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)]"
+                >
+                  <span className="text-[var(--dash-text-secondary)]">{p.label}</span>
+                  <span className="dash-num shrink-0">
+                    <span className="text-[var(--dash-success)]">P{p.pass}</span>
+                    {' / '}
+                    <span
+                      className={
+                        p.fail > 0 ? 'text-[var(--dash-danger)]' : 'text-[var(--dash-text-tertiary)]'
+                      }
+                    >
+                      F{p.fail}
+                    </span>
+                    <span className="text-[var(--dash-text-tertiary)] ml-1">({n})</span>
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
       </div>
     )
   }

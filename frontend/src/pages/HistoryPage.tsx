@@ -1,5 +1,5 @@
 /**
- * 검사 로그 — FAIL 리뷰 (서버 페이지·키보드 큐·리뷰 확인)
+ * 검사 로그 — 서버 페이지·목록/상세 분할
  */
 
 import { useMemo, useCallback, useEffect, useState } from 'react'
@@ -9,7 +9,6 @@ import { useSearchParams } from 'react-router-dom'
 import DeviceFilterTabs from '@/components/common/DeviceFilterTabs'
 import FilterSummaryStrip from '@/components/dashboard/FilterSummaryStrip'
 import DefectViewer from '@/components/inspection/DefectViewer'
-import FailReviewToolbar from '@/components/inspection/FailReviewToolbar'
 import InspectionTable from '@/components/inspection/InspectionTable'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useDefectSummary, useFacets, useInspectionSearch, useStats } from '@/hooks/useInspectionData'
@@ -23,6 +22,7 @@ import {
 import { historyToSearchParams, shiftLabel } from '@/utils/inspectionSearchParams'
 import { logMatchesDefectDisplayLabel } from '@/utils/inspectionFilters'
 import { downloadDailyReportCsv, downloadInspectionCsv } from '@/utils/csvReport'
+
 type ResultFilter = 'ALL' | InspectionResultType
 
 const PAGE_SIZE = 50
@@ -84,9 +84,8 @@ export default function HistoryPage() {
       deviceId: q.device,
       board: q.board,
       shift: q.shift,
-      reviewStatus: q.review,
     }),
-    [dateFrom, dateTo, today, q.device, q.board, q.shift, q.review]
+    [dateFrom, dateTo, today, q.device, q.board, q.shift]
   )
 
   const searchParamsApi = useMemo(
@@ -115,7 +114,10 @@ export default function HistoryPage() {
           const current = parseHistoryQuery(prev)
           const merged: HistoryQuery = { ...current, ...patch }
           if (merged.result === 'ALL') delete merged.result
-          if (patch.page === undefined && (patch.from || patch.to || patch.device || patch.board || patch.result || patch.shift || patch.review)) {
+          if (
+            patch.page === undefined &&
+            (patch.from || patch.to || patch.device || patch.board || patch.result || patch.shift)
+          ) {
             merged.page = 0
           }
           const s = buildHistorySearchString(merged)
@@ -136,28 +138,18 @@ export default function HistoryPage() {
     })
   }, [pageData, q.hour, q.defect, settings.timeZoneMode])
 
-  const failQueue = useMemo(
-    () => filteredLogs.filter((l) => l.result === 'FAIL'),
-    [filteredLogs]
-  )
-
   const resultFilter: ResultFilter = q.result ?? 'ALL'
 
-  const selectedLog = useMemo(
-    () => filteredLogs.find((l) => l.id === selectedId),
-    [filteredLogs, selectedId]
-  )
+  const listIndex = filteredLogs.findIndex((l) => l.id === selectedId)
 
-  const queueIndex = failQueue.findIndex((l) => l.id === selectedId)
-
-  const goQueue = useCallback(
+  const goList = useCallback(
     (delta: number) => {
-      if (failQueue.length === 0) return
-      const idx = queueIndex < 0 ? 0 : queueIndex + delta
-      const next = failQueue[Math.max(0, Math.min(failQueue.length - 1, idx))]
+      if (filteredLogs.length === 0) return
+      const idx = listIndex < 0 ? 0 : listIndex + delta
+      const next = filteredLogs[Math.max(0, Math.min(filteredLogs.length - 1, idx))]
       if (next) setSelectedId(next.id)
     },
-    [failQueue, queueIndex]
+    [filteredLogs, listIndex]
   )
 
   useEffect(() => {
@@ -169,29 +161,27 @@ export default function HistoryPage() {
 
   useEffect(() => {
     if (selectedId != null && filteredLogs.some((l) => l.id === selectedId)) return
-    if (q.result === 'FAIL' && failQueue.length > 0) {
-      setSelectedId(failQueue[0].id)
-    } else if (filteredLogs.length > 0) {
+    if (filteredLogs.length > 0) {
       setSelectedId(filteredLogs[0].id)
     } else {
       setSelectedId(undefined)
     }
-  }, [filteredLogs, failQueue, q.result, selectedId])
+  }, [filteredLogs, selectedId])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return
       if (e.key === 'ArrowDown' || e.key === 'j') {
         e.preventDefault()
-        goQueue(1)
+        goList(1)
       } else if (e.key === 'ArrowUp' || e.key === 'k') {
         e.preventDefault()
-        goQueue(-1)
+        goList(-1)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [goQueue])
+  }, [goList])
 
   const downloadCsv = () => {
     downloadInspectionCsv(
@@ -229,7 +219,7 @@ export default function HistoryPage() {
         <div>
           <h1 className="text-sm font-semibold text-[var(--dash-text-primary)]">검사 로그</h1>
           <p className="text-xs text-[var(--dash-text-tertiary)]">
-            FAIL 리뷰 · 서버 페이지 ({totalElements.toLocaleString()}건)
+            서버 페이지 ({totalElements.toLocaleString()}건)
           </p>
         </div>
         <div className="flex gap-2">
@@ -345,29 +335,6 @@ export default function HistoryPage() {
                   ))}
                 </select>
               </label>
-              <label className="text-xs text-[var(--dash-text-tertiary)] flex flex-col gap-1">
-                리뷰
-                <select
-                  value={q.review ?? ''}
-                  onChange={(e) =>
-                    patchQuery({
-                      review:
-                        e.target.value === 'PENDING' ||
-                        e.target.value === 'CONFIRMED' ||
-                        e.target.value === 'FALSE_CALL'
-                          ? e.target.value
-                          : undefined,
-                      open: undefined,
-                    })
-                  }
-                  className="min-w-[110px] rounded border border-[var(--dash-border)] px-2 py-1.5 text-sm bg-[var(--dash-surface)]"
-                >
-                  <option value="">전체</option>
-                  <option value="PENDING">PENDING</option>
-                  <option value="CONFIRMED">CONFIRMED</option>
-                  <option value="FALSE_CALL">FALSE_CALL</option>
-                </select>
-              </label>
             </div>
             <div className="flex flex-wrap gap-1.5 ml-auto">
               <FilterButton label="전체" value="ALL" current={resultFilter} count={rangeStats?.totalCount ?? 0} onClick={(v) => patchQuery({ result: v, open: undefined })} />
@@ -384,23 +351,11 @@ export default function HistoryPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 min-h-[480px] border border-[var(--dash-border)] rounded-lg overflow-hidden bg-[var(--dash-surface)]">
           <div className="lg:col-span-2 min-h-[320px] lg:min-h-0 lg:max-h-[calc(100vh-320px)] flex flex-col border-b lg:border-b-0 lg:border-r border-[var(--dash-border)]">
-            {selectedId != null && selectedLog?.result === 'FAIL' && (
-              <FailReviewToolbar
-                inspectionId={selectedId}
-                reviewStatus={selectedLog.reviewStatus}
-                onPrev={() => goQueue(-1)}
-                onNext={() => goQueue(1)}
-                hasPrev={queueIndex > 0}
-                hasNext={queueIndex >= 0 && queueIndex < failQueue.length - 1}
-                queueIndex={queueIndex >= 0 ? queueIndex : undefined}
-                queueTotal={failQueue.length}
-              />
-            )}
             <div className="flex-1 min-h-0 overflow-y-auto">
               <InspectionTable
                 logs={filteredLogs}
                 isLoading={isLoading}
-                detailMode="review"
+                detailMode="split"
                 selectedId={selectedId}
                 onSelectId={setSelectedId}
                 embedded
@@ -437,7 +392,7 @@ export default function HistoryPage() {
               <div className="h-full min-h-[280px] flex items-center justify-center text-sm text-[var(--dash-text-secondary)] text-center px-6">
                 목록에서 검사를 선택하면 이미지와 결함 오버레이가 표시됩니다.
                 <br />
-                <span className="text-xs text-[var(--dash-text-tertiary)] mt-2">↑↓ 또는 j/k — FAIL 큐 이동</span>
+                <span className="text-xs text-[var(--dash-text-tertiary)] mt-2">↑↓ 또는 j/k — 목록 이동</span>
               </div>
             )}
           </div>

@@ -7,14 +7,13 @@ export function downloadInspectionCsv(
   formatFullDateTime: (iso: string) => string
 ) {
   if (!logs.length) return
-  const header = ['ID', '시각', '디바이스', '보드', '결과', '리뷰', '오차(°)', '추론(ms)', '결함수', '결함요약']
+  const header = ['ID', '시각', '디바이스', '보드', '결과', '오차(°)', '추론(ms)', '결함수', '결함요약']
   const rows = logs.map((l) => [
     l.id,
     formatFullDateTime(l.inspectedAt),
     deviceDisplayLabel(l.deviceId),
     (l.silkBoardName ?? '').trim(),
     l.result,
-    l.reviewStatus ?? 'PENDING',
     l.angleErrorDeg?.toFixed(2) ?? '',
     l.inferenceTimeMs ?? '',
     l.defects.length,
@@ -50,13 +49,12 @@ export function downloadDailyReportCsv(opts: {
     '',
     '--- 검사 로그 ---',
   ]
-  const header = ['ID', '시각', '디바이스', '결과', '리뷰', '결함수']
+  const header = ['ID', '시각', '디바이스', '결과', '결함수']
   const rows = opts.logs.map((l) => [
     l.id,
     opts.formatFullDateTime(l.inspectedAt),
     deviceDisplayLabel(l.deviceId),
     l.result,
-    l.reviewStatus ?? 'PENDING',
     l.defects.length,
   ])
   const csv = [...lines, header.join(','), ...rows.map((r) => r.map(escapeCsvCell).join(','))].join('\n')

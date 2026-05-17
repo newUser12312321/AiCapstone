@@ -19,7 +19,6 @@ export function historyToSearchParams(
     board: q.board,
     shift: q.shift,
     defectType: opts?.defectAsType ? q.defect : undefined,
-    reviewStatus: q.review,
   }
 }
 

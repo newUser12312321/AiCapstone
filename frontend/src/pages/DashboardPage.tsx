@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DeviceFilterTabs from '@/components/common/DeviceFilterTabs'
-import DashboardDefectPareto from '@/components/dashboard/DashboardDefectPareto'
+import DashboardFailPanel from '@/components/dashboard/DashboardFailPanel'
 import DashboardKpiStrip, { dashboardTodayHistoryPath } from '@/components/dashboard/DashboardKpiStrip'
-import DashboardLatestFail from '@/components/dashboard/DashboardLatestFail'
 import DashboardLineStatus from '@/components/dashboard/DashboardLineStatus'
 import DashboardRecentFeed from '@/components/dashboard/DashboardRecentFeed'
 import HourlyInspectionVolumeChart from '@/components/dashboard/HourlyInspectionVolumeChart'
@@ -87,6 +86,11 @@ export default function DashboardPage() {
     : undefined
 
   const latestFail = latestFailPage?.content[0]
+  const dayFailCount = dayStats?.failCount ?? 0
+  const showFailSidebar =
+    dayFailCount > 0 || !!latestFail || topDefects.length > 0
+  const sparseFeed = scopedRecent.length > 0 && scopedRecent.length <= 5
+  const chartCompact = !showFailSidebar
 
   return (
     <div className="dashboard-hmi flex h-full min-h-0 flex-col gap-px p-px overflow-hidden bg-[var(--dash-border)]">
@@ -110,14 +114,14 @@ export default function DashboardPage() {
             onClick={() => navigate(dashboardTodayHistoryPath('FAIL'))}
             className="px-2.5 py-1.5 font-semibold border border-[var(--dash-border)] bg-[var(--dash-danger)]/12 text-[var(--dash-danger)] hover:bg-[var(--dash-danger)]/20"
           >
-            당일 FAIL
+            FAIL 이력
           </button>
           <button
             type="button"
             onClick={() => navigate(dashboardTodayHistoryPath())}
             className="px-2.5 py-1.5 border border-[var(--dash-border)] -ml-px bg-[var(--dash-surface)] text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)]"
           >
-            당일 전체
+            전체 이력
           </button>
         </div>
       </div>
@@ -130,28 +134,46 @@ export default function DashboardPage() {
         cumulative={deviceFilter ? undefined : cumulative}
       />
 
+      {!showFailSidebar && (
+        <DashboardFailPanel
+          latestFail={latestFail}
+          isLoadingFail={!latestFailPage}
+          defectItems={topDefects}
+          formatSplitDateTime={formatSplitDateTime}
+          onDefectSelect={goDefectHistory}
+        />
+      )}
+
       <div className="flex flex-1 min-h-0 gap-px">
-        <div className="flex-[3] min-w-0 min-h-0 flex flex-col">
+        <div className={showFailSidebar ? 'flex-[3] min-w-0 min-h-0 flex flex-col' : 'flex-1 min-w-0 min-h-0 flex flex-col'}>
           <DashboardRecentFeed
             logs={scopedRecent}
             isLoading={isRecentLoading}
             formatSplitDateTime={formatSplitDateTime}
             maxRows={14}
+            sparse={sparseFeed}
           />
         </div>
-        <div className="flex-[2] min-w-[260px] max-w-[360px] shrink-0 flex flex-col gap-px min-h-0">
-          <DashboardLatestFail
-            log={latestFail}
-            isLoading={!latestFailPage}
-            formatSplitDateTime={formatSplitDateTime}
-          />
-          <div className="flex-1 min-h-0">
-            <DashboardDefectPareto items={topDefects} onSelect={goDefectHistory} />
+        {showFailSidebar && (
+          <div className="flex-[2] min-w-[260px] max-w-[360px] shrink-0 flex flex-col gap-px min-h-0">
+            <DashboardFailPanel
+              latestFail={latestFail}
+              isLoadingFail={!latestFailPage}
+              defectItems={topDefects}
+              formatSplitDateTime={formatSplitDateTime}
+              onDefectSelect={goDefectHistory}
+            />
           </div>
-        </div>
+        )}
       </div>
 
-      <div className="shrink-0 h-[200px] min-h-[180px]">
+      <div
+        className={
+          chartCompact
+            ? 'shrink-0 min-h-[120px] max-h-[160px]'
+            : 'shrink-0 h-[200px] min-h-[180px]'
+        }
+      >
         <HourlyInspectionVolumeChart lineFilter={lineFilter} compact />
       </div>
     </div>

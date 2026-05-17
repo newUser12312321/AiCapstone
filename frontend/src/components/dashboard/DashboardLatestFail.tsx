@@ -28,7 +28,6 @@ export default function DashboardLatestFail({
   }
 
   const { date, time } = formatSplitDateTime(log.inspectedAt)
-  const review = log.reviewStatus ?? 'PENDING'
 
   return (
     <Link
@@ -53,9 +52,9 @@ export default function DashboardLatestFail({
           {deviceDisplayLabel(log.deviceId)} · {(log.silkBoardName ?? '').trim() || '—'}
         </p>
         <p className="text-[var(--dash-text-tertiary)] tabular-nums">
-          {date} {time} · {review}
+          {date} {time}
         </p>
-        <p className="text-[var(--dash-accent)] font-semibold mt-0.5">리뷰 →</p>
+        <p className="text-[var(--dash-accent)] font-semibold mt-0.5">상세 보기</p>
       </div>
     </Link>
   )

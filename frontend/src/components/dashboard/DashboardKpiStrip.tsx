@@ -91,7 +91,7 @@ export default function DashboardKpiStrip({
   return (
     <div className="hmi-panel overflow-hidden">
       <div className="hmi-panel__head">
-        <span className="hmi-panel__title">{'\uB2F9\uC77C KPI'}</span>
+        <span className="hmi-panel__title">{'\uB2F9\uC77C \uC9D1\uACC4'}</span>
         <span className="hmi-panel__meta">
           {dateLabel}
           {cumulative != null && cumulative.total > 0 && (

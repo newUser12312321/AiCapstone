@@ -1,5 +1,5 @@
 /**
- * 검사 이력 테이블 — 전체 로그 / FAIL 리뷰(split) / 인라인 펼침
+ * 검사 이력 테이블 — 전체 로그 / 분할 목록(split) / 인라인 펼침
  */
 
 import { Fragment, useEffect, useState } from 'react'
@@ -12,22 +12,6 @@ import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import InspectionThumbnail from '@/components/inspection/InspectionThumbnail'
 import DefectViewer from './DefectViewer'
 import { inspectionDetailPath } from '@/utils/historyNavigation'
-
-function ReviewBadge({ status }: { status?: string | null }) {
-  const s = status ?? 'PENDING'
-  return (
-    <span
-      className={clsx(
-        'text-[10px] font-semibold px-1.5 py-0.5 rounded border',
-        s === 'CONFIRMED' && 'border-[var(--dash-success)]/50 text-[var(--dash-success)]',
-        s === 'FALSE_CALL' && 'border-[var(--dash-border)] text-[var(--dash-text-secondary)]',
-        s === 'PENDING' && 'border-[var(--dash-warning)]/50 text-[var(--dash-warning)]'
-      )}
-    >
-      {s}
-    </span>
-  )
-}
 
 function ResultBadge({ result, compact }: { result: 'PASS' | 'FAIL'; compact?: boolean }) {
   return (
@@ -115,7 +99,7 @@ export interface InspectionTableProps {
   isLoading?: boolean
   resultFilter?: 'PASS' | 'FAIL'
   initialOpenLogId?: number | null
-  detailMode?: 'inline' | 'route' | 'review'
+  detailMode?: 'inline' | 'route' | 'split'
   selectedId?: number
   onSelectId?: (id: number | undefined) => void
   embedded?: boolean
@@ -135,9 +119,9 @@ export default function InspectionTable({
   const navigate = useNavigate()
   const location = useLocation()
   const [selectedIdInternal, setSelectedIdInternal] = useState<number | undefined>()
-  const reviewMode = detailMode === 'review'
-  const selectedId = reviewMode ? selectedIdProp : selectedIdInternal
-  const setSelectedId = reviewMode
+  const splitMode = detailMode === 'split'
+  const selectedId = splitMode ? selectedIdProp : selectedIdInternal
+  const setSelectedId = splitMode
     ? (id: number | undefined) => onSelectId?.(id)
     : setSelectedIdInternal
 
@@ -150,8 +134,8 @@ export default function InspectionTable({
     setSelectedId(initialOpenLogId)
   }, [detailMode, initialOpenLogId, filtered, setSelectedId])
 
-  const headers = reviewMode
-    ? ['', 'ID', '시각', '기종', '판정', '리뷰', '결함']
+  const headers = splitMode
+    ? ['', 'ID', '시각', '기종', '판정', '결함']
     : ['ID', '시각', '실크 OCR', '디바이스', '결과', '검출 클래스', '오차 (°)', '추론 (ms)', '']
   const colCount = headers.length
 
@@ -204,21 +188,21 @@ export default function InspectionTable({
                         })
                         return
                       }
-                      if (reviewMode) {
+                      if (splitMode) {
                         setSelectedId(log.id)
                         return
                       }
                       setSelectedId(active ? undefined : log.id)
                     }}
                   >
-                    {reviewMode && (
+                    {splitMode && (
                       <td className="px-2 py-2">
                         <InspectionThumbnail imagePath={log.imagePath} result={log.result} size={40} />
                       </td>
                     )}
                     <td className="px-2 py-2 font-mono text-xs text-[var(--dash-text-tertiary)]">#{log.id}</td>
                     <td className="px-2 py-2 text-xs">
-                      {reviewMode ? (
+                      {splitMode ? (
                         <>
                           <span className="tabular-nums text-[var(--dash-text-primary)]">{time || date}</span>
                           {time && <span className="block text-[10px] text-[var(--dash-text-tertiary)]">{date}</span>}
@@ -230,7 +214,7 @@ export default function InspectionTable({
                         </>
                       )}
                     </td>
-                    {!reviewMode && (
+                    {!splitMode && (
                       <td className="px-4 py-3">
                         <SilkOcrCell
                           silkBoardName={log.silkBoardName}
@@ -243,15 +227,10 @@ export default function InspectionTable({
                       {deviceDisplayLabel(log.deviceId)}
                     </td>
                     <td className="px-2 py-2">
-                      <ResultBadge result={log.result} compact={reviewMode} />
+                      <ResultBadge result={log.result} compact={splitMode} />
                     </td>
-                    {reviewMode && (
-                      <td className="px-2 py-2">
-                        <ReviewBadge status={log.reviewStatus} />
-                      </td>
-                    )}
                     <td className="px-2 py-2">
-                      {reviewMode ? (
+                      {splitMode ? (
                         <span className="text-xs text-[var(--dash-text-secondary)]">
                           {log.defects.length ? `${log.defects.length}건` : '—'}
                         </span>
@@ -259,7 +238,7 @@ export default function InspectionTable({
                         <DefectTags defects={log.defects} />
                       )}
                     </td>
-                    {!reviewMode && (
+                    {!splitMode && (
                       <>
                         <td className="px-4 py-3 font-mono text-xs text-[var(--dash-text-secondary)]">
                           {log.angleErrorDeg != null ? `${log.angleErrorDeg.toFixed(2)}°` : '—'}
