@@ -106,7 +106,7 @@ export default function KioskPage() {
       />
       <KioskFailBurstLabel visible={failLabelFlash} />
       <KioskPassBurstLabel visible={passLabelFlash} />
-      <div className="glass-panel mx-auto flex min-h-0 w-full max-w-[1024px] flex-1 flex-col rounded-2xl p-3 shadow-[var(--dash-glow)]">
+      <div className="glass-panel mx-auto flex min-h-0 w-full max-w-[1024px] flex-1 flex-col rounded-xl p-3 shadow-[var(--dash-shadow-soft)]">
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-stretch lg:gap-3">
           <section className="glass-panel flex min-h-0 flex-col gap-2 overflow-hidden rounded-2xl p-3 lg:flex-1">
             <div className="flex shrink-0 flex-wrap items-end justify-between gap-2 gap-y-1">
@@ -119,14 +119,7 @@ export default function KioskPage() {
                   draggable={false}
                   className="h-9 w-9 shrink-0 object-contain select-none lg:h-10 lg:w-10"
                 />
-                <h1
-                  className="
-                  text-xl sm:text-2xl font-extrabold leading-tight tracking-tight
-                  bg-gradient-to-r from-[var(--dash-text-primary)] via-[var(--dash-accent)] to-[var(--dash-info)]
-                  bg-clip-text text-transparent
-                  drop-shadow-[0_0_24px_rgba(139,92,246,0.25)]
-                "
-                >
+                <h1 className="text-xl sm:text-2xl font-bold leading-tight tracking-tight text-[var(--dash-text-primary)]">
                   PCB 비전 검사 시스템
                 </h1>
               </div>
@@ -261,7 +254,7 @@ export default function KioskPage() {
                         {new Date(log.inspectedAt).toLocaleTimeString('ko-KR')}
                       </span>
                       <span className={clsx('font-semibold', log.result === 'PASS' ? 'text-[var(--dash-success)]' : 'text-[var(--dash-danger)]')}>
-                        {log.result === 'PASS' ? '정상' : '불량'}
+                        {log.result === 'PASS' ? 'PASS' : 'FAIL'}
                       </span>
                     </div>
                   </button>
@@ -283,7 +276,7 @@ export default function KioskPage() {
                     'relative flex h-full min-h-[52px] w-full flex-1 flex-row items-center justify-center gap-[0.45em]',
                     'overflow-hidden rounded-2xl border border-white/25 px-4 py-3',
                     'bg-gradient-to-b from-[var(--dash-accent)] via-[var(--dash-accent)] to-[var(--dash-accent-hover)]',
-                    'shadow-[0_12px_36px_rgba(139,92,246,0.38),inset_0_1px_0_rgba(255,255,255,0.22)]',
+                    'shadow-[0_8px_24px_rgba(37,99,235,0.28)]',
                     'text-[clamp(1.125rem,calc(0.55rem+10cqh),2.35rem)] font-extrabold tracking-tight text-white',
                     'transition-[transform,filter] hover:brightness-[1.06] active:scale-[0.99] active:brightness-95',
                     'disabled:pointer-events-none disabled:opacity-45',

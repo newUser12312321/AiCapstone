@@ -1,4 +1,4 @@
-/** 정상 깜빡임 시 화면 중앙 대형 「정상」 문구 */
+/** PASS 깜빡임 시 화면 중앙 대형 「PASS」 문구 */
 export default function KioskPassBurstLabel({ visible }: { visible: boolean }) {
   if (!visible) return null
   return (
@@ -14,7 +14,7 @@ export default function KioskPassBurstLabel({ visible }: { visible: boolean }) {
           textShadow: '0 0 3px #fff, 0 0 10px #fff, 2px 3px 24px rgba(0,0,0,0.45)',
         }}
       >
-        정상
+        PASS
       </span>
     </div>
   )

@@ -42,11 +42,11 @@ export default function App() {
     /* 전체 화면을 채우는 flex 컨테이너 */
     <div
       className={clsx(
-        'dashboard-theme h-screen text-[var(--dash-text-primary)] p-4 md:p-6 overflow-hidden',
-        settings.colorScheme === 'light' && 'dashboard-theme--light'
+        'dashboard-theme h-screen text-[var(--dash-text-primary)] p-3 md:p-4 overflow-hidden',
+        settings.colorScheme === 'dark' && 'dashboard-theme--dark'
       )}
     >
-      <div className="glass-panel h-full w-full max-w-[1600px] mx-auto rounded-[30px] overflow-hidden shadow-[var(--dash-glow)]">
+      <div className="glass-panel h-full w-full max-w-[1600px] mx-auto rounded-xl overflow-hidden shadow-[var(--dash-shadow-soft)]">
         {/* 상단 고정 헤더 */}
         <Header />
 

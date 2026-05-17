@@ -1,6 +1,7 @@
 package com.inspection.domain.entity;
 
 import com.inspection.domain.enums.InspectionResult;
+import com.inspection.domain.enums.ReviewStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -149,6 +150,14 @@ public class InspectionLog {
     @Column(name = "silk_manufacture_date", length = 64)
     private String silkManufactureDate;
 
+    /** FAIL 리뷰 상태 (PASS 건은 보통 null) */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "review_status", length = 20)
+    private ReviewStatus reviewStatus;
+
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+
     // ── 타임스탬프 ──────────────────────────────────────────────────────────
 
     /**
@@ -192,5 +201,10 @@ public class InspectionLog {
      */
     public void addDefect(DefectDetail defect) {
         this.defects.add(defect);
+    }
+
+    public void applyReview(ReviewStatus status) {
+        this.reviewStatus = status;
+        this.reviewedAt = LocalDateTime.now();
     }
 }

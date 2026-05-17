@@ -1,14 +1,5 @@
 /**
- * 검사 이력 테이블 컴포넌트
- *
- * 검사 이력 목록을 테이블로 표시하며, 행 클릭 시 검사 상세(`/inspection/:id`)로 이동하거나
- * (inline 모드) 테이블 아래에 DefectViewer를 펼친다.
- *
- * 기능:
- * - 정상/불량 뱃지 색상 구분
- * - 결함 종류 태그 (단선, 까짐 등)
- * - 각도 오차 표시
- * - 클릭으로 상세 DefectViewer 연동
+ * 검사 이력 테이블 — 전체 로그 / FAIL 리뷰(split) / 인라인 펼침
  */
 
 import { Fragment, useEffect, useState } from 'react'
@@ -18,20 +9,35 @@ import clsx from 'clsx'
 import type { InspectionLog } from '@/types/inspection'
 import { defectDisplayName, DEFECT_COLOR, deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
+import InspectionThumbnail from '@/components/inspection/InspectionThumbnail'
 import DefectViewer from './DefectViewer'
 import { inspectionDetailPath } from '@/utils/historyNavigation'
 
-// ── 보조 컴포넌트 ─────────────────────────────────────────────────────────────
-
-/** 정상 / 불량 결과 뱃지 — 다크·라이트 테마 모두에서 채도 있는 대비 */
-function ResultBadge({ result }: { result: 'PASS' | 'FAIL' }) {
+function ReviewBadge({ status }: { status?: string | null }) {
+  const s = status ?? 'PENDING'
   return (
     <span
       className={clsx(
-        'inline-flex shrink-0 items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-extrabold tracking-wide',
+        'text-[10px] font-semibold px-1.5 py-0.5 rounded border',
+        s === 'CONFIRMED' && 'border-[var(--dash-success)]/50 text-[var(--dash-success)]',
+        s === 'FALSE_CALL' && 'border-[var(--dash-border)] text-[var(--dash-text-secondary)]',
+        s === 'PENDING' && 'border-[var(--dash-warning)]/50 text-[var(--dash-warning)]'
+      )}
+    >
+      {s}
+    </span>
+  )
+}
+
+function ResultBadge({ result, compact }: { result: 'PASS' | 'FAIL'; compact?: boolean }) {
+  return (
+    <span
+      className={clsx(
+        'inline-flex shrink-0 items-center justify-center whitespace-nowrap font-semibold',
+        compact ? 'px-2 py-0.5 rounded text-[11px] border' : 'px-3 py-1 rounded-full text-xs border-2',
         result === 'PASS'
-          ? 'bg-[var(--dash-success)]/24 text-[var(--dash-success)] border-2 border-[var(--dash-success)]/70'
-          : 'bg-[var(--dash-danger)]/26 text-[var(--dash-danger)] border-2 border-[var(--dash-danger)]/70'
+          ? 'bg-[var(--dash-success)]/12 text-[var(--dash-success)] border-[var(--dash-success)]/50'
+          : 'bg-[var(--dash-danger)]/12 text-[var(--dash-danger)] border-[var(--dash-danger)]/50'
       )}
     >
       {inspectionResultLabel(result)}
@@ -39,16 +45,9 @@ function ResultBadge({ result }: { result: 'PASS' | 'FAIL' }) {
   )
 }
 
-/** 결함 종류 태그 목록 */
 function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
-  if (!defects.length) {
-    return <span className="text-xs text-[var(--dash-text-tertiary)]">—</span>
-  }
-
-  const grouped = new Map<
-    string,
-    { count: number; color: string; label: string }
-  >()
+  if (!defects.length) return <span className="text-xs text-[var(--dash-text-tertiary)]">—</span>
+  const grouped = new Map<string, { count: number; color: string; label: string }>()
   defects.forEach((d) => {
     const key = `${d.defectType}\0${d.detail?.trim() ?? ''}`
     const label = defectDisplayName(d.defectType, d.detail)
@@ -57,23 +56,15 @@ function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
       prev.count += 1
       return
     }
-    grouped.set(key, {
-      count: 1,
-      color: DEFECT_COLOR[d.defectType] ?? '#9ca3af',
-      label,
-    })
+    grouped.set(key, { count: 1, color: DEFECT_COLOR[d.defectType] ?? '#9ca3af', label })
   })
-
   return (
     <div className="flex flex-wrap gap-1">
       {Array.from(grouped.entries()).map(([tagKey, meta]) => (
         <span
           key={tagKey}
           className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium"
-          style={{
-            backgroundColor: `${meta.color}22`,
-            color: meta.color,
-          }}
+          style={{ backgroundColor: `${meta.color}22`, color: meta.color }}
         >
           <AlertCircle size={10} />
           {`${meta.label} X${meta.count}`}
@@ -83,9 +74,6 @@ function DefectTags({ defects }: { defects: InspectionLog['defects'] }) {
   )
 }
 
-// ── 스켈레톤 ─────────────────────────────────────────────────────────────────
-
-/** 실크 OCR 요약 한 컬럼 */
 function SilkOcrCell({
   silkBoardName,
   silkManufacturer,
@@ -96,11 +84,9 @@ function SilkOcrCell({
     silkManufacturer ? `제조사: ${silkManufacturer}` : null,
     silkManufactureDate ? `제조일: ${silkManufactureDate}` : null,
   ].filter(Boolean)
-  if (lines.length === 0) {
-    return <span className="text-xs text-[var(--dash-text-tertiary)]">—</span>
-  }
+  if (!lines.length) return <span className="text-xs text-[var(--dash-text-tertiary)]">—</span>
   return (
-    <div className="text-xs text-[var(--dash-text-secondary)] space-y-0.5 leading-snug">
+    <div className="text-xs text-[var(--dash-text-secondary)] space-y-0.5">
       {lines.map((line, idx) => (
         <div key={idx}>{line}</div>
       ))}
@@ -108,14 +94,14 @@ function SilkOcrCell({
   )
 }
 
-function TableSkeleton() {
+function TableSkeleton({ cols }: { cols: number }) {
   return (
     <>
-      {Array.from({ length: 8 }).map((_, i) => (
-        <tr key={i} className="border-b border-[var(--dash-border)] animate-pulse">
-          {Array.from({ length: 9 }).map((_, j) => (
-            <td key={j} className="px-4 py-3">
-              <div className="h-3.5 bg-[var(--dash-bg-secondary)] rounded w-3/4" />
+      {Array.from({ length: 6 }).map((_, i) => (
+        <tr key={i} className="animate-pulse">
+          {Array.from({ length: cols }).map((_, j) => (
+            <td key={j} className="px-2 py-3">
+              <div className="h-3 bg-[var(--dash-bg-secondary)] rounded w-3/4" />
             </td>
           ))}
         </tr>
@@ -124,19 +110,15 @@ function TableSkeleton() {
   )
 }
 
-// ── 메인 컴포넌트 ─────────────────────────────────────────────────────────────
-
-interface InspectionTableProps {
-  /** 표시할 검사 이력 데이터 */
+export interface InspectionTableProps {
   logs: InspectionLog[]
-  /** 데이터 로딩 중 여부 */
   isLoading?: boolean
-  /** 결과 필터 (undefined이면 전체 표시) */
-  resultFilter?: 'PASS' | 'FAIL' | undefined
-  /** inline 모드 전용: 마운트 시 해당 행 상세를 펼친다 */
+  resultFilter?: 'PASS' | 'FAIL'
   initialOpenLogId?: number | null
-  /** route(기본): 상세 페이지로 이동 / inline: 아래 행에 DefectViewer */
-  detailMode?: 'inline' | 'route'
+  detailMode?: 'inline' | 'route' | 'review'
+  selectedId?: number
+  onSelectId?: (id: number | undefined) => void
+  embedded?: boolean
 }
 
 export default function InspectionTable({
@@ -145,168 +127,165 @@ export default function InspectionTable({
   resultFilter,
   initialOpenLogId,
   detailMode = 'route',
+  selectedId: selectedIdProp,
+  onSelectId,
+  embedded = false,
 }: InspectionTableProps) {
   const { formatSplitDateTime } = useDashboardSettings()
   const navigate = useNavigate()
   const location = useLocation()
-  /* 클릭된 검사 ID — inline DefectViewer에만 사용 */
-  const [selectedId, setSelectedId] = useState<number | undefined>()
+  const [selectedIdInternal, setSelectedIdInternal] = useState<number | undefined>()
+  const reviewMode = detailMode === 'review'
+  const selectedId = reviewMode ? selectedIdProp : selectedIdInternal
+  const setSelectedId = reviewMode
+    ? (id: number | undefined) => onSelectId?.(id)
+    : setSelectedIdInternal
 
-  /* 결과 필터 적용 */
-  const filtered = resultFilter
-    ? logs.filter((l) => l.result === resultFilter)
-    : logs
+  const filtered = resultFilter ? logs.filter((l) => l.result === resultFilter) : logs
 
   useEffect(() => {
-    if (detailMode !== 'inline') return
+    if (detailMode === 'route') return
     if (initialOpenLogId == null) return
     if (!filtered.some((l) => l.id === initialOpenLogId)) return
     setSelectedId(initialOpenLogId)
-  }, [detailMode, initialOpenLogId, filtered])
+  }, [detailMode, initialOpenLogId, filtered, setSelectedId])
+
+  const headers = reviewMode
+    ? ['', 'ID', '시각', '기종', '판정', '리뷰', '결함']
+    : ['ID', '시각', '실크 OCR', '디바이스', '결과', '검출 클래스', '오차 (°)', '추론 (ms)', '']
+  const colCount = headers.length
 
   return (
-    <>
-      <div className="overflow-x-auto rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] shadow-[var(--dash-shadow-soft)]">
-        <table className="w-full text-sm">
-          {/* 헤더 */}
-          <thead>
-            <tr className="bg-[var(--dash-bg-secondary)] text-left">
-              {['ID', '시각', '실크 OCR', '디바이스', '결과', '검출 클래스', '오차 (°)', '추론 (ms)', ''].map((h) => (
-                <th
-                  key={h}
-                  className={clsx(
-                    'px-4 py-3.5 text-xs font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider',
-                    h === '결과' && 'whitespace-nowrap'
-                  )}
-                >
-                  {h}
-                </th>
-              ))}
+    <div
+      className={clsx(
+        'overflow-x-auto',
+        !embedded && 'rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)]'
+      )}
+    >
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-[var(--dash-bg-secondary)] text-left">
+            {headers.map((h) => (
+              <th
+                key={h || 'thumb'}
+                className="px-2 py-2 text-[10px] font-semibold text-[var(--dash-text-tertiary)] uppercase tracking-wider"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-[var(--dash-border)]">
+          {isLoading ? (
+            <TableSkeleton cols={colCount} />
+          ) : filtered.length === 0 ? (
+            <tr>
+              <td colSpan={colCount} className="px-4 py-12 text-center text-sm text-[var(--dash-text-secondary)]">
+                검사 이력이 없습니다.
+              </td>
             </tr>
-          </thead>
-
-          {/* 바디 */}
-          <tbody className="divide-y divide-[var(--dash-border)]">
-            {isLoading ? (
-              <TableSkeleton />
-            ) : filtered.length === 0 ? (
-              /* 데이터 없음 */
-              <tr>
-                <td colSpan={9} className="px-4 py-12 text-center text-[var(--dash-text-secondary)] text-sm">
-                  검사 이력이 없습니다.
-                </td>
-              </tr>
-            ) : (
-              filtered.map((log) => {
-                const { date, time } = formatSplitDateTime(log.inspectedAt)
-                return (
-                  <Fragment key={log.id}>
-                    <tr
-                      className={clsx(
-                        'bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] cursor-pointer transition-colors',
-                        detailMode === 'inline' &&
-                          selectedId === log.id &&
-                          'ring-1 ring-inset ring-[var(--dash-accent)]/40'
+          ) : (
+            filtered.map((log) => {
+              const { date, time } = formatSplitDateTime(log.inspectedAt)
+              const active = selectedId === log.id
+              return (
+                <Fragment key={log.id}>
+                  <tr
+                    className={clsx(
+                      'cursor-pointer transition-colors',
+                      active
+                        ? 'bg-[var(--dash-accent)]/8 ring-1 ring-inset ring-[var(--dash-accent)]/35'
+                        : 'hover:bg-[var(--dash-bg-secondary)]'
+                    )}
+                    onClick={() => {
+                      if (detailMode === 'route') {
+                        navigate(inspectionDetailPath(log.id), {
+                          state: { returnTo: `${location.pathname}${location.search}` },
+                        })
+                        return
+                      }
+                      if (reviewMode) {
+                        setSelectedId(log.id)
+                        return
+                      }
+                      setSelectedId(active ? undefined : log.id)
+                    }}
+                  >
+                    {reviewMode && (
+                      <td className="px-2 py-2">
+                        <InspectionThumbnail imagePath={log.imagePath} result={log.result} size={40} />
+                      </td>
+                    )}
+                    <td className="px-2 py-2 font-mono text-xs text-[var(--dash-text-tertiary)]">#{log.id}</td>
+                    <td className="px-2 py-2 text-xs">
+                      {reviewMode ? (
+                        <>
+                          <span className="tabular-nums text-[var(--dash-text-primary)]">{time || date}</span>
+                          {time && <span className="block text-[10px] text-[var(--dash-text-tertiary)]">{date}</span>}
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-[var(--dash-text-secondary)]">{date}</p>
+                          {time && <p className="text-[var(--dash-text-tertiary)] font-mono text-xs">{time}</p>}
+                        </>
                       )}
-                      onClick={() => {
-                        if (detailMode === 'route') {
-                          navigate(inspectionDetailPath(log.id), {
-                            state: { returnTo: `${location.pathname}${location.search}` },
-                          })
-                          return
-                        }
-                        setSelectedId((prev) => (prev === log.id ? undefined : log.id))
-                      }}
-                    >
-                      {/* ID */}
-                      <td className="px-4 py-3 font-mono text-[13px] text-[var(--dash-text-tertiary)]">
-                        #{log.id}
-                      </td>
-
-                      {/* 시각 */}
+                    </td>
+                    {!reviewMode && (
                       <td className="px-4 py-3">
-                        <p className="text-[var(--dash-text-secondary)] text-[13px]">{date}</p>
-                        {time ? (
-                          <p className="text-[var(--dash-text-tertiary)] text-xs font-mono">{time}</p>
-                        ) : null}
-                      </td>
-
-                      {/* 실크 OCR */}
-                      <td className="px-4 py-3 align-top">
                         <SilkOcrCell
                           silkBoardName={log.silkBoardName}
                           silkManufacturer={log.silkManufacturer}
                           silkManufactureDate={log.silkManufactureDate}
                         />
                       </td>
-
-                      {/* 디바이스 */}
-                      <td className="px-4 py-3 text-[13px] text-[var(--dash-text-secondary)] font-mono">
-                        {deviceDisplayLabel(log.deviceId)}
+                    )}
+                    <td className="px-2 py-2 text-xs text-[var(--dash-text-secondary)]">
+                      {deviceDisplayLabel(log.deviceId)}
+                    </td>
+                    <td className="px-2 py-2">
+                      <ResultBadge result={log.result} compact={reviewMode} />
+                    </td>
+                    {reviewMode && (
+                      <td className="px-2 py-2">
+                        <ReviewBadge status={log.reviewStatus} />
                       </td>
-
-                      {/* 결과 뱃지 — 열 폭이 좁을 때 한 글자씩 세로 줄바꿈 방지 */}
-                      <td className="whitespace-nowrap px-4 py-3 align-middle">
-                        <div className="flex flex-col gap-0.5">
-                          <ResultBadge result={log.result} />
-                          {log.result === 'FAIL' &&
-                            log.defects.some((d) => d.defectType === 'SILK_SCREEN_PRINT_DEFECT') && (
-                              <span className="text-[10px] font-semibold text-[var(--dash-warning)]">
-                                실크인쇄불량
-                              </span>
-                            )}
-                        </div>
-                      </td>
-
-                      {/* 결함 태그 */}
-                      <td className="px-4 py-3">
+                    )}
+                    <td className="px-2 py-2">
+                      {reviewMode ? (
+                        <span className="text-xs text-[var(--dash-text-secondary)]">
+                          {log.defects.length ? `${log.defects.length}건` : '—'}
+                        </span>
+                      ) : (
                         <DefectTags defects={log.defects} />
-                      </td>
-
-                      {/* 오차 각도 */}
-                      <td className="px-4 py-3 text-[13px] text-[var(--dash-text-secondary)] font-mono">
-                        {log.angleErrorDeg != null
-                          ? `${log.angleErrorDeg.toFixed(2)}°`
-                          : '—'}
-                      </td>
-
-                      {/* 추론 시간 */}
-                      <td className="px-4 py-3 text-[13px] text-[var(--dash-text-secondary)] font-mono">
-                        {log.inferenceTimeMs != null ? `${log.inferenceTimeMs}ms` : '—'}
-                      </td>
-
-                      {/* 상세 버튼 */}
-                      <td className="px-4 py-3">
-                        <ChevronRight
-                          size={16}
-                          className={clsx(
-                            'transition-colors',
-                            detailMode === 'inline' && selectedId === log.id
-                              ? 'text-[var(--dash-accent)]'
-                              : 'text-[var(--dash-text-tertiary)]'
-                          )}
-                        />
+                      )}
+                    </td>
+                    {!reviewMode && (
+                      <>
+                        <td className="px-4 py-3 font-mono text-xs text-[var(--dash-text-secondary)]">
+                          {log.angleErrorDeg != null ? `${log.angleErrorDeg.toFixed(2)}°` : '—'}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs text-[var(--dash-text-secondary)]">
+                          {log.inferenceTimeMs != null ? `${log.inferenceTimeMs}ms` : '—'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <ChevronRight size={16} className={active ? 'text-[var(--dash-accent)]' : 'text-[var(--dash-text-tertiary)]'} />
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                  {detailMode === 'inline' && active && selectedId != null && (
+                    <tr>
+                      <td colSpan={colCount} className="px-4 py-3 bg-[var(--dash-bg-secondary)]">
+                        <DefectViewer inspectionId={selectedId} onClose={() => setSelectedId(undefined)} inline />
                       </td>
                     </tr>
-                    {detailMode === 'inline' && selectedId === log.id && (
-                      <tr key={`detail-${log.id}`} className="bg-[var(--dash-bg-primary)]">
-                        <td colSpan={9} className="px-4 py-3">
-                          <DefectViewer
-                            inspectionId={selectedId}
-                            onClose={() => setSelectedId(undefined)}
-                            inline
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                )
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
-
-    </>
+                  )}
+                </Fragment>
+              )
+            })
+          )}
+        </tbody>
+      </table>
+    </div>
   )
 }

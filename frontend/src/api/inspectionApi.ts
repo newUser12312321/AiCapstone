@@ -7,7 +7,17 @@
  */
 
 import axios from 'axios'
-import type { InspectionLog, InspectionStats } from '@/types/inspection'
+import type {
+  DefectCountItem,
+  InspectionFacets,
+  InspectionLineStatus,
+  InspectionLog,
+  InspectionPage,
+  InspectionSearchParams,
+  InspectionStats,
+  ReviewStatusType,
+} from '@/types/inspection'
+import type { HourlyVolumePoint } from '@/types/inspection'
 
 // ── Axios 인스턴스 생성 ───────────────────────────────────────────────────────
 const apiBaseUrlFromEnv = import.meta.env.VITE_API_BASE_URL?.trim()
@@ -108,8 +118,95 @@ export const fetchRecentInspectionsWithTimeout = async (
  * 전체 검사 통계 요약을 조회한다.
  * 대시보드 상단 StatCard에 사용.
  */
-export const fetchStats = async (): Promise<InspectionStats> => {
-  const { data } = await apiClient.get<InspectionStats>('/inspections/stats')
+export const fetchStats = async (params?: Omit<InspectionSearchParams, 'page' | 'size'>): Promise<InspectionStats> => {
+  const { data } = await apiClient.get<InspectionStats>('/inspections/stats', {
+    params: searchParamsToQuery(params),
+  })
+  return data
+}
+
+function searchParamsToQuery(params?: Omit<InspectionSearchParams, 'page' | 'size'>) {
+  if (!params) return undefined
+  return {
+    from: params.from,
+    to: params.to,
+    deviceId: params.deviceId,
+    result: params.result,
+    board: params.board,
+    shift: params.shift,
+    defectType: params.defectType,
+    reviewStatus: params.reviewStatus,
+  }
+}
+
+export const searchInspections = async (
+  params: InspectionSearchParams
+): Promise<InspectionPage> => {
+  const { data } = await apiClient.get<InspectionPage>('/inspections/search', {
+    params: {
+      page: params.page ?? 0,
+      size: params.size ?? 50,
+      ...searchParamsToQuery(params),
+    },
+  })
+  return data
+}
+
+export const fetchFacets = async (): Promise<InspectionFacets> => {
+  const { data } = await apiClient.get<InspectionFacets>('/inspections/facets')
+  return data
+}
+
+export const fetchLineStatus = async (deviceId?: string): Promise<InspectionLineStatus> => {
+  const { data } = await apiClient.get<InspectionLineStatus>('/inspections/line-status', {
+    params: deviceId ? { deviceId } : undefined,
+  })
+  return data
+}
+
+export const fetchHourlySummary = async (
+  params?: Omit<InspectionSearchParams, 'page' | 'size' | 'result'>
+): Promise<HourlyVolumePoint[]> => {
+  const { data } = await apiClient.get<
+    {
+      bucketStartMs: number
+      label: string
+      hour: number
+      anchorDate: string
+      pass: number
+      fail: number
+      count: number
+    }[]
+  >('/inspections/summary/hourly', { params: searchParamsToQuery(params) })
+  return data.map((row) => ({
+    bucketStartMs: row.bucketStartMs,
+    label: row.label,
+    tooltipTitle: row.label,
+    count: row.count,
+    pass: row.pass,
+    fail: row.fail,
+    anchorDate: row.anchorDate,
+    hour: row.hour,
+  }))
+}
+
+export const fetchDefectSummary = async (
+  params?: InspectionSearchParams,
+  limit = 6
+): Promise<DefectCountItem[]> => {
+  const { data } = await apiClient.get<DefectCountItem[]>('/inspections/summary/defects', {
+    params: { ...searchParamsToQuery(params), limit },
+  })
+  return data
+}
+
+export const patchInspectionReview = async (
+  id: number,
+  reviewStatus: ReviewStatusType
+): Promise<InspectionLog> => {
+  const { data } = await apiClient.patch<InspectionLog>(`/inspections/${id}/review`, {
+    reviewStatus,
+  })
   return data
 }
 

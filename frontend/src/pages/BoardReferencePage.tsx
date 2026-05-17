@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import clsx from 'clsx'
 import {
   BOARD_REFERENCES,
   BOARD_REFERENCE_CALIBRATION_URL,
@@ -6,6 +8,7 @@ import {
   toCountRows,
 } from '@/config/boardReference'
 import fiducialFallback from '@/config/fiducialScaleCalibration.json'
+import { buildHistoryPath } from '@/utils/historyNavigation'
 
 type FiducialCalibration = typeof fiducialFallback
 
@@ -21,9 +24,7 @@ export default function BoardReferencePage() {
       .then((j: FiducialCalibration) => {
         if (!cancelled) setCalib(j)
       })
-      .catch(() => {
-        /* public/board-reference 없거나 네트워크 실패 시 src/config 폴백 */
-      })
+      .catch(() => {})
     return () => {
       cancelled = true
     }
@@ -35,128 +36,123 @@ export default function BoardReferencePage() {
   )
 
   const rows = selected ? toCountRows(selected.expectedCounts) : []
-
-  const boardScale = selected
-    ? calib.boards[selected.key as keyof typeof calib.boards]
-    : undefined
-
+  const boardScale = selected ? calib.boards[selected.key as keyof typeof calib.boards] : undefined
   const overlaySrc = selected ? boardOverlayUrl(selected.key) : ''
 
   if (!selected) {
     return (
       <div className="h-full flex items-center justify-center text-sm text-[var(--dash-text-secondary)]">
-        등록된 기판 기준 정보가 없습니다.
+        등록된 검사 프로그램이 없습니다.
       </div>
     )
   }
 
+  const historyForBoard = buildHistoryPath({ device: selected.key })
+
   return (
-    <div className="h-full overflow-auto p-6 space-y-4 bg-[var(--dash-bg-secondary)]">
-      <div className="max-w-[1280px] mx-auto space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text-primary)]">기판 기준 정보</h1>
-            <p className="text-sm text-[var(--dash-text-secondary)] mt-1">
-              정상 라벨링 기준 이미지와 클래스 정상 개수, 두 피듀셜 마크 간 실측 거리, 피듀셜 기준 픽셀·mm 스케일을
-              보드별로 확인합니다.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 shadow-[var(--dash-shadow-soft)]">
-            <label className="text-xs text-[var(--dash-text-secondary)]">기판 선택</label>
-            <select
-              value={selected.key}
-              onChange={(e) => {
-                setSelectedKey(e.target.value)
+    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[var(--dash-bg-secondary)]">
+      <div className="shrink-0 border-b border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h1 className="text-sm font-semibold text-[var(--dash-text-primary)]">기판 프로그램</h1>
+          <p className="text-xs text-[var(--dash-text-tertiary)]">마스터 이미지 · 기대 검출 개수 · 스케일</p>
+        </div>
+        <Link
+          to={historyForBoard}
+          className="text-xs px-3 py-1.5 rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] text-[var(--dash-text-secondary)]"
+        >
+          이 기종 검사 로그
+        </Link>
+      </div>
+
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
+        <aside className="shrink-0 lg:w-52 border-b lg:border-b-0 lg:border-r border-[var(--dash-border)] bg-[var(--dash-surface)] p-2 overflow-y-auto">
+          <p className="px-2 py-1 text-[10px] font-semibold uppercase text-[var(--dash-text-tertiary)]">프로그램</p>
+          {BOARD_REFERENCES.map((b) => (
+            <button
+              key={b.key}
+              type="button"
+              onClick={() => {
+                setSelectedKey(b.key)
                 setImageError(false)
               }}
-              className="bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] rounded-lg px-3 py-1.5 text-sm text-[var(--dash-text-primary)]"
+              className={clsx(
+                'w-full text-left px-3 py-2.5 rounded text-sm font-medium transition-colors',
+                selected.key === b.key
+                  ? 'bg-[var(--dash-accent)] text-white'
+                  : 'text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)]'
+              )}
             >
-              {BOARD_REFERENCES.map((b) => (
-                <option key={b.key} value={b.key}>
-                  {b.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+              {b.label}
+            </button>
+          ))}
+        </aside>
 
-        <section className="border border-[var(--dash-border)] rounded-2xl bg-[var(--dash-surface)] p-4 shadow-[var(--dash-shadow-soft)] space-y-3">
-          <h2 className="text-base text-[var(--dash-text-secondary)] font-semibold">피듀셜 기준 스케일 (px ↔ mm)</h2>
-          <p className="text-xs text-[var(--dash-text-tertiary)] leading-relaxed">{calib.description}</p>
-          {selected.fiducialMarkSpacingMm != null && (
-            <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5 flex flex-wrap items-baseline justify-between gap-2">
-              <span className="text-xs text-[var(--dash-text-secondary)]">두 피듀셜 마크 간 실측 거리</span>
-              <span className="text-lg font-mono font-semibold text-[var(--dash-accent)] tabular-nums">
-                {selected.fiducialMarkSpacingMm} mm
-              </span>
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            {selected.fiducialMarkSpacingMm != null && (
+              <div className="rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2">
+                <p className="text-[var(--dash-text-tertiary)]">피듀셜 간격</p>
+                <p className="font-mono font-semibold text-[var(--dash-text-primary)]">{selected.fiducialMarkSpacingMm} mm</p>
+              </div>
+            )}
+            <div className="rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2">
+              <p className="text-[var(--dash-text-tertiary)]">px/mm (통합)</p>
+              <p className="font-mono font-semibold">{calib.default_px_per_mm.toFixed(4)}</p>
             </div>
-          )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5">
-              <div className="text-xs text-[var(--dash-text-secondary)]">통합 기본값 · px/mm</div>
-              <div className="text-lg font-mono text-[var(--dash-info)]">{calib.default_px_per_mm.toFixed(6)}</div>
-            </div>
-            <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5">
-              <div className="text-xs text-[var(--dash-text-secondary)]">통합 기본값 · mm/px</div>
-              <div className="text-lg font-mono text-[var(--dash-info)]">{calib.default_mm_per_px.toFixed(6)}</div>
-            </div>
-            {boardScale ? (
+            {boardScale && (
               <>
-                <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5">
-                  <div className="text-xs text-[var(--dash-text-secondary)]">{selected.label} · px/mm</div>
-                  <div className="text-lg font-mono text-[var(--dash-accent)]">{boardScale.px_per_mm.toFixed(6)}</div>
+                <div className="rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2">
+                  <p className="text-[var(--dash-text-tertiary)]">px/mm ({selected.label})</p>
+                  <p className="font-mono font-semibold text-[var(--dash-accent)]">{boardScale.px_per_mm.toFixed(4)}</p>
                 </div>
-                <div className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5">
-                  <div className="text-xs text-[var(--dash-text-secondary)]">{selected.label} · mm/px</div>
-                  <div className="text-lg font-mono text-[var(--dash-accent)]">{boardScale.mm_per_px.toFixed(6)}</div>
+                <div className="rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2">
+                  <p className="text-[var(--dash-text-tertiary)]">mm/px</p>
+                  <p className="font-mono font-semibold">{boardScale.mm_per_px.toFixed(6)}</p>
                 </div>
               </>
-            ) : (
-              <div className="sm:col-span-2 text-sm text-[var(--dash-text-secondary)]">
-                선택 기판에 대한 보드별 스케일 항목이 없습니다.
-              </div>
             )}
           </div>
-        </section>
 
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
-          <section className="xl:col-span-3 border border-[var(--dash-border)] rounded-2xl bg-[var(--dash-surface)] p-4 shadow-[var(--dash-shadow-soft)]">
-            <h2 className="text-base text-[var(--dash-text-secondary)] font-semibold mb-3">
-              정상 라벨링 기준 이미지 (YOLO 레이아웃)
-            </h2>
-            {!imageError ? (
-              <img
-                src={overlaySrc}
-                alt={`${selected.label} 기준 검출`}
-                className="w-full h-auto rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="h-72 rounded-xl border border-dashed border-[var(--dash-border)] flex flex-col items-center justify-center text-sm text-[var(--dash-text-secondary)] px-4 text-center gap-2">
-                <span>
-                  오버레이 이미지를 불러오지 못했습니다. Docker 이미지 빌드 시{' '}
-                  <code className="text-[var(--dash-text-secondary)]">public/board-reference/</code> 가 포함됐는지,
-                  배포 경로(Vite base)가 맞는지 확인하세요.
-                </span>
-                <code className="text-xs break-all opacity-80">{overlaySrc}</code>
-              </div>
-            )}
-          </section>
-
-          <section className="xl:col-span-2 border border-[var(--dash-border)] rounded-2xl bg-[var(--dash-surface)] p-4 shadow-[var(--dash-shadow-soft)]">
-            <h2 className="text-base text-[var(--dash-text-secondary)] font-semibold mb-3">정상 클래스 개수</h2>
-            <div className="space-y-2">
-              {rows.map((row) => (
-                <div
-                  key={row.cls}
-                  className="flex items-center justify-between rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2.5"
-                >
-                  <span className="text-sm font-medium text-[var(--dash-text-primary)]">{row.label}</span>
-                  <span className="text-sm font-mono text-[var(--dash-info)]">X{row.count}</span>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+            <section className="xl:col-span-2 border border-[var(--dash-border)] rounded-lg bg-[var(--dash-surface)] p-3">
+              <h2 className="text-xs font-semibold text-[var(--dash-text-secondary)] mb-2 uppercase tracking-wide">
+                마스터 오버레이
+              </h2>
+              {!imageError ? (
+                <img
+                  src={overlaySrc}
+                  alt={selected.label}
+                  className="w-full h-auto rounded border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)]"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="h-48 flex items-center justify-center text-xs text-[var(--dash-text-secondary)] border border-dashed border-[var(--dash-border)] rounded">
+                  이미지를 불러올 수 없습니다.
                 </div>
-              ))}
-            </div>
-          </section>
+              )}
+            </section>
+            <section className="border border-[var(--dash-border)] rounded-lg bg-[var(--dash-surface)] p-3">
+              <h2 className="text-xs font-semibold text-[var(--dash-text-secondary)] mb-2 uppercase tracking-wide">
+                기대 클래스 수량
+              </h2>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-[10px] text-[var(--dash-text-tertiary)] uppercase">
+                    <th className="pb-2">클래스</th>
+                    <th className="pb-2 text-right">수량</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--dash-border)]">
+                  {rows.map((row) => (
+                    <tr key={row.cls}>
+                      <td className="py-2 text-[var(--dash-text-primary)]">{row.label}</td>
+                      <td className="py-2 text-right font-mono text-[var(--dash-accent)]">×{row.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          </div>
         </div>
       </div>
     </div>

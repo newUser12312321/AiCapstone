@@ -95,7 +95,7 @@ function StatCard({ title, value, icon: Icon, theme, caption, delta, onNavigate 
         type="button"
         onClick={onNavigate}
         className={clsx(
-          'glass-panel rounded-[22px] p-6 min-h-[196px] text-left w-full transition-transform hover:scale-[1.01] active:scale-[0.99]',
+          'glass-panel rounded-xl p-6 min-h-[196px] text-left w-full transition-colors hover:border-[var(--dash-accent)]/35',
           colors.border,
           'focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/40'
         )}
@@ -106,7 +106,7 @@ function StatCard({ title, value, icon: Icon, theme, caption, delta, onNavigate 
   }
 
   return (
-    <div className={clsx('glass-panel rounded-[22px] p-6 min-h-[196px]', colors.border)}>
+    <div className={clsx('glass-panel rounded-xl p-6 min-h-[196px]', colors.border)}>
       {inner}
     </div>
   )
@@ -213,7 +213,7 @@ export default function StatCardGroup({ lineFilter, allLogs, chartSlot }: StatCa
         onNavigate={() => go({})}
       />
       <StatCard
-        title="정상"
+        title="PASS"
         value={pass.toLocaleString()}
         icon={CheckCircle}
         theme="green"
@@ -222,7 +222,7 @@ export default function StatCardGroup({ lineFilter, allLogs, chartSlot }: StatCa
         onNavigate={() => goToday({ result: 'PASS' })}
       />
       <StatCard
-        title="불량"
+        title="FAIL"
         value={fail.toLocaleString()}
         icon={XCircle}
         theme="red"

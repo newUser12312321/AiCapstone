@@ -83,19 +83,34 @@ export default function SettingsPage() {
         <div className="flex items-center gap-3">
           <Link
             to="/"
-            className="glass-panel-subtle inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)]"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded border border-[var(--dash-border)] text-sm text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)]"
           >
             <ArrowLeft size={16} />
             대시보드
           </Link>
-          <h1 className="text-xl font-semibold text-[var(--dash-text-primary)]">설정</h1>
+          <h1 className="text-xl font-semibold text-[var(--dash-text-primary)]">시스템 설정</h1>
         </div>
 
-        {/* 대시보드 동작 */}
-        <section className="glass-panel rounded-[22px] p-5">
+        <section className="rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
+          <SectionTitle icon={Percent} title="품질 기준" description="라인 모니터 목표 수율" />
+          <label className="block max-w-xs">
+            <span className="text-xs font-medium text-[var(--dash-text-secondary)]">목표 수율 (%)</span>
+            <input
+              type="number"
+              min={50}
+              max={100}
+              step={0.1}
+              value={settings.targetYieldPct}
+              onChange={(e) => setSettings({ targetYieldPct: Number(e.target.value) })}
+              className="mt-1.5 w-full rounded border border-[var(--dash-border)] px-3 py-2 text-sm"
+            />
+          </label>
+        </section>
+
+        <section className="rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
           <SectionTitle
             icon={RefreshCw}
-            title="대시보드 동작"
+            title="데이터 갱신"
             description="통계·이력 목록·최근 검사 피드의 자동 새로고침 간격입니다. 끄면 탭 포커스 시 등의 기본 갱신만 동작합니다."
           />
           <div className="space-y-4">
@@ -155,8 +170,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* 표시 */}
-        <section className="glass-panel rounded-[22px] p-5">
+        <section className="rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
           <SectionTitle
             icon={Clock}
             title="표시 옵션"
@@ -234,8 +248,8 @@ export default function SettingsPage() {
               <div className="flex flex-wrap gap-2">
                 {(
                   [
+                    { v: 'light' as const, label: '라이트 (기본)', Icon: Monitor },
                     { v: 'dark' as const, label: '다크', Icon: Monitor },
-                    { v: 'light' as const, label: '라이트', Icon: Monitor },
                   ] as const
                 ).map(({ v, label, Icon: I }) => (
                   <button
@@ -266,12 +280,11 @@ export default function SettingsPage() {
           </button>
         </section>
 
-        {/* 임계값 알림 */}
-        <section className="glass-panel rounded-[22px] p-5">
+        <section className="rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
           <SectionTitle
             icon={Bell}
-            title="운영 알림 (임계값)"
-            description="조건을 넘으면 헤더에 배지가 뜨고 짧은 토스트가 표시됩니다. 값은 설정에 저장됩니다."
+            title="운영 알림"
+            description="조건 초과 시 라인 모니터 상단 배너로 표시됩니다."
           />
           <label className="flex items-center gap-2 text-sm text-[var(--dash-text-secondary)] mb-4">
             <input
@@ -301,7 +314,7 @@ export default function SettingsPage() {
             </label>
             <label className="block">
               <span className="text-xs font-medium text-[var(--dash-text-secondary)]">
-                연속 불량 알림 (건)
+                연속 FAIL 알림 (건)
               </span>
               <input
                 type="number"
@@ -334,8 +347,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* 위험 구역 */}
-        <section className="glass-panel rounded-[22px] p-5 border-[var(--dash-danger)]/35">
+        <section className="rounded-lg border border-[var(--dash-danger)]/40 bg-[var(--dash-surface)] p-5">
           <SectionTitle
             icon={AlertTriangle}
             title="데이터 관리"

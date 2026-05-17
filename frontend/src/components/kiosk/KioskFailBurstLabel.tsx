@@ -1,4 +1,4 @@
-/** 불량 깜빡임 시 화면 중앙 대형 「불량」 문구 */
+/** FAIL 깜빡임 시 화면 중앙 대형 「FAIL」 문구 */
 export default function KioskFailBurstLabel({ visible }: { visible: boolean }) {
   if (!visible) return null
   return (
@@ -14,7 +14,7 @@ export default function KioskFailBurstLabel({ visible }: { visible: boolean }) {
           textShadow: '0 0 3px #fff, 0 0 10px #fff, 2px 3px 24px rgba(0,0,0,0.45)',
         }}
       >
-        불량
+        FAIL
       </span>
     </div>
   )

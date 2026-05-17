@@ -79,7 +79,7 @@ export default function TrendChart({ lineFilter }: TrendChartProps) {
 
   if (isLoading) {
     return (
-      <div className="glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-[22px] p-5">
+      <div className="glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-xl p-5">
         <div className="mb-4 h-4 w-36 shrink-0 rounded bg-[var(--dash-bg-secondary)]" />
         <div className="min-h-0 flex-1 rounded bg-[var(--dash-bg-secondary)]" />
       </div>
@@ -88,14 +88,14 @@ export default function TrendChart({ lineFilter }: TrendChartProps) {
 
   if (!trendData.length) {
     return (
-      <div className="glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[22px] p-5">
+      <div className="glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-xl p-5">
         <p className="text-sm text-[var(--dash-text-secondary)]">최근 24시간 검사 데이터가 없습니다.</p>
       </div>
     )
   }
 
   return (
-    <div className="glass-panel flex h-full min-h-[240px] flex-col rounded-[22px] p-5">
+    <div className="glass-panel flex h-full min-h-[240px] flex-col rounded-xl p-5">
       <div className="mb-4 flex shrink-0 items-center justify-between">
         <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">시간대별 검사 추이</h2>
         <span className="text-xs text-[var(--dash-text-tertiary)]">최근 24시간</span>
@@ -130,7 +130,7 @@ export default function TrendChart({ lineFilter }: TrendChartProps) {
 
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ fill: 'rgba(139,92,246,0.16)' }}
+            cursor={{ fill: 'rgba(37,99,235,0.14)' }}
           />
 
           <Legend
@@ -141,7 +141,7 @@ export default function TrendChart({ lineFilter }: TrendChartProps) {
 
           <Bar
             dataKey="pass"
-            name="정상"
+            name="PASS"
             stackId="stack"
             fill={PASS_COLOR}
             radius={[0, 0, 0, 0]}
@@ -151,7 +151,7 @@ export default function TrendChart({ lineFilter }: TrendChartProps) {
 
           <Bar
             dataKey="fail"
-            name="불량"
+            name="FAIL"
             stackId="stack"
             fill={FAIL_COLOR}
             radius={[3, 3, 0, 0]}

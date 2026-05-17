@@ -1,7 +1,7 @@
 package com.inspection.controller;
 
-import com.inspection.dto.InspectionRequestDto;
-import com.inspection.dto.InspectionResponseDto;
+import com.inspection.dto.*;
+import com.inspection.service.InspectionQueryService;
 import com.inspection.service.InspectionService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -47,6 +47,7 @@ import java.util.Map;
 public class InspectionController {
 
     private final InspectionService inspectionService;
+    private final InspectionQueryService inspectionQueryService;
 
     @Value("${app.inspection-image-dir:inspection-images}")
     private String inspectionImageDir;
@@ -96,6 +97,60 @@ public class InspectionController {
         return ResponseEntity.ok(inspectionService.getAllInspections());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<InspectionPageResponseDto> searchInspections(
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "50") @Min(1) int size,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String deviceId,
+            @RequestParam(required = false) String result,
+            @RequestParam(required = false) String board,
+            @RequestParam(required = false) String shift,
+            @RequestParam(required = false) String defectType,
+            @RequestParam(required = false) String reviewStatus) {
+        var criteria = InspectionQueryService.buildCriteria(
+                from, to, deviceId, result, board, shift, defectType, reviewStatus);
+        return ResponseEntity.ok(inspectionQueryService.search(criteria, page, size));
+    }
+
+    @GetMapping("/facets")
+    public ResponseEntity<InspectionFacetsDto> getFacets() {
+        return ResponseEntity.ok(inspectionQueryService.getFacets());
+    }
+
+    @GetMapping("/line-status")
+    public ResponseEntity<InspectionLineStatusDto> getLineStatus(
+            @RequestParam(required = false) String deviceId) {
+        return ResponseEntity.ok(inspectionQueryService.getLineStatus(deviceId));
+    }
+
+    @GetMapping("/summary/hourly")
+    public ResponseEntity<List<HourlyVolumeDto>> getHourlySummary(
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String deviceId,
+            @RequestParam(required = false) String board,
+            @RequestParam(required = false) String shift) {
+        var criteria = InspectionQueryService.buildCriteria(
+                from, to, deviceId, null, board, shift, null, null);
+        return ResponseEntity.ok(inspectionQueryService.getHourlyVolume(criteria));
+    }
+
+    @GetMapping("/summary/defects")
+    public ResponseEntity<List<DefectCountDto>> getDefectSummary(
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String deviceId,
+            @RequestParam(required = false) String board,
+            @RequestParam(required = false) String shift,
+            @RequestParam(required = false) String defectType,
+            @RequestParam(defaultValue = "6") @Min(1) int limit) {
+        var criteria = InspectionQueryService.buildCriteria(
+                from, to, deviceId, "FAIL", board, shift, defectType, null);
+        return ResponseEntity.ok(inspectionQueryService.getDefectSummary(criteria, limit));
+    }
+
     /**
      * 단건 검사 이력 상세 조회
      *
@@ -142,9 +197,26 @@ public class InspectionController {
      * @return 200 OK + 통계 집계 Map
      */
     @GetMapping("/stats")
-    public ResponseEntity<Map<String, Object>> getStatsSummary() {
-        log.debug("[GET /api/inspections/stats] 통계 조회");
-        return ResponseEntity.ok(inspectionService.getStatsSummary());
+    public ResponseEntity<Map<String, Object>> getStatsSummary(
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String deviceId,
+            @RequestParam(required = false) String result,
+            @RequestParam(required = false) String board,
+            @RequestParam(required = false) String shift) {
+        if (from == null && to == null && deviceId == null && result == null && board == null && shift == null) {
+            return ResponseEntity.ok(inspectionService.getStatsSummary());
+        }
+        var criteria = InspectionQueryService.buildCriteria(
+                from, to, deviceId, result, board, shift, null, null);
+        return ResponseEntity.ok(inspectionQueryService.getStatsSummary(criteria));
+    }
+
+    @PatchMapping("/{id}/review")
+    public ResponseEntity<InspectionResponseDto> updateReview(
+            @PathVariable Long id,
+            @Valid @RequestBody InspectionReviewRequestDto body) {
+        return ResponseEntity.ok(inspectionQueryService.updateReview(id, body.getReviewStatus()));
     }
 
     /**

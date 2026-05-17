@@ -2,12 +2,15 @@ package com.inspection.repository;
 
 import com.inspection.domain.entity.InspectionLog;
 import com.inspection.domain.enums.InspectionResult;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * InspectionLog JPA 리포지토리
@@ -18,7 +21,29 @@ import java.util.List;
  * <p>아래에는 대시보드에 필요한 쿼리 메서드를 추가로 선언한다.
  * Spring Data JPA가 메서드명을 파싱하여 자동으로 SQL을 생성한다.
  */
-public interface InspectionLogRepository extends JpaRepository<InspectionLog, Long> {
+public interface InspectionLogRepository extends JpaRepository<InspectionLog, Long>,
+        JpaSpecificationExecutor<InspectionLog> {
+
+    @EntityGraph(attributePaths = "defects")
+    Optional<InspectionLog> findWithDefectsById(Long id);
+
+    Optional<InspectionLog> findFirstByDeviceIdOrderByInspectedAtDesc(String deviceId);
+
+    Optional<InspectionLog> findFirstByDeviceIdAndResultOrderByInspectedAtDesc(
+            String deviceId, InspectionResult result);
+
+    Optional<InspectionLog> findFirstByResultOrderByInspectedAtDesc(InspectionResult result);
+
+    @Query("SELECT DISTINCT l.deviceId FROM InspectionLog l ORDER BY l.deviceId")
+    List<String> findDistinctDeviceIds();
+
+    @Query("SELECT DISTINCT l.silkBoardName FROM InspectionLog l WHERE l.silkBoardName IS NOT NULL AND l.silkBoardName <> '' ORDER BY l.silkBoardName")
+    List<String> findDistinctBoardNames();
+
+    @EntityGraph(attributePaths = "defects")
+    org.springframework.data.domain.Page<InspectionLog> findAll(
+            org.springframework.data.jpa.domain.Specification<InspectionLog> spec,
+            org.springframework.data.domain.Pageable pageable);
 
     /**
      * 특정 기간 내 모든 검사 이력을 시각 내림차순으로 조회

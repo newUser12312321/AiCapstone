@@ -20,6 +20,7 @@ import {
   clampAlertFailRate,
   clampAlertConsecutiveFail,
   clampAlertInferenceMs,
+  clampTargetYieldPct,
   isValidPollingInterval,
 } from '@/settings/dashboardSettings'
 import {
@@ -68,6 +69,9 @@ export function DashboardSettingsProvider({ children }: { children: ReactNode })
       }
       if (patch.alertMaxAvgInferenceMs != null) {
         next.alertMaxAvgInferenceMs = clampAlertInferenceMs(patch.alertMaxAvgInferenceMs)
+      }
+      if (patch.targetYieldPct != null) {
+        next.targetYieldPct = clampTargetYieldPct(patch.targetYieldPct)
       }
       saveDashboardSettings(next)
       return next

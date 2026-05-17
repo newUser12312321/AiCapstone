@@ -53,7 +53,7 @@ export default function KioskInspectionCompletePage() {
 
   return (
     <div className="dashboard-theme relative min-h-screen w-full text-[var(--dash-text-primary)] p-4 md:p-6 overflow-y-auto">
-      <div className="glass-panel mx-auto max-w-[980px] rounded-[30px] p-5 md:p-6 shadow-[var(--dash-glow)]">
+      <div className="glass-panel mx-auto max-w-[980px] rounded-xl p-5 md:p-6 shadow-[var(--dash-shadow-soft)]">
         <div className="flex flex-col gap-4">
           <header className="glass-panel rounded-3xl px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
             <div>
@@ -170,7 +170,7 @@ export default function KioskInspectionCompletePage() {
             <button
               type="button"
               onClick={() => navigate('/kiosk')}
-              className="mt-auto w-full rounded-full bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] shadow-[var(--dash-glow)] px-6 py-5 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3 shrink-0"
+              className="mt-auto w-full rounded-full bg-[var(--dash-accent)] hover:bg-[var(--dash-accent-hover)] shadow-[var(--dash-shadow-soft)] px-6 py-5 min-h-[72px] text-2xl font-bold text-white inline-flex items-center justify-center gap-3 shrink-0"
             >
               <Home size={24} />
               메인 화면으로 돌아가기

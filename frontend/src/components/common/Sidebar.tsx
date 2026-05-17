@@ -14,53 +14,58 @@ const NAV_ITEMS = [
   {
     to:    '/',
     icon:  BarChart2,
-    label: '대시보드',
-    end:   true,  // 루트 경로 정확히 매칭 (하위 경로에서 active 방지)
+    label: '라인 모니터',
+    subtitle: '당일 수율·FAIL',
+    end:   true,
   },
   {
     to:    '/history',
     icon:  ClipboardList,
-    label: '검사 이력',
+    label: '검사 로그',
+    subtitle: 'FAIL 리뷰',
     end:   false,
   },
   {
     to:    '/board-reference',
     icon:  Layers3,
-    label: 'PCB 정보',
+    label: '기판 프로그램',
+    subtitle: '마스터·스펙',
     end:   false,
   },
   {
     to:    '/settings',
     icon:  Settings,
-    label: '설정',
+    label: '시스템 설정',
+    subtitle: '품질·알람',
     end:   false,
   },
-]
+] as const
 
 export default function Sidebar() {
   return (
-    <aside className="w-60 bg-[var(--dash-surface-strong)]/45 border-r border-[var(--dash-border)] backdrop-blur-md flex flex-col py-4 shrink-0">
+    <aside className="w-60 bg-[var(--dash-bg-secondary)] border-r border-[var(--dash-border)] flex flex-col py-4 shrink-0">
 
       {/* 네비게이션 메뉴 */}
       <nav className="flex flex-col gap-1.5 px-3">
-        {NAV_ITEMS.map(({ to, icon: Icon, label, end }) => (
+        {NAV_ITEMS.map(({ to, icon: Icon, label, subtitle, end }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
             className={({ isActive }) =>
               clsx(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 isActive
-                  /* 활성 메뉴: 인디고 배경 + 흰 텍스트 */
-                  ? 'bg-gradient-to-r from-[var(--dash-accent)]/95 to-indigo-500 text-white shadow-[var(--dash-glow)]'
-                  /* 비활성 메뉴: 회색 텍스트, 호버 시 배경 */
-                  : 'text-[var(--dash-text-secondary)] hover:bg-white/10 hover:text-[var(--dash-text-primary)]'
+                  ? 'bg-[var(--dash-accent)] text-white shadow-sm'
+                  : 'text-[var(--dash-text-secondary)] hover:bg-[var(--dash-surface)] hover:text-[var(--dash-text-primary)] border border-transparent hover:border-[var(--dash-border-soft)]'
               )
             }
           >
-            <Icon size={18} />
-            {label}
+            <Icon size={18} className="shrink-0" />
+            <span className="min-w-0">
+              <span className="block leading-tight">{label}</span>
+              <span className={clsx('block text-[10px] font-normal opacity-80')}>{subtitle}</span>
+            </span>
           </NavLink>
         ))}
       </nav>

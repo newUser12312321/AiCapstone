@@ -1,57 +1,59 @@
 /**
- * 검사 이력 페이지
- *
- * 전체 검사 이력을 조회하고 날짜 기간 필터 및 결과(정상/불량, URL은 PASS/FAIL) 필터를 제공한다.
- * 쿼리스트링(from, to, result, device, board, defect, hour, open)으로 대시보드·차트와 연동한다.
+ * 검사 로그 — FAIL 리뷰 (서버 페이지·키보드 큐·리뷰 확인)
  */
 
-import { useMemo, useCallback, useEffect } from 'react'
-import { Search, Filter, Download } from 'lucide-react'
+import { useMemo, useCallback, useEffect, useState } from 'react'
+import { Download, FileSpreadsheet, Filter } from 'lucide-react'
 import clsx from 'clsx'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import DeviceFilterTabs from '@/components/common/DeviceFilterTabs'
+import FilterSummaryStrip from '@/components/dashboard/FilterSummaryStrip'
+import DefectViewer from '@/components/inspection/DefectViewer'
+import FailReviewToolbar from '@/components/inspection/FailReviewToolbar'
 import InspectionTable from '@/components/inspection/InspectionTable'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
-import { useAllInspections } from '@/hooks/useInspectionData'
-import { type InspectionResultType, deviceDisplayLabel } from '@/types/inspection'
+import { useDefectSummary, useFacets, useInspectionSearch, useStats } from '@/hooks/useInspectionData'
+import { type InspectionResultType, type WorkShift } from '@/types/inspection'
 import {
-  buildHistoryPath,
   buildHistorySearchString,
   getLocalDateString,
-  inspectionDetailPath,
   parseHistoryQuery,
   type HistoryQuery,
 } from '@/utils/historyNavigation'
+import { historyToSearchParams, shiftLabel } from '@/utils/inspectionSearchParams'
 import { logMatchesDefectDisplayLabel } from '@/utils/inspectionFilters'
-
-// ── 결과 필터 버튼 ────────────────────────────────────────────────────────────
-
+import { downloadDailyReportCsv, downloadInspectionCsv } from '@/utils/csvReport'
 type ResultFilter = 'ALL' | InspectionResultType
 
-interface FilterButtonProps {
-  label:    string
-  value:    ResultFilter
-  current:  ResultFilter
-  count:    number
-  onClick:  (v: ResultFilter) => void
-}
+const PAGE_SIZE = 50
 
-function FilterButton({ label, value, current, count, onClick }: FilterButtonProps) {
+function FilterButton({
+  label,
+  value,
+  current,
+  count,
+  onClick,
+}: {
+  label: string
+  value: ResultFilter
+  current: ResultFilter
+  count: number
+  onClick: (v: ResultFilter) => void
+}) {
   const active = value === current
   return (
     <button
+      type="button"
       onClick={() => onClick(value)}
       className={clsx(
-        'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+        'flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border transition-colors',
         active
-          ? 'bg-[var(--dash-accent)] text-white'
-          : 'bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)] hover:bg-[var(--dash-bg-secondary)]'
+          ? 'bg-[var(--dash-accent)] text-white border-[var(--dash-accent)]'
+          : 'bg-[var(--dash-surface)] border-[var(--dash-border)] text-[var(--dash-text-secondary)] hover:bg-[var(--dash-bg-secondary)]'
       )}
     >
       {label}
-      <span className={clsx(
-        'px-1.5 py-0.5 rounded-full text-xs',
-        active ? 'bg-white/20' : 'bg-[var(--dash-bg-secondary)]'
-      )}>
+      <span className={clsx('px-1.5 py-0.5 rounded text-[10px]', active ? 'bg-white/20' : 'bg-[var(--dash-bg-secondary)]')}>
         {count}
       </span>
     </button>
@@ -63,19 +65,48 @@ function logHour(iso: string, timeZoneMode: 'local' | 'utc'): number {
   return timeZoneMode === 'utc' ? d.getUTCHours() : d.getHours()
 }
 
-// ── 메인 컴포넌트 ─────────────────────────────────────────────────────────────
-
 export default function HistoryPage() {
   const { formatFullDateTime, formatRatePercent, settings } = useDashboardSettings()
-  const { data: allLogs = [], isLoading } = useAllInspections()
   const [searchParams, setSearchParams] = useSearchParams()
-  const navigate = useNavigate()
+  const [selectedId, setSelectedId] = useState<number | undefined>()
 
   const today = getLocalDateString()
   const q = useMemo(() => parseHistoryQuery(searchParams), [searchParams])
 
   const dateFrom = q.from ?? ''
   const dateTo = q.to !== undefined && q.to !== '' ? q.to : today
+  const page = q.page ?? 0
+
+  const baseFilter = useMemo(
+    () => ({
+      from: dateFrom || today,
+      to: dateTo,
+      deviceId: q.device,
+      board: q.board,
+      shift: q.shift,
+      reviewStatus: q.review,
+    }),
+    [dateFrom, dateTo, today, q.device, q.board, q.shift, q.review]
+  )
+
+  const searchParamsApi = useMemo(
+    () =>
+      historyToSearchParams(
+        { ...q, from: dateFrom || today, to: dateTo, page },
+        { page, size: PAGE_SIZE }
+      ),
+    [q, dateFrom, dateTo, page]
+  )
+
+  const { data: pageData, isLoading } = useInspectionSearch(searchParamsApi)
+  const { data: rangeStats } = useStats(baseFilter)
+  const { data: passStats } = useStats({ ...baseFilter, result: 'PASS' })
+  const { data: failStats } = useStats({ ...baseFilter, result: 'FAIL' })
+  const { data: facets } = useFacets()
+  const { data: defectSummary = [] } = useDefectSummary({
+    ...baseFilter,
+    result: 'FAIL',
+  })
 
   const patchQuery = useCallback(
     (patch: Partial<HistoryQuery>) => {
@@ -83,8 +114,9 @@ export default function HistoryPage() {
         (prev) => {
           const current = parseHistoryQuery(prev)
           const merged: HistoryQuery = { ...current, ...patch }
-          if (merged.result === 'ALL') {
-            delete merged.result
+          if (merged.result === 'ALL') delete merged.result
+          if (patch.page === undefined && (patch.from || patch.to || patch.device || patch.board || patch.result || patch.shift || patch.review)) {
+            merged.page = 0
           }
           const s = buildHistorySearchString(merged)
           return s ? new URLSearchParams(s) : new URLSearchParams()
@@ -95,241 +127,321 @@ export default function HistoryPage() {
     [setSearchParams]
   )
 
-  const deviceOptions = useMemo(() => {
-    const s = new Set<string>()
-    allLogs.forEach((l) => {
-      if (l.deviceId) s.add(l.deviceId)
-    })
-    return Array.from(s).sort()
-  }, [allLogs])
-
-  const boardOptions = useMemo(() => {
-    const s = new Set<string>()
-    allLogs.forEach((l) => {
-      const b = (l.silkBoardName ?? '').trim()
-      if (b) s.add(b)
-    })
-    return Array.from(s).sort()
-  }, [allLogs])
-
   const filteredLogs = useMemo(() => {
-    return allLogs.filter((log) => {
-      if (q.result && q.result !== 'ALL' && log.result !== q.result) return false
-
-      const logDate = log.inspectedAt.slice(0, 10)
-      if (dateFrom && logDate < dateFrom) return false
-      if (dateTo && logDate > dateTo) return false
-
-      if (q.device && log.deviceId !== q.device) return false
-      if (q.board && (log.silkBoardName ?? '').trim() !== q.board) return false
-
-      if (q.hour != null && logHour(log.inspectedAt, settings.timeZoneMode) !== q.hour) {
-        return false
-      }
-
+    const rows = pageData?.content ?? []
+    return rows.filter((log) => {
+      if (q.hour != null && logHour(log.inspectedAt, settings.timeZoneMode) !== q.hour) return false
       if (q.defect && !logMatchesDefectDisplayLabel(log, q.defect)) return false
-
       return true
     })
-  }, [allLogs, q, dateFrom, dateTo, settings.timeZoneMode])
+  }, [pageData, q.hour, q.defect, settings.timeZoneMode])
+
+  const failQueue = useMemo(
+    () => filteredLogs.filter((l) => l.result === 'FAIL'),
+    [filteredLogs]
+  )
 
   const resultFilter: ResultFilter = q.result ?? 'ALL'
 
-  /* `?open=` 딥링크 → 상세 페이지로 이동(닫기 시 동일 필터의 이력으로 복귀) */
+  const selectedLog = useMemo(
+    () => filteredLogs.find((l) => l.id === selectedId),
+    [filteredLogs, selectedId]
+  )
+
+  const queueIndex = failQueue.findIndex((l) => l.id === selectedId)
+
+  const goQueue = useCallback(
+    (delta: number) => {
+      if (failQueue.length === 0) return
+      const idx = queueIndex < 0 ? 0 : queueIndex + delta
+      const next = failQueue[Math.max(0, Math.min(failQueue.length - 1, idx))]
+      if (next) setSelectedId(next.id)
+    },
+    [failQueue, queueIndex]
+  )
+
   useEffect(() => {
     const parsed = parseHistoryQuery(searchParams)
     if (parsed.open == null) return
-    if (!filteredLogs.some((l) => l.id === parsed.open)) return
-    const returnTo = buildHistoryPath({ ...parsed, open: undefined })
-    navigate(inspectionDetailPath(parsed.open), { replace: true, state: { returnTo } })
-  }, [searchParams, filteredLogs, navigate])
+    setSelectedId(parsed.open)
+    patchQuery({ open: undefined })
+  }, [searchParams, patchQuery])
+
+  useEffect(() => {
+    if (selectedId != null && filteredLogs.some((l) => l.id === selectedId)) return
+    if (q.result === 'FAIL' && failQueue.length > 0) {
+      setSelectedId(failQueue[0].id)
+    } else if (filteredLogs.length > 0) {
+      setSelectedId(filteredLogs[0].id)
+    } else {
+      setSelectedId(undefined)
+    }
+  }, [filteredLogs, failQueue, q.result, selectedId])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return
+      if (e.key === 'ArrowDown' || e.key === 'j') {
+        e.preventDefault()
+        goQueue(1)
+      } else if (e.key === 'ArrowUp' || e.key === 'k') {
+        e.preventDefault()
+        goQueue(-1)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [goQueue])
 
   const downloadCsv = () => {
-    if (!filteredLogs.length) return
-
-    const header = ['ID', '시각', '디바이스', '결과', '오차(°)', '추론(ms)', '총처리(ms)', '결함수']
-    const rows = filteredLogs.map((l) => [
-      l.id,
-      formatFullDateTime(l.inspectedAt),
-      deviceDisplayLabel(l.deviceId),
-      l.result,
-      l.angleErrorDeg?.toFixed(2) ?? '',
-      l.inferenceTimeMs ?? '',
-      l.totalTimeMs ?? '',
-      l.defects.length,
-    ])
-
-    const csv = [header, ...rows].map((r) => r.join(',')).join('\n')
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `inspection_history_${new Date().toISOString().slice(0, 10)}.csv`
-    link.click()
-    URL.revokeObjectURL(url)
+    downloadInspectionCsv(
+      filteredLogs,
+      `inspection_log_${dateTo}_p${page + 1}.csv`,
+      formatFullDateTime
+    )
   }
 
-  const passCount = filteredLogs.filter((l) => l.result === 'PASS').length
-  const failCount = filteredLogs.filter((l) => l.result === 'FAIL').length
+  const downloadReport = () => {
+    if (!rangeStats) return
+    downloadDailyReportCsv({
+      dateFrom: dateFrom || today,
+      dateTo,
+      stats: rangeStats,
+      defectRows: defectSummary,
+      logs: filteredLogs,
+      formatFullDateTime,
+    })
+  }
+
+  const presetToday = () => patchQuery({ from: today, to: today, open: undefined, page: 0 })
+  const presetWeek = () => {
+    const d = new Date()
+    d.setDate(d.getDate() - 6)
+    patchQuery({ from: d.toISOString().slice(0, 10), to: today, open: undefined, page: 0 })
+  }
+
+  const totalPages = pageData?.totalPages ?? 0
+  const totalElements = pageData?.totalElements ?? 0
 
   return (
-    <div className="p-6 space-y-5 overflow-y-auto h-full bg-[var(--dash-bg-secondary)]">
-      <div className="max-w-[1280px] mx-auto space-y-5">
-
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold tracking-tight text-[var(--dash-text-primary)]">검사 이력</h2>
-            <p className="text-sm text-[var(--dash-text-secondary)] mt-0.5">전체 검사 기록 조회 및 결함 상세 확인</p>
-          </div>
-
-          <button
-            onClick={downloadCsv}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] rounded-xl text-sm font-medium transition-colors shadow-[var(--dash-shadow-soft)]"
-          >
-            <Download size={15} />
-            CSV 내보내기
-          </button>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[var(--dash-bg-secondary)]">
+      <div className="shrink-0 border-b border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h1 className="text-sm font-semibold text-[var(--dash-text-primary)]">검사 로그</h1>
+          <p className="text-xs text-[var(--dash-text-tertiary)]">
+            FAIL 리뷰 · 서버 페이지 ({totalElements.toLocaleString()}건)
+          </p>
         </div>
-
-        <div className="bg-[var(--dash-surface)] rounded-2xl border border-[var(--dash-border)] shadow-[var(--dash-shadow-soft)] p-4">
-          <div className="flex flex-wrap gap-4 items-end">
-
-          <div className="flex items-center gap-2">
-            <Filter size={14} className="text-[var(--dash-text-tertiary)] shrink-0" />
-            <div className="flex items-center gap-2">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-[var(--dash-text-tertiary)]">시작일</label>
-                <input
-                  type="date"
-                  value={dateFrom}
-                  onChange={(e) => patchQuery({ from: e.target.value || undefined })}
-                  max={dateTo || today}
-                  className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
-                />
-              </div>
-              <span className="text-[var(--dash-text-tertiary)] text-sm mt-4">~</span>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-[var(--dash-text-tertiary)]">종료일</label>
-                <input
-                  type="date"
-                  value={dateTo}
-                  onChange={(e) => patchQuery({ to: e.target.value || undefined })}
-                  min={dateFrom}
-                  max={today}
-                  className="bg-[var(--dash-surface)] border border-[var(--dash-border)] text-[var(--dash-text-primary)] text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-[var(--dash-text-tertiary)]">디바이스</label>
-              <select
-                value={q.device ?? ''}
-                onChange={(e) =>
-                  patchQuery({ device: e.target.value || undefined, open: undefined })
-                }
-                className="min-w-[140px] rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
-              >
-                <option value="">전체</option>
-                {deviceOptions.map((d) => (
-                  <option key={d} value={d}>
-                    {deviceDisplayLabel(d)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs text-[var(--dash-text-tertiary)]">기판명(실크)</label>
-              <select
-                value={q.board ?? ''}
-                onChange={(e) =>
-                  patchQuery({ board: e.target.value || undefined, open: undefined })
-                }
-                className="min-w-[160px] rounded-xl border border-[var(--dash-border)] bg-[var(--dash-surface)] px-3 py-2 text-sm text-[var(--dash-text-primary)]"
-              >
-                <option value="">전체</option>
-                {boardOptions.map((b) => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-            </div>
-            {q.hour != null && (
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-[var(--dash-text-tertiary)]">시간대 필터</label>
-                <button
-                  type="button"
-                  onClick={() => patchQuery({ hour: undefined, open: undefined })}
-                  className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2 text-xs text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)]"
-                >
-                  {String(q.hour).padStart(2, '0')}:00 해제
-                </button>
-              </div>
-            )}
-            {q.defect && (
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-[var(--dash-text-tertiary)]">결함 필터</label>
-                <button
-                  type="button"
-                  onClick={() => patchQuery({ defect: undefined, open: undefined })}
-                  className="rounded-xl border border-[var(--dash-border)] bg-[var(--dash-bg-secondary)] px-3 py-2 text-xs text-[var(--dash-text-secondary)] hover:text-[var(--dash-text-primary)] max-w-[220px] truncate"
-                  title={q.defect}
-                >
-                  「{q.defect}」 해제
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 ml-auto">
-            <Search size={14} className="text-[var(--dash-text-tertiary)]" />
-            <FilterButton
-              label="전체"
-              value="ALL"
-              current={resultFilter}
-              count={allLogs.length}
-              onClick={(v) => patchQuery({ result: v, open: undefined })}
-            />
-            <FilterButton
-              label="정상"
-              value="PASS"
-              current={resultFilter}
-              count={allLogs.filter((l) => l.result === 'PASS').length}
-              onClick={(v) => patchQuery({ result: v, open: undefined })}
-            />
-            <FilterButton
-              label="불량"
-              value="FAIL"
-              current={resultFilter}
-              count={allLogs.filter((l) => l.result === 'FAIL').length}
-              onClick={(v) => patchQuery({ result: v, open: undefined })}
-            />
-          </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={downloadReport}
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)]"
+          >
+            <FileSpreadsheet size={14} />
+            품질 리포트
+          </button>
+          <button
+            type="button"
+            onClick={downloadCsv}
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] hover:bg-[var(--dash-bg-secondary)]"
+          >
+            <Download size={14} />
+            CSV
+          </button>
         </div>
       </div>
 
-        <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--dash-text-secondary)]">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
-            조회 결과 <span className="text-[var(--dash-text-primary)] font-semibold">{filteredLogs.length}건</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
-            정상 <span className="text-[var(--dash-success)] font-semibold">{passCount}건</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--dash-border)] bg-[var(--dash-surface)]">
-            불량 <span className="text-[var(--dash-danger)] font-semibold">{failCount}건</span>
-          </span>
-          {filteredLogs.length > 0 && (
-          <span>
-            불량률 <span className="text-[var(--dash-warning)] font-semibold">
-              {formatRatePercent((failCount / filteredLogs.length) * 100)}%
-            </span>
-          </span>
-          )}
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
+        <FilterSummaryStrip
+          stats={rangeStats}
+          title="조회 구간 요약"
+          subtitle={`${dateFrom || '—'} ~ ${dateTo}`}
+          formatRate={formatRatePercent}
+          targetYieldPct={settings.targetYieldPct}
+        />
+
+        <div className="border border-[var(--dash-border)] bg-[var(--dash-surface)] rounded-lg p-3 space-y-3">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Filter size={14} className="text-[var(--dash-text-tertiary)]" />
+              <button type="button" onClick={presetToday} className="text-xs px-2 py-1 rounded border border-[var(--dash-border)] hover:bg-[var(--dash-bg-secondary)]">
+                오늘
+              </button>
+              <button type="button" onClick={presetWeek} className="text-xs px-2 py-1 rounded border border-[var(--dash-border)] hover:bg-[var(--dash-bg-secondary)]">
+                최근 7일
+              </button>
+              <button
+                type="button"
+                onClick={() => patchQuery({ from: dateFrom || today, to: dateTo, result: 'FAIL', open: undefined, page: 0 })}
+                className="text-xs px-2 py-1 rounded border border-[var(--dash-danger)]/40 text-[var(--dash-danger)] hover:bg-[var(--dash-danger)]/8"
+              >
+                FAIL만
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2 items-end">
+              <label className="text-xs text-[var(--dash-text-tertiary)] flex flex-col gap-1">
+                시작
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => patchQuery({ from: e.target.value || undefined, open: undefined })}
+                  max={dateTo || today}
+                  className="rounded border border-[var(--dash-border)] px-2 py-1.5 text-sm bg-[var(--dash-surface)]"
+                />
+              </label>
+              <label className="text-xs text-[var(--dash-text-tertiary)] flex flex-col gap-1">
+                종료
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => patchQuery({ to: e.target.value || undefined, open: undefined })}
+                  min={dateFrom}
+                  max={today}
+                  className="rounded border border-[var(--dash-border)] px-2 py-1.5 text-sm bg-[var(--dash-surface)]"
+                />
+              </label>
+              <label className="text-xs text-[var(--dash-text-tertiary)] flex flex-col gap-1">
+                교대
+                <select
+                  value={q.shift ?? ''}
+                  onChange={(e) =>
+                    patchQuery({
+                      shift: (e.target.value as WorkShift) || undefined,
+                      open: undefined,
+                    })
+                  }
+                  className="min-w-[130px] rounded border border-[var(--dash-border)] px-2 py-1.5 text-sm bg-[var(--dash-surface)]"
+                >
+                  <option value="">전체</option>
+                  <option value="DAY">{shiftLabel('DAY')}</option>
+                  <option value="SWING">{shiftLabel('SWING')}</option>
+                  <option value="NIGHT">{shiftLabel('NIGHT')}</option>
+                </select>
+              </label>
+              <label className="text-xs text-[var(--dash-text-tertiary)] flex flex-col gap-1">
+                기종
+                <select
+                  value={q.device ?? ''}
+                  onChange={(e) => patchQuery({ device: e.target.value || undefined, open: undefined })}
+                  className="min-w-[120px] rounded border border-[var(--dash-border)] px-2 py-1.5 text-sm bg-[var(--dash-surface)]"
+                >
+                  <option value="">전체</option>
+                  {(facets?.deviceIds ?? []).map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-xs text-[var(--dash-text-tertiary)] flex flex-col gap-1">
+                보드
+                <select
+                  value={q.board ?? ''}
+                  onChange={(e) => patchQuery({ board: e.target.value || undefined, open: undefined })}
+                  className="min-w-[120px] rounded border border-[var(--dash-border)] px-2 py-1.5 text-sm bg-[var(--dash-surface)]"
+                >
+                  <option value="">전체</option>
+                  {(facets?.boardNames ?? []).map((b) => (
+                    <option key={b} value={b}>{b}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-xs text-[var(--dash-text-tertiary)] flex flex-col gap-1">
+                리뷰
+                <select
+                  value={q.review ?? ''}
+                  onChange={(e) =>
+                    patchQuery({
+                      review:
+                        e.target.value === 'PENDING' ||
+                        e.target.value === 'CONFIRMED' ||
+                        e.target.value === 'FALSE_CALL'
+                          ? e.target.value
+                          : undefined,
+                      open: undefined,
+                    })
+                  }
+                  className="min-w-[110px] rounded border border-[var(--dash-border)] px-2 py-1.5 text-sm bg-[var(--dash-surface)]"
+                >
+                  <option value="">전체</option>
+                  <option value="PENDING">PENDING</option>
+                  <option value="CONFIRMED">CONFIRMED</option>
+                  <option value="FALSE_CALL">FALSE_CALL</option>
+                </select>
+              </label>
+            </div>
+            <div className="flex flex-wrap gap-1.5 ml-auto">
+              <FilterButton label="전체" value="ALL" current={resultFilter} count={rangeStats?.totalCount ?? 0} onClick={(v) => patchQuery({ result: v, open: undefined })} />
+              <FilterButton label="PASS" value="PASS" current={resultFilter} count={passStats?.totalCount ?? 0} onClick={(v) => patchQuery({ result: v, open: undefined })} />
+              <FilterButton label="FAIL" value="FAIL" current={resultFilter} count={failStats?.totalCount ?? 0} onClick={(v) => patchQuery({ result: v, open: undefined })} />
+            </div>
+          </div>
+          <DeviceFilterTabs
+            devices={facets?.deviceIds}
+            value={q.device ?? ''}
+            onChange={(device) => patchQuery({ device: device || undefined, open: undefined })}
+          />
         </div>
 
-        <InspectionTable logs={filteredLogs} isLoading={isLoading} />
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 min-h-[480px] border border-[var(--dash-border)] rounded-lg overflow-hidden bg-[var(--dash-surface)]">
+          <div className="lg:col-span-2 min-h-[320px] lg:min-h-0 lg:max-h-[calc(100vh-320px)] flex flex-col border-b lg:border-b-0 lg:border-r border-[var(--dash-border)]">
+            {selectedId != null && selectedLog?.result === 'FAIL' && (
+              <FailReviewToolbar
+                inspectionId={selectedId}
+                reviewStatus={selectedLog.reviewStatus}
+                onPrev={() => goQueue(-1)}
+                onNext={() => goQueue(1)}
+                hasPrev={queueIndex > 0}
+                hasNext={queueIndex >= 0 && queueIndex < failQueue.length - 1}
+                queueIndex={queueIndex >= 0 ? queueIndex : undefined}
+                queueTotal={failQueue.length}
+              />
+            )}
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <InspectionTable
+                logs={filteredLogs}
+                isLoading={isLoading}
+                detailMode="review"
+                selectedId={selectedId}
+                onSelectId={setSelectedId}
+                embedded
+              />
+            </div>
+            {totalPages > 1 && (
+              <div className="shrink-0 flex items-center justify-between gap-2 border-t border-[var(--dash-border)] px-3 py-2 text-xs">
+                <button
+                  type="button"
+                  disabled={page <= 0}
+                  onClick={() => patchQuery({ page: page - 1 })}
+                  className="px-2 py-1 rounded border border-[var(--dash-border)] disabled:opacity-40"
+                >
+                  이전
+                </button>
+                <span className="text-[var(--dash-text-tertiary)] tabular-nums">
+                  {page + 1} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  disabled={page >= totalPages - 1}
+                  onClick={() => patchQuery({ page: page + 1 })}
+                  className="px-2 py-1 rounded border border-[var(--dash-border)] disabled:opacity-40"
+                >
+                  다음
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="lg:col-span-3 min-h-[360px] lg:min-h-0 overflow-y-auto bg-[var(--dash-bg-secondary)] p-3 flex flex-col">
+            {selectedId != null ? (
+              <DefectViewer inspectionId={selectedId} onClose={() => setSelectedId(undefined)} inline />
+            ) : (
+              <div className="h-full min-h-[280px] flex items-center justify-center text-sm text-[var(--dash-text-secondary)] text-center px-6">
+                목록에서 검사를 선택하면 이미지와 결함 오버레이가 표시됩니다.
+                <br />
+                <span className="text-xs text-[var(--dash-text-tertiary)] mt-2">↑↓ 또는 j/k — FAIL 큐 이동</span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

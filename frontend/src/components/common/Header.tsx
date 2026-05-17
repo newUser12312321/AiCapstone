@@ -47,13 +47,13 @@ export default function Header() {
 
   return (
     <>
-      <header className="h-16 bg-[var(--dash-surface-strong)]/60 border-b border-[var(--dash-border)] backdrop-blur-md flex items-center px-6 shrink-0">
+      <header className="h-16 bg-[var(--dash-surface-strong)] border-b border-[var(--dash-border)] flex items-center px-6 shrink-0">
 
         <div className="flex items-center gap-3.5 min-w-0">
           <Link
             to="/"
             title="메인 대시보드로 이동"
-            className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center overflow-hidden bg-white p-1.5 shadow-[0_8px_28px_rgba(139,92,246,0.35)] ring-1 ring-white/15 transition-transform hover:scale-105 hover:ring-[var(--dash-accent)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/50"
+            className="w-10 h-10 shrink-0 rounded-lg flex items-center justify-center overflow-hidden bg-white p-1.5 shadow-[var(--dash-shadow-soft)] ring-1 ring-[var(--dash-border)] transition-colors hover:ring-[var(--dash-accent)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--dash-accent)]/40"
           >
             <img
               src={raspberryPiIcon}
@@ -65,14 +65,7 @@ export default function Header() {
             />
           </Link>
           <div className="min-w-0 py-0.5">
-            <h1
-              className="
-              text-xl sm:text-2xl font-extrabold leading-tight tracking-tight
-              bg-gradient-to-r from-[var(--dash-text-primary)] via-[var(--dash-accent)] to-[var(--dash-info)]
-              bg-clip-text text-transparent
-              drop-shadow-[0_0_24px_rgba(139,92,246,0.25)]
-            "
-            >
+            <h1 className="text-xl sm:text-2xl font-bold leading-tight tracking-tight text-[var(--dash-text-primary)]">
               PCB 비전 검사 시스템
             </h1>
           </div>

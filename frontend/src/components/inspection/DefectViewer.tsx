@@ -9,6 +9,7 @@ import { useInspectionById } from '@/hooks/useInspectionData'
 import type { DefectDetail, InspectionLog } from '@/types/inspection'
 import { DEFECT_COLOR, defectDisplayName, deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 import fiducialCalib from '@/config/fiducialScaleCalibration.json'
+import { deriveRawImagePathFromStored, resolveImageSrc } from '@/utils/inspectionImage'
 
 // ── 이미지 로드 전 기본값 (로드 후 naturalWidth/Height 사용) ───────────────
 const DEFAULT_REF_WIDTH = 1920
@@ -465,45 +466,6 @@ interface DefectViewerProps {
   inline?: boolean
 }
 
-/**
- * 캡처 이미지 URL — 항상 `/captures/...` 상대 경로만 사용한다.
- * `npm run dev` 시 Vite가 `vite.config.ts`의 프록시로 라즈베리파이 :8000에 넘긴다.
- * (브라우저가 Pi에 직접 접속하면 PC 방화벽/망 설정에 따라 실패하기 쉬움)
- */
-function resolveImageSrc(imagePath: string | null): string | null {
-  if (!imagePath) return null
-  const p = imagePath.replace(/\\/g, '/')
-  if (p.startsWith('http://') || p.startsWith('https://')) return p
-
-  let relative: string
-  if (p.startsWith('/captures/')) {
-    relative = p
-  } else if (p.startsWith('captures/')) {
-    relative = `/${p}`
-  } else {
-    const capturesIndex = p.indexOf('/captures/')
-    relative = capturesIndex >= 0 ? p.slice(capturesIndex) : p
-  }
-
-  if (relative.startsWith('/')) return relative
-  return relative.startsWith('captures/') ? `/${relative}` : relative
-}
-
-/**
- * 엣지 저장 규칙: `타임스탬프_deskew.jpg` ↔ 원본 `타임스탬프.jpg`
- * 보정 전 이미지 URL을 유추한다. 패턴이 아니면 null (구 이력·정렬 FAIL 등).
- */
-function deriveRawImagePathFromStored(stored: string | null): string | null {
-  if (!stored) return null
-  const p = stored.replace(/\\/g, '/')
-  const last = p.lastIndexOf('/')
-  const dir = last >= 0 ? p.slice(0, last + 1) : ''
-  const file = last >= 0 ? p.slice(last + 1) : p
-  const m = file.match(/^(.+)_deskew(\.[^.]+)$/)
-  if (!m) return null
-  return `${dir}${m[1]}${m[2]}`
-}
-
 function SubpixelScaleCheckPanel({
   log,
   distPx,
@@ -698,7 +660,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
             검사 상세 (피듀셜)
             {log && (
               <span className="ml-2 text-xs text-[var(--dash-text-tertiary)] font-normal">
-                #{log.id} — {log.result === 'PASS' ? '✅ 정상' : `❌ ${inspectionResultLabel(log.result)}`}
+                #{log.id} — {log.result === 'PASS' ? '✅ PASS' : `❌ ${inspectionResultLabel(log.result)}`}
               </span>
             )}
           </span>
@@ -1179,7 +1141,7 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
 
             {missingReasons.length > 0 && (
               <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
-                <h4 className="text-[11px] font-semibold text-[var(--dash-danger)] mb-1">불량 원인</h4>
+                <h4 className="text-[11px] font-semibold text-[var(--dash-danger)] mb-1">FAIL 원인</h4>
                 <ul className="space-y-1">
                   {missingReasons.map((d, i) => (
                     <li key={`${d.defectType}-${i}`} className="text-[11px] text-[var(--dash-danger)]">

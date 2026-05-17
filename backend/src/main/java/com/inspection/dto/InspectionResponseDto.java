@@ -80,6 +80,11 @@ public class InspectionResponseDto {
     /** 실크 OCR — 제조일자 문자열 */
     private String silkManufactureDate;
 
+    /** FAIL 리뷰 상태 (PENDING | CONFIRMED | FALSE_CALL, null=PENDING) */
+    private String reviewStatus;
+
+    private LocalDateTime reviewedAt;
+
     // ── 정적 팩토리 메서드 ────────────────────────────────────────────────────
 
     /**
@@ -126,6 +131,8 @@ public class InspectionResponseDto {
                 .silkBoardName(log.getSilkBoardName())
                 .silkManufacturer(log.getSilkManufacturer())
                 .silkManufactureDate(log.getSilkManufactureDate())
+                .reviewStatus(log.getReviewStatus() != null ? log.getReviewStatus().name() : null)
+                .reviewedAt(log.getReviewedAt())
                 .build();
     }
 

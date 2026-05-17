@@ -209,7 +209,7 @@ public class InspectionService {
      */
     @Transactional(readOnly = true)
     public InspectionResponseDto getInspectionById(Long id) {
-        InspectionLog log = inspectionLogRepository.findById(id)
+        InspectionLog log = inspectionLogRepository.findWithDefectsById(id)
                 .orElseThrow(() ->
                         new IllegalArgumentException("검사 이력을 찾을 수 없습니다. ID: " + id));
         return InspectionResponseDto.from(log);

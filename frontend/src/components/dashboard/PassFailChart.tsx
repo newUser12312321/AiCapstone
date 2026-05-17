@@ -13,8 +13,8 @@ import type { InspectionLog, PieDataPoint } from '@/types/inspection'
 import { buildHistoryPath, getLocalDateString } from '@/utils/historyNavigation'
 import type { LineFilter } from '@/utils/inspectionFilters'
 
-const PASS_COLOR = '#34d399'
-const FAIL_COLOR = '#fb7185'
+const PASS_COLOR = '#16a34a'
+const FAIL_COLOR = '#dc2626'
 
 function summarize(logs: InspectionLog[]) {
   const total = logs.length
@@ -130,8 +130,8 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
 
   const isTile = variant === 'statTile'
   const shellClass = isTile
-    ? 'glass-panel flex min-h-[196px] h-full animate-pulse flex-col rounded-[22px] p-6'
-    : 'glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-[22px] p-5'
+    ? 'glass-panel flex min-h-[196px] h-full animate-pulse flex-col rounded-xl p-6'
+    : 'glass-panel flex h-full min-h-[240px] animate-pulse flex-col rounded-xl p-5'
 
   if (isLoading || !stats) {
     return (
@@ -153,8 +153,8 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
     : summarize(logs)
 
   const pieData: PieDataPoint[] = [
-    { name: '정상', value: pass, fill: PASS_COLOR },
-    { name: '불량', value: fail, fill: FAIL_COLOR },
+    { name: 'PASS', value: pass, fill: PASS_COLOR },
+    { name: 'FAIL', value: fail, fill: FAIL_COLOR },
   ]
 
   if (pass === 0 && fail === 0) {
@@ -162,12 +162,12 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
       <div
         className={
           isTile
-            ? 'glass-panel flex min-h-[196px] h-full flex-col items-center justify-center rounded-[22px] p-6'
-            : 'glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[22px] p-5'
+            ? 'glass-panel flex min-h-[196px] h-full flex-col items-center justify-center rounded-xl p-6'
+            : 'glass-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-xl p-5'
         }
       >
-        <h2 className="mb-2 self-stretch text-[15px] font-semibold text-[var(--dash-text-secondary)]">정상 / 불량 비율</h2>
-        <p className="text-sm text-[var(--dash-text-secondary)]">표시할 정상·불량 데이터가 없습니다.</p>
+        <h2 className="mb-2 self-stretch text-[15px] font-semibold text-[var(--dash-text-secondary)]">PASS / FAIL 비율</h2>
+        <p className="text-sm text-[var(--dash-text-secondary)]">표시할 PASS·FAIL 데이터가 없습니다.</p>
       </div>
     )
   }
@@ -189,12 +189,12 @@ export default function PassFailChart({ lineFilter, logs, variant = 'default' }:
     <div
       className={
         isTile
-          ? 'glass-panel flex min-h-[196px] h-full flex-col rounded-[22px] p-6 transition-transform hover:scale-[1.01]'
-          : 'glass-panel flex h-full min-h-[240px] flex-col rounded-[22px] p-5'
+          ? 'glass-panel flex min-h-[196px] h-full flex-col rounded-xl p-6 transition-colors hover:border-[var(--dash-accent)]/30'
+          : 'glass-panel flex h-full min-h-[240px] flex-col rounded-xl p-5'
       }
     >
       <h2 className={`shrink-0 text-[15px] font-semibold text-[var(--dash-text-secondary)] ${isTile ? 'mb-2' : 'mb-4'}`}>
-        정상 / 불량 비율
+        PASS / FAIL 비율
       </h2>
 
       <div className="min-h-0 w-full flex-1" style={chartHeight ? { height: chartHeight } : undefined}>

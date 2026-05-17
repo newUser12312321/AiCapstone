@@ -24,9 +24,9 @@ export interface DefectDetail {
 /** 최종 판정 결과 타입 */
 export type InspectionResultType = 'PASS' | 'FAIL'
 
-/** 화면 표시용 판정 라벨(API·쿼리는 PASS/FAIL 유지) */
+/** 화면 표시용 판정 라벨 — API·DB와 동일하게 PASS/FAIL */
 export function inspectionResultLabel(result: InspectionResultType): string {
-  return result === 'PASS' ? '정상' : '불량'
+  return result
 }
 
 /** 서버에 저장된 멀티보드 키·레거시 값 → 현장 표기 디바이스명 */
@@ -96,6 +96,56 @@ export interface InspectionLog {
 
   /** 탐지된 결함 목록 */
   defects: DefectDetail[]
+
+  /** FAIL 리뷰: PENDING | CONFIRMED | FALSE_CALL (null → 미확인) */
+  reviewStatus?: 'PENDING' | 'CONFIRMED' | 'FALSE_CALL' | null
+  reviewedAt?: string | null
+}
+
+export type ReviewStatusType = 'PENDING' | 'CONFIRMED' | 'FALSE_CALL'
+
+export type WorkShift = 'DAY' | 'SWING' | 'NIGHT'
+
+export interface InspectionPage {
+  content: InspectionLog[]
+  totalElements: number
+  totalPages: number
+  page: number
+  size: number
+}
+
+export interface InspectionFacets {
+  deviceIds: string[]
+  boardNames: string[]
+}
+
+export interface InspectionLineStatus {
+  deviceId?: string
+  lastInspectedAt?: string
+  lastResult?: InspectionResultType
+  lastInspectionId?: number
+  lastFailAt?: string
+  lastFailId?: number
+  secondsSinceLastInspection: number
+  stale: boolean
+}
+
+export interface DefectCountItem {
+  label: string
+  count: number
+}
+
+export interface InspectionSearchParams {
+  page?: number
+  size?: number
+  from?: string
+  to?: string
+  deviceId?: string
+  result?: InspectionResultType | 'ALL'
+  board?: string
+  shift?: WorkShift
+  defectType?: string
+  reviewStatus?: ReviewStatusType
 }
 
 // ── 통계 ─────────────────────────────────────────────────────────────────────

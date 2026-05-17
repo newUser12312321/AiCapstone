@@ -19,8 +19,8 @@ import type { HourlyVolumePoint } from '@/types/inspection'
 import { buildHistoryPath } from '@/utils/historyNavigation'
 import type { LineFilter } from '@/utils/inspectionFilters'
 
-const PASS_COLOR = '#34d399'
-const FAIL_COLOR = '#fb7185'
+const PASS_COLOR = '#16a34a'
+const FAIL_COLOR = '#dc2626'
 
 function PassFailTooltip({
   active,
@@ -34,7 +34,7 @@ function PassFailTooltip({
   const title = (payload[0] as { payload?: HourlyVolumePoint }).payload?.tooltipTitle
 
   return (
-    <div className="glass-panel-subtle rounded-lg px-3 py-2 text-xs">
+    <div className="rounded border border-[var(--dash-border)] bg-[var(--dash-surface)] shadow-sm px-3 py-2 text-xs">
       {title && <p className="mb-1.5 text-[var(--dash-text-tertiary)]">{title}</p>}
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
@@ -84,7 +84,7 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
 
   if (isLoading) {
     return (
-      <div className="glass-panel flex min-h-[420px] flex-1 animate-pulse flex-col rounded-[22px] p-5">
+      <div className="flex min-h-[420px] flex-1 animate-pulse flex-col rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4">
         <div className="mb-4 flex shrink-0 items-center justify-between">
           <div className="h-4 w-56 rounded bg-[var(--dash-bg-secondary)]" />
           <div className="h-3 w-24 rounded bg-[var(--dash-bg-secondary)]" />
@@ -95,10 +95,10 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
   }
 
   return (
-    <div className="glass-panel flex min-h-[420px] flex-1 flex-col rounded-[22px] p-5">
-      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-2">
-        <h2 className="text-[15px] font-semibold text-[var(--dash-text-secondary)]">
-          시간대별 검사 정상·불량
+    <div className="flex min-h-[420px] h-full flex-1 flex-col rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4">
+      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--dash-border)] pb-2">
+        <h2 className="text-sm font-semibold text-[var(--dash-text-primary)]">
+          시간대별 검사량 (PASS / FAIL)
         </h2>
         <span className="text-xs text-[var(--dash-text-tertiary)]">
           최근 24시간 · 1시간 단위 · {settings.timeZoneMode === 'utc' ? 'UTC' : '로컬'}
@@ -108,30 +108,30 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
       <div className="h-[360px] w-full shrink-0">
         <ResponsiveContainer width="100%" height={360}>
           <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }} barCategoryGap="12%">
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(152,160,200,0.18)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
             <XAxis
               dataKey="label"
-              tick={{ fill: '#9ca3c9', fontSize: 10 }}
+              tick={{ fill: '#6b7280', fontSize: 10 }}
               interval={2}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: '#9ca3c9', fontSize: 11 }}
+              tick={{ fill: '#6b7280', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}
               width={36}
             />
-            <Tooltip content={<PassFailTooltip />} cursor={{ fill: 'rgba(139,92,246,0.12)' }} />
+            <Tooltip content={<PassFailTooltip />} cursor={{ fill: 'rgba(37,99,235,0.12)' }} />
             <Legend
               formatter={(value) => (
-                <span style={{ color: '#c7cdef', fontSize: '0.8125rem' }}>{value}</span>
+                <span style={{ color: '#4b5563', fontSize: '0.75rem' }}>{value}</span>
               )}
             />
             <Bar
               dataKey="pass"
-              name="정상"
+              name="PASS"
               stackId="hour"
               fill={PASS_COLOR}
               radius={[0, 0, 0, 0]}
@@ -140,7 +140,7 @@ export default function HourlyInspectionVolumeChart({ lineFilter }: HourlyInspec
             />
             <Bar
               dataKey="fail"
-              name="불량"
+              name="FAIL"
               stackId="hour"
               fill={FAIL_COLOR}
               radius={[4, 4, 0, 0]}

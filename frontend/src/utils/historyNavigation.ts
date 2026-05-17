@@ -2,7 +2,7 @@
  * 검사 이력 페이지(/history) 쿼리 — 대시보드·차트에서 동일 필터로 이동할 때 사용
  */
 
-import type { InspectionResultType } from '@/types/inspection'
+import type { InspectionResultType, ReviewStatusType, WorkShift } from '@/types/inspection'
 
 export function getLocalDateString(date = new Date()): string {
   const y = date.getFullYear()
@@ -24,6 +24,12 @@ export type HistoryQuery = {
   hour?: number
   /** 상세 패널을 열 검사 ID */
   open?: number
+  /** 작업 교대 (서버 inspectedAt 시각 기준) */
+  shift?: WorkShift
+  /** 리뷰 상태 필터 */
+  review?: ReviewStatusType
+  /** 목록 페이지 (0-based) */
+  page?: number
 }
 
 function setParam(sp: URLSearchParams, key: string, value: string | undefined) {
@@ -45,6 +51,9 @@ export function buildHistorySearchString(q: HistoryQuery): string {
   if (q.defect) sp.set('defect', q.defect)
   if (q.hour != null && q.hour >= 0 && q.hour <= 23) sp.set('hour', String(q.hour))
   if (q.open != null && Number.isFinite(q.open)) sp.set('open', String(q.open))
+  if (q.shift) sp.set('shift', q.shift)
+  if (q.review) sp.set('review', q.review)
+  if (q.page != null && q.page > 0) sp.set('page', String(q.page))
   const s = sp.toString()
   return s
 }
@@ -80,6 +89,20 @@ export function parseHistoryQuery(searchParams: URLSearchParams): HistoryQuery {
     const n = Number.parseInt(o, 10)
     if (!Number.isNaN(n)) open = n
   }
+  const shiftRaw = searchParams.get('shift')
+  const shift =
+    shiftRaw === 'DAY' || shiftRaw === 'SWING' || shiftRaw === 'NIGHT' ? shiftRaw : undefined
+  const reviewRaw = searchParams.get('review')
+  const review =
+    reviewRaw === 'PENDING' || reviewRaw === 'CONFIRMED' || reviewRaw === 'FALSE_CALL'
+      ? reviewRaw
+      : undefined
+  const pg = searchParams.get('page')
+  let page: number | undefined
+  if (pg != null) {
+    const n = Number.parseInt(pg, 10)
+    if (!Number.isNaN(n) && n >= 0) page = n
+  }
   return {
     from: from || undefined,
     to: to || undefined,
@@ -89,5 +112,8 @@ export function parseHistoryQuery(searchParams: URLSearchParams): HistoryQuery {
     defect,
     hour,
     open,
+    shift,
+    review,
+    page,
   }
 }

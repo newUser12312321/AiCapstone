@@ -11,21 +11,31 @@
 import { useQuery } from '@tanstack/react-query'
 import {
   fetchAllInspections,
+  fetchDefectSummary,
+  fetchFacets,
+  fetchHourlySummary,
   fetchInspectionById,
   fetchInspectionsByPeriod,
+  fetchLineStatus,
   fetchRecentInspections,
   fetchStats,
+  searchInspections,
 } from '@/api/inspectionApi'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
-import type { HourlyVolumePoint, TrendDataPoint } from '@/types/inspection'
+import type { HourlyVolumePoint, InspectionSearchParams, TrendDataPoint } from '@/types/inspection'
 import type { LineFilter } from '@/utils/inspectionFilters'
 import { filterByLine } from '@/utils/inspectionFilters'
 import { getLocalDateString } from '@/utils/historyNavigation'
 
 /** React Query 캐시 키 상수 — 오타 방지를 위해 중앙 관리 */
 export const QUERY_KEYS = {
-  stats:        ['inspections', 'stats']         as const,
+  stats:        (p?: object) => ['inspections', 'stats', p] as const,
   all:          ['inspections', 'all']           as const,
+  search:       (p: InspectionSearchParams) => ['inspections', 'search', p] as const,
+  facets:       ['inspections', 'facets']        as const,
+  lineStatus:   (deviceId?: string) => ['inspections', 'line-status', deviceId ?? ''] as const,
+  hourly:       (p?: object) => ['inspections', 'hourly', p] as const,
+  defects:      (p?: object) => ['inspections', 'defects', p] as const,
   recent:       (limit: number) => ['inspections', 'recent', limit] as const,
   byId:         (id: number)    => ['inspections', id]              as const,
   byPeriod:     (from: string, to: string) =>
@@ -49,11 +59,60 @@ function useInspectionPollingOptions(): {
 /**
  * 전체 통계 요약을 조회한다. (totalCount, passCount, failCount, failRate)
  */
-export function useStats() {
+export function useStats(params?: Omit<InspectionSearchParams, 'page' | 'size'>) {
   const { refetchInterval, staleTime } = useInspectionPollingOptions()
   return useQuery({
-    queryKey:        QUERY_KEYS.stats,
-    queryFn:         fetchStats,
+    queryKey:        QUERY_KEYS.stats(params),
+    queryFn:         () => fetchStats(params),
+    refetchInterval,
+    staleTime,
+  })
+}
+
+export function useInspectionSearch(params: InspectionSearchParams, enabled = true) {
+  const { refetchInterval, staleTime } = useInspectionPollingOptions()
+  return useQuery({
+    queryKey: QUERY_KEYS.search(params),
+    queryFn: () => searchInspections(params),
+    enabled,
+    refetchInterval,
+    staleTime,
+  })
+}
+
+export function useFacets() {
+  return useQuery({
+    queryKey: QUERY_KEYS.facets,
+    queryFn: fetchFacets,
+    staleTime: 60_000,
+  })
+}
+
+export function useLineStatus(deviceId?: string) {
+  const { refetchInterval, staleTime } = useInspectionPollingOptions()
+  return useQuery({
+    queryKey: QUERY_KEYS.lineStatus(deviceId),
+    queryFn: () => fetchLineStatus(deviceId),
+    refetchInterval,
+    staleTime,
+  })
+}
+
+export function useHourlySummary(params?: Omit<InspectionSearchParams, 'page' | 'size' | 'result'>) {
+  const { refetchInterval, staleTime } = useInspectionPollingOptions()
+  return useQuery({
+    queryKey: QUERY_KEYS.hourly(params),
+    queryFn: () => fetchHourlySummary(params),
+    refetchInterval,
+    staleTime,
+  })
+}
+
+export function useDefectSummary(params?: InspectionSearchParams, limit = 6) {
+  const { refetchInterval, staleTime } = useInspectionPollingOptions()
+  return useQuery({
+    queryKey: QUERY_KEYS.defects({ ...params, limit }),
+    queryFn: () => fetchDefectSummary(params, limit),
     refetchInterval,
     staleTime,
   })
@@ -185,41 +244,6 @@ export function useTrendData(lineFilter?: LineFilter): { data: TrendDataPoint[];
   return { data: trendData, isLoading }
 }
 
-function floorToHourStartMs(ts: number, utc: boolean): number {
-  const d = new Date(ts)
-  if (utc) {
-    d.setUTCMilliseconds(0)
-    d.setUTCSeconds(0)
-    d.setUTCMinutes(0)
-    return d.getTime()
-  }
-  d.setMilliseconds(0)
-  d.setSeconds(0)
-  d.setMinutes(0)
-  return d.getTime()
-}
-
-function formatHourlyLabels(bucketStartMs: number, utc: boolean): {
-  shortLabel: string
-  tooltipTitle: string
-  anchorDate: string
-  hour: number
-} {
-  const d = new Date(bucketStartMs)
-  const mo = String(utc ? d.getUTCMonth() + 1 : d.getMonth() + 1).padStart(2, '0')
-  const day = String(utc ? d.getUTCDate() : d.getDate()).padStart(2, '0')
-  const h = utc ? d.getUTCHours() : d.getHours()
-  const hh = String(h).padStart(2, '0')
-  const y = utc ? d.getUTCFullYear() : d.getFullYear()
-  const anchorDate = `${y}-${mo}-${day}`
-  return {
-    shortLabel: `${mo}/${day} ${hh}:00`,
-    tooltipTitle: `${y}-${mo}-${day} ${hh}:00 구간 (1시간)`,
-    anchorDate,
-    hour: h,
-  }
-}
-
 /**
  * 최근 24시간을 1시간 버킷으로 나눈 검사 건수 집계 (주식형 추이 차트용).
  * 버킷은 설정의 timeZoneMode(로컬/UTC) 기준으로 정렬된다.
@@ -228,56 +252,12 @@ export function useHourlyInspectionVolume(lineFilter?: LineFilter): {
   data: HourlyVolumePoint[]
   isLoading: boolean
 } {
-  const { settings } = useDashboardSettings()
-  const { data: logs = [], isLoading } = useAllInspections()
-
-  if (isLoading) {
-    return { data: [], isLoading: true }
-  }
-
-  const utc = settings.timeZoneMode === 'utc'
-  const scoped = filterByLine(logs, {
+  const today = getLocalDateString()
+  const { data = [], isLoading } = useHourlySummary({
+    from: today,
+    to: today,
     deviceId: lineFilter?.deviceId,
     board: lineFilter?.board,
   })
-
-  const now = Date.now()
-  const endBucket = floorToHourStartMs(now, utc)
-  const bucketStarts: number[] = []
-  for (let i = 23; i >= 0; i--) {
-    bucketStarts.push(endBucket - i * 3600000)
-  }
-
-  const counts = new Map<number, { pass: number; fail: number }>()
-  bucketStarts.forEach((ms) => counts.set(ms, { pass: 0, fail: 0 }))
-
-  const windowStart = bucketStarts[0]!
-  const windowEndExclusive = bucketStarts[23]! + 3600000
-
-  scoped.forEach((log) => {
-    const t = new Date(log.inspectedAt).getTime()
-    if (t < windowStart || t >= windowEndExclusive) return
-    const b = floorToHourStartMs(t, utc)
-    const cell = counts.get(b)
-    if (!cell) return
-    if (log.result === 'PASS') cell.pass++
-    else cell.fail++
-  })
-
-  const data: HourlyVolumePoint[] = bucketStarts.map((bucketStartMs) => {
-    const { shortLabel, tooltipTitle, anchorDate, hour } = formatHourlyLabels(bucketStartMs, utc)
-    const { pass, fail } = counts.get(bucketStartMs) ?? { pass: 0, fail: 0 }
-    return {
-      bucketStartMs,
-      label: shortLabel,
-      tooltipTitle,
-      count: pass + fail,
-      pass,
-      fail,
-      anchorDate,
-      hour,
-    }
-  })
-
-  return { data, isLoading: false }
+  return { data, isLoading }
 }

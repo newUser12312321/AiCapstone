@@ -28,6 +28,8 @@ export interface DashboardSettings {
   alertMinConsecutiveFail: number
   /** 평균 추론 시간(ms)이 이 값 초과면 알림 (0이면 비활성) */
   alertMaxAvgInferenceMs: number
+  /** 대시보드 당일 수율 목표 (%) */
+  targetYieldPct: number
 }
 
 export const DASHBOARD_SETTINGS_STORAGE_KEY = 'pcb-dashboard-settings-v1'
@@ -38,11 +40,12 @@ export const DEFAULT_DASHBOARD_SETTINGS: DashboardSettings = {
   timeZoneMode: 'local',
   dateStyle: 'compact',
   decimalPlaces: 2,
-  colorScheme: 'dark',
+  colorScheme: 'light',
   alertsEnabled: true,
   alertMinFailRatePct: 5,
   alertMinConsecutiveFail: 3,
   alertMaxAvgInferenceMs: 20_000,
+  targetYieldPct: 97,
 }
 
 const POLLING_OPTIONS_MS = [5_000, 10_000, 30_000] as const
@@ -72,6 +75,10 @@ export function clampAlertInferenceMs(n: number): number {
   return Math.min(600_000, Math.max(0, Math.round(Number.isFinite(n) ? n : 0)))
 }
 
+export function clampTargetYieldPct(n: number): number {
+  return Math.min(100, Math.max(50, Number.isFinite(n) ? n : DEFAULT_DASHBOARD_SETTINGS.targetYieldPct))
+}
+
 export function loadDashboardSettings(): DashboardSettings {
   try {
     const raw = localStorage.getItem(DASHBOARD_SETTINGS_STORAGE_KEY)
@@ -99,7 +106,7 @@ export function loadDashboardSettings(): DashboardSettings {
         parsed.decimalPlaces ?? DEFAULT_DASHBOARD_SETTINGS.decimalPlaces
       ),
       colorScheme:
-        parsed.colorScheme === 'light' ? 'light' : 'dark',
+        parsed.colorScheme === 'dark' ? 'dark' : 'light',
       alertsEnabled:
         typeof parsed.alertsEnabled === 'boolean'
           ? parsed.alertsEnabled
@@ -112,6 +119,9 @@ export function loadDashboardSettings(): DashboardSettings {
       ),
       alertMaxAvgInferenceMs: clampAlertInferenceMs(
         parsed.alertMaxAvgInferenceMs ?? DEFAULT_DASHBOARD_SETTINGS.alertMaxAvgInferenceMs
+      ),
+      targetYieldPct: clampTargetYieldPct(
+        parsed.targetYieldPct ?? DEFAULT_DASHBOARD_SETTINGS.targetYieldPct
       ),
     }
   } catch {
