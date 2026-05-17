@@ -9,7 +9,11 @@ import { useInspectionById } from '@/hooks/useInspectionData'
 import type { DefectDetail, InspectionLog } from '@/types/inspection'
 import { DEFECT_COLOR, defectDisplayName, deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 import fiducialCalib from '@/config/fiducialScaleCalibration.json'
-import { deriveRawImagePathFromStored, resolveImageSrc } from '@/utils/inspectionImage'
+import {
+  deriveRawImagePathFromStored,
+  imageLoadErrorHint,
+  resolveImageSrc,
+} from '@/utils/inspectionImage'
 
 // ── 이미지 로드 전 기본값 (로드 후 naturalWidth/Height 사용) ───────────────
 const DEFAULT_REF_WIDTH = 1920
@@ -989,10 +993,11 @@ export default function DefectViewer({ inspectionId, onClose, inline = false }: 
               <div className="w-full aspect-video bg-[var(--dash-overlay-soft)]/70 flex flex-col items-center justify-center gap-2 px-4 text-center">
                 <ImageOff size={32} className="text-[var(--dash-text-tertiary)]" />
                 <p className="text-xs text-[var(--dash-text-secondary)]">캡처 이미지를 불러오지 못했습니다.</p>
+                <p className="text-[10px] text-[var(--dash-text-tertiary)] font-mono break-all max-w-full">
+                  {deskewSrc}
+                </p>
                 <p className="text-xs text-[var(--dash-text-tertiary)]">
-                  <code className="text-[var(--dash-accent)]">frontend/vite.config.ts</code>의{' '}
-                  <code className="text-[var(--dash-accent)]">/captures</code> 프록시가 Pi IP와 맞는지,
-                  Pi에서 <code className="text-[var(--dash-accent)]">uvicorn</code>이 떠 있는지 확인하세요.
+                  {imageLoadErrorHint(log?.imagePath ?? null, deskewSrc)}
                 </p>
               </div>
             ) : (
