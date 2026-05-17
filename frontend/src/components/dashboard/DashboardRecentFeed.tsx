@@ -4,6 +4,7 @@ import InspectionThumbnail from '@/components/inspection/InspectionThumbnail'
 import type { InspectionLog } from '@/types/inspection'
 import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 import { inspectionDetailPath } from '@/utils/historyNavigation'
+import { primaryFailReason } from '@/utils/dashboardDefectSummary'
 
 interface DashboardRecentFeedProps {
   logs: InspectionLog[]
@@ -74,6 +75,7 @@ export default function DashboardRecentFeed({
               rows.map((log) => {
                 const { date, time } = formatSplitDateTime(log.inspectedAt)
                 const fail = log.result === 'FAIL'
+                const failReason = fail ? primaryFailReason(log) : null
                 return (
                   <tr
                     key={log.id}
@@ -114,9 +116,12 @@ export default function DashboardRecentFeed({
                       >
                         {inspectionResultLabel(log.result)}
                       </span>
-                      {fail && log.defects.length > 0 && (
-                        <span className="ml-1 text-[10px] text-[var(--dash-text-tertiary)]">
-                          {log.defects.length}건
+                      {failReason && (
+                        <span
+                          className="block mt-0.5 text-[10px] text-[var(--dash-danger)] truncate max-w-[140px]"
+                          title={failReason}
+                        >
+                          {failReason}
                         </span>
                       )}
                     </td>

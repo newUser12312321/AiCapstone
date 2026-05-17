@@ -3,6 +3,7 @@ import InspectionThumbnail from '@/components/inspection/InspectionThumbnail'
 import type { InspectionLog } from '@/types/inspection'
 import { deviceDisplayLabel, inspectionResultLabel } from '@/types/inspection'
 import { buildHistoryPath } from '@/utils/historyNavigation'
+import { primaryFailReason } from '@/utils/dashboardDefectSummary'
 
 interface DashboardLatestFailProps {
   log?: InspectionLog
@@ -28,6 +29,7 @@ export default function DashboardLatestFail({
   }
 
   const { date, time } = formatSplitDateTime(log.inspectedAt)
+  const reason = primaryFailReason(log)
 
   return (
     <Link
@@ -51,6 +53,11 @@ export default function DashboardLatestFail({
         <p className="text-[var(--dash-text-secondary)] truncate">
           {deviceDisplayLabel(log.deviceId)} · {(log.silkBoardName ?? '').trim() || '—'}
         </p>
+        {reason && (
+          <p className="text-[var(--dash-danger)] font-medium truncate mt-0.5" title={reason}>
+            {reason}
+          </p>
+        )}
         <p className="text-[var(--dash-text-tertiary)] tabular-nums">
           {date} {time}
         </p>

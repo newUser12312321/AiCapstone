@@ -69,7 +69,7 @@ export default function DashboardLineStatus({
         )}
         {stale && (
           <span className="text-[var(--dash-warning)] font-semibold">
-            {' \u00B7 '}5{'\uBD84 \uC774\uC0C1 \uC2E0\uADDC \uAC80\uC0AC \uC5C6\uC74C'}
+            {' \u00B7 '}5{'\uBD84 \uC774\uC0C1 \uBBF8\uAC80\uC0AC (\uB300\uAE30/\uC911\uB2E8 \uAC00\uB2A5)'}
           </span>
         )}
       </span>

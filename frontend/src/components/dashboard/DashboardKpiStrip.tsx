@@ -94,6 +94,9 @@ export default function DashboardKpiStrip({
         <span className="hmi-panel__title">{'\uB2F9\uC77C \uC9D1\uACC4'}</span>
         <span className="hmi-panel__meta">
           {dateLabel}
+          {day.total > 0 && day.total < 10 && (
+            <span className="text-[var(--dash-warning)]"> · ?? {day.total}? (?? ???)</span>
+          )}
           {cumulative != null && cumulative.total > 0 && (
             <>
               {' \u00b7 '}

@@ -16,12 +16,11 @@ import {
   useStats,
 } from '@/hooks/useInspectionData'
 import { buildHistoryPath, getLocalDateString } from '@/utils/historyNavigation'
-import { useDashboardAlerts } from '@/hooks/useDashboardAlerts'
+import { buildDashboardDefectPareto } from '@/utils/dashboardDefectSummary'
 
 export default function DashboardPage() {
   const { settings, formatSplitDateTime, formatRatePercent } = useDashboardSettings()
   const navigate = useNavigate()
-  const alerts = useDashboardAlerts()
   const [deviceFilter, setDeviceFilter] = useState('')
   const today = getLocalDateString()
 
@@ -54,9 +53,12 @@ export default function DashboardPage() {
     return recentLogs.filter((l) => l.deviceId === deviceFilter)
   }, [recentLogs, deviceFilter])
 
-  const topDefects = useMemo(
-    () => defectItems.map((d) => [d.label, d.count] as [string, number]),
-    [defectItems]
+  const latestFail = latestFailPage?.content[0]
+  const dayFailCount = dayStats?.failCount ?? 0
+
+  const defectPareto = useMemo(
+    () => buildDashboardDefectPareto(defectItems, latestFail, dayFailCount),
+    [defectItems, latestFail, dayFailCount]
   )
 
   const lineFilter = useMemo(
@@ -64,13 +66,13 @@ export default function DashboardPage() {
     [deviceFilter]
   )
 
-  const goDefectHistory = (label: string) => {
+  const goDefectHistory = (filterKey: string) => {
     navigate(
       buildHistoryPath({
         from: today,
         to: today,
         result: 'FAIL',
-        defect: label,
+        defect: filterKey,
         device: deviceFilter || undefined,
       })
     )
@@ -85,22 +87,13 @@ export default function DashboardPage() {
       }
     : undefined
 
-  const latestFail = latestFailPage?.content[0]
-  const dayFailCount = dayStats?.failCount ?? 0
   const showFailSidebar =
-    dayFailCount > 0 || !!latestFail || topDefects.length > 0
+    dayFailCount > 0 || !!latestFail || defectPareto.length > 0
   const sparseFeed = scopedRecent.length > 0 && scopedRecent.length <= 5
   const chartCompact = !showFailSidebar
 
   return (
     <div className="dashboard-hmi flex h-full min-h-0 flex-col gap-px p-px overflow-hidden bg-[var(--dash-border)]">
-      {alerts.length > 0 && (
-        <div className="shrink-0 flex items-center gap-2 bg-[var(--dash-warning)]/15 border border-[var(--dash-warning)] px-2 py-1 text-[11px] text-[var(--dash-warning)] font-semibold">
-          <span>ALM</span>
-          <span className="truncate">{alerts.join(' · ')}</span>
-        </div>
-      )}
-
       <div className="shrink-0 flex flex-wrap items-stretch gap-px bg-[var(--dash-border)]">
         <div className="flex-1 min-w-[280px]">
           <DashboardLineStatus status={lineStatus} isLoading={lineLoading} />
@@ -138,7 +131,7 @@ export default function DashboardPage() {
         <DashboardFailPanel
           latestFail={latestFail}
           isLoadingFail={!latestFailPage}
-          defectItems={topDefects}
+          defectPareto={defectPareto}
           formatSplitDateTime={formatSplitDateTime}
           onDefectSelect={goDefectHistory}
         />
@@ -159,7 +152,7 @@ export default function DashboardPage() {
             <DashboardFailPanel
               latestFail={latestFail}
               isLoadingFail={!latestFailPage}
-              defectItems={topDefects}
+              defectPareto={defectPareto}
               formatSplitDateTime={formatSplitDateTime}
               onDefectSelect={goDefectHistory}
             />
@@ -174,7 +167,7 @@ export default function DashboardPage() {
             : 'shrink-0 h-[200px] min-h-[180px]'
         }
       >
-        <HourlyInspectionVolumeChart lineFilter={lineFilter} compact />
+        <HourlyInspectionVolumeChart lineFilter={lineFilter} compact={chartCompact} dayTotal={dayStats?.totalCount} />
       </div>
     </div>
   )

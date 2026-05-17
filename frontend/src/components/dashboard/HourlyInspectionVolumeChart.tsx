@@ -56,11 +56,14 @@ export interface HourlyInspectionVolumeChartProps {
   lineFilter?: LineFilter
   /** 대시보드 하단 슬림 차트 */
   compact?: boolean
+  /** 당일 검사 건수 (소량일 때 목록 뷰 전환) */
+  dayTotal?: number
 }
 
 export default function HourlyInspectionVolumeChart({
   lineFilter,
   compact = false,
+  dayTotal,
 }: HourlyInspectionVolumeChartProps) {
   const { settings } = useDashboardSettings()
   const { data, isLoading } = useHourlyInspectionVolume(lineFilter)
@@ -92,7 +95,8 @@ export default function HourlyInspectionVolumeChart({
     () => (data ?? []).reduce((sum, p) => sum + p.pass + p.fail, 0),
     [data]
   )
-  const lowVolume = compact && total24h > 0 && total24h <= 8
+  const dayN = dayTotal ?? total24h
+  const lowVolume = compact && dayN > 0 && dayN <= 15
   const activeBuckets = useMemo(
     () => (data ?? []).filter((p) => p.pass + p.fail > 0),
     [data]
