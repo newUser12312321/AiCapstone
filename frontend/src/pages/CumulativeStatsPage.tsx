@@ -86,14 +86,15 @@ export default function CumulativeStatsPage() {
 
       <div className="flex flex-1 min-h-0 gap-px">
         <div className="flex-[3] min-w-0 min-h-0 flex flex-col gap-px">
-          <div className="flex-[2] min-h-[240px]">
+          <div className="shrink-0 h-[148px] max-h-[160px]">
             <DailyVolumeChart
               data={daily}
               isLoading={dailyLoading}
               deviceId={deviceFilter || undefined}
+              compact
             />
           </div>
-          <div className="flex-1 min-h-[200px]">
+          <div className="flex-1 min-h-[180px]">
             <DailyYieldChart
               data={daily}
               isLoading={dailyLoading}
