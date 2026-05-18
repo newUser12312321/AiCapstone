@@ -50,12 +50,15 @@ export default function DailyVolumeChart({
   isLoading,
   deviceId,
   compact = false,
+  chartHeight: chartHeightProp,
 }: {
   data: DailyVolumePoint[]
   isLoading?: boolean
   deviceId?: string
   /** 누적 통계 상단 — 고정 높이 슬림 차트 */
   compact?: boolean
+  /** compact일 때 그리기 영역 높이(px) */
+  chartHeight?: number
 }) {
   const navigate = useNavigate()
 
@@ -67,7 +70,7 @@ export default function DailyVolumeChart({
   const panelClass = compact
     ? 'hmi-panel h-full flex flex-col overflow-hidden min-h-0'
     : 'hmi-panel h-full flex flex-col overflow-hidden min-h-[220px]'
-  const chartPx = compact ? 96 : undefined
+  const chartPx = compact ? (chartHeightProp ?? 96) : undefined
   const barMargin = compact
     ? { top: 4, right: 6, left: 0, bottom: 0 }
     : { top: 8, right: 8, left: 0, bottom: 4 }

@@ -6,7 +6,6 @@ import CumulativePassFailChart from '@/components/cumulative/CumulativePassFailC
 import CumulativePeriodTabs from '@/components/cumulative/CumulativePeriodTabs'
 import DailyVolumeChart from '@/components/cumulative/DailyVolumeChart'
 import DailyYieldChart from '@/components/cumulative/DailyYieldChart'
-import DeviceVolumeChart from '@/components/cumulative/DeviceVolumeChart'
 import DashboardDefectPareto from '@/components/dashboard/DashboardDefectPareto'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useDailySummary, useDefectSummary, useFacets, useStats } from '@/hooks/useInspectionData'
@@ -38,18 +37,13 @@ export default function CumulativeStatsPage() {
 
   const { data: stats, isLoading: statsLoading } = useStats(queryParams)
   const { data: daily = [], isLoading: dailyLoading } = useDailySummary(queryParams)
-  const { data: facets, isLoading: facetsLoading } = useFacets()
+  const { data: facets } = useFacets()
   const { data: defectItems = [] } = useDefectSummary(
     { ...queryParams, result: 'FAIL' },
     8
   )
 
   const defectPareto = useMemo(() => defectParetoFromApiCounts(defectItems), [defectItems])
-
-  const deviceIdsForChart = useMemo(() => {
-    if (deviceFilter) return [deviceFilter]
-    return facets?.deviceIds ?? []
-  }, [deviceFilter, facets?.deviceIds])
 
   const goDefectHistory = (filterKey: string) => {
     navigate(
@@ -85,37 +79,27 @@ export default function CumulativeStatsPage() {
       />
 
       <div className="flex flex-1 min-h-0 gap-px">
-        {/* 좌: 시계열 차트(고정 높이) + FAIL 유형 */}
-        <div className="flex-1 min-w-0 min-h-0 flex flex-col gap-px">
-          <div className="shrink-0 h-[136px]">
+        <div className="flex-[3] min-w-0 min-h-0 flex flex-col gap-px">
+          <div className="shrink-0 h-[200px]">
             <DailyVolumeChart
               data={daily}
               isLoading={dailyLoading}
               deviceId={deviceFilter || undefined}
               compact
+              chartHeight={132}
             />
           </div>
-          <div className="shrink-0 h-[168px]">
+          <div className="flex-1 min-h-[220px]">
             <DailyYieldChart
               data={daily}
               isLoading={dailyLoading}
               targetYieldPct={settings.targetYieldPct}
-              compact
-            />
-          </div>
-          <div className="flex-1 min-h-[100px]">
-            <DashboardDefectPareto
-              items={defectPareto}
-              onSelect={goDefectHistory}
-              title="FAIL 유형 (누적)"
-              hint={`${periodLabel} · 클릭→이력`}
             />
           </div>
         </div>
 
-        {/* 우: 비율·기종 — 좌측과 비슷한 높이로 2등분 */}
-        <div className="w-[min(36%,320px)] min-w-[260px] shrink-0 flex flex-col gap-px min-h-0">
-          <div className="flex-1 min-h-0">
+        <div className="flex-[2] w-[min(38%,340px)] min-w-[268px] shrink-0 flex flex-col gap-px min-h-0">
+          <div className="shrink-0 h-[212px]">
             <CumulativePassFailChart
               stats={stats}
               isLoading={statsLoading}
@@ -124,12 +108,12 @@ export default function CumulativeStatsPage() {
               deviceId={deviceFilter || undefined}
             />
           </div>
-          <div className="flex-1 min-h-0">
-            <DeviceVolumeChart
-              deviceIds={deviceIdsForChart}
-              from={range.from}
-              to={range.to}
-              isLoadingFacets={facetsLoading}
+          <div className="flex-1 min-h-[160px]">
+            <DashboardDefectPareto
+              items={defectPareto}
+              onSelect={goDefectHistory}
+              title="FAIL 유형 (누적)"
+              hint={`${periodLabel} · 클릭→이력`}
             />
           </div>
         </div>
