@@ -85,8 +85,9 @@ export default function CumulativeStatsPage() {
       />
 
       <div className="flex flex-1 min-h-0 gap-px">
-        <div className="flex-[3] min-w-0 min-h-0 flex flex-col gap-px">
-          <div className="shrink-0 h-[148px] max-h-[160px]">
+        {/* 좌: 시계열 차트(고정 높이) + FAIL 유형 */}
+        <div className="flex-1 min-w-0 min-h-0 flex flex-col gap-px">
+          <div className="shrink-0 h-[136px]">
             <DailyVolumeChart
               data={daily}
               isLoading={dailyLoading}
@@ -94,17 +95,27 @@ export default function CumulativeStatsPage() {
               compact
             />
           </div>
-          <div className="flex-1 min-h-[180px]">
+          <div className="shrink-0 h-[168px]">
             <DailyYieldChart
               data={daily}
               isLoading={dailyLoading}
               targetYieldPct={settings.targetYieldPct}
+              compact
+            />
+          </div>
+          <div className="flex-1 min-h-[100px]">
+            <DashboardDefectPareto
+              items={defectPareto}
+              onSelect={goDefectHistory}
+              title="FAIL 유형 (누적)"
+              hint={`${periodLabel} · 클릭→이력`}
             />
           </div>
         </div>
 
-        <div className="flex-[2] min-w-[280px] max-w-[400px] shrink-0 flex flex-col gap-px min-h-0">
-          <div className="flex-1 min-h-[220px]">
+        {/* 우: 비율·기종 — 좌측과 비슷한 높이로 2등분 */}
+        <div className="w-[min(36%,320px)] min-w-[260px] shrink-0 flex flex-col gap-px min-h-0">
+          <div className="flex-1 min-h-0">
             <CumulativePassFailChart
               stats={stats}
               isLoading={statsLoading}
@@ -113,7 +124,7 @@ export default function CumulativeStatsPage() {
               deviceId={deviceFilter || undefined}
             />
           </div>
-          <div className="flex-1 min-h-[220px]">
+          <div className="flex-1 min-h-0">
             <DeviceVolumeChart
               deviceIds={deviceIdsForChart}
               from={range.from}
@@ -122,15 +133,6 @@ export default function CumulativeStatsPage() {
             />
           </div>
         </div>
-      </div>
-
-      <div className="shrink-0 h-[200px] min-h-[180px] max-h-[240px]">
-        <DashboardDefectPareto
-          items={defectPareto}
-          onSelect={goDefectHistory}
-          title="FAIL 유형 (누적)"
-          hint={`${periodLabel} · 클릭→이력`}
-        />
       </div>
     </div>
   )

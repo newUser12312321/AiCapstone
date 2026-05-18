@@ -16,70 +16,109 @@ import type { DailyVolumePoint } from '@/types/inspection'
 const YIELD_COLOR = '#1e5a9e'
 const TARGET_COLOR = '#b45309'
 
+function yieldDomain(
+  values: number[],
+  targetYieldPct: number
+): [number, number] {
+  if (values.length === 0) return [0, 100]
+  const minV = Math.min(...values, targetYieldPct)
+  const maxV = Math.max(...values, targetYieldPct)
+  const pad = Math.max(8, (maxV - minV) * 0.15)
+  return [Math.max(0, Math.floor(minV - pad)), Math.min(100, Math.ceil(maxV + pad))]
+}
+
 export default function DailyYieldChart({
   data,
   isLoading,
   targetYieldPct,
+  compact = false,
 }: {
   data: DailyVolumePoint[]
   isLoading?: boolean
   targetYieldPct: number
+  compact?: boolean
 }) {
   const { formatRatePercent } = useDashboardSettings()
 
-  const chartData = useMemo(
-    () =>
-      data.map((p) => {
+  const chartData = useMemo(() => {
+    return data
+      .filter((p) => p.pass + p.fail > 0)
+      .map((p) => {
         const n = p.pass + p.fail
-        const yieldPct = n > 0 ? (p.pass / n) * 100 : null
         return {
           label: p.label,
           anchorDate: p.anchorDate,
-          yieldPct,
-          failRate: n > 0 ? (p.fail / n) * 100 : null,
+          yieldPct: (p.pass / n) * 100,
         }
-      }),
-    [data]
+      })
+  }, [data])
+
+  const yDomain = useMemo(
+    () => yieldDomain(chartData.map((d) => d.yieldPct), targetYieldPct),
+    [chartData, targetYieldPct]
   )
 
-  const hasPoints = chartData.some((d) => d.yieldPct != null)
+  const panelClass = compact
+    ? 'hmi-panel h-full flex flex-col overflow-hidden min-h-0'
+    : 'hmi-panel h-full flex flex-col overflow-hidden min-h-[200px]'
+  const chartPx = compact ? 112 : undefined
 
   if (isLoading) {
     return (
-      <div className="hmi-panel h-full animate-pulse flex flex-col min-h-[200px]">
-        <div className="hmi-panel__head">
+      <div className={`${panelClass} animate-pulse`}>
+        <div className="hmi-panel__head py-1">
           <div className="h-3 w-28 bg-[var(--dash-bg-secondary)]" />
         </div>
-        <div className="flex-1 m-2 bg-[var(--dash-bg-secondary)]" />
+        <div
+          className="mx-1.5 mb-1.5 bg-[var(--dash-bg-secondary)]"
+          style={{ height: chartPx ?? 120 }}
+        />
       </div>
     )
   }
 
   return (
-    <div className="hmi-panel h-full flex flex-col overflow-hidden min-h-[200px]">
-      <div className="hmi-panel__head shrink-0">
+    <div className={panelClass}>
+      <div className={`hmi-panel__head shrink-0 ${compact ? 'py-1' : ''}`}>
         <span className="hmi-panel__title">일별 수율 추이</span>
-        <span className="hmi-panel__meta">목표 {formatRatePercent(targetYieldPct)}</span>
+        <span className="hmi-panel__meta">
+          목표 {formatRatePercent(targetYieldPct)}
+          {chartData.length > 0 && chartData.length <= 14
+            ? ` · ${chartData.length}일`
+            : ''}
+        </span>
       </div>
-      {!hasPoints ? (
-        <p className="flex-1 flex items-center justify-center text-sm text-[var(--dash-text-secondary)]">
+      {chartData.length === 0 ? (
+        <p
+          className={
+            compact
+              ? 'py-3 text-center text-xs text-[var(--dash-text-secondary)]'
+              : 'flex-1 flex items-center justify-center text-sm text-[var(--dash-text-secondary)]'
+          }
+        >
           수율을 계산할 검사가 없습니다.
         </p>
       ) : (
-        <div className="flex-1 min-h-0 px-1 pb-1">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
+        <div
+          className={compact ? 'shrink-0 px-1 pb-0.5' : 'flex-1 min-h-0 px-1 pb-1'}
+          style={chartPx ? { height: chartPx } : undefined}
+        >
+          <ResponsiveContainer width="100%" height={chartPx ?? '100%'}>
+            <LineChart
+              data={chartData}
+              margin={compact ? { top: 4, right: 8, left: 0, bottom: 0 } : { top: 8, right: 8, left: 0, bottom: 4 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
               <XAxis
                 dataKey="label"
-                tick={{ fill: '#6b7280', fontSize: 10 }}
-                interval={chartData.length > 14 ? Math.floor(chartData.length / 10) : 0}
+                tick={{ fill: '#6b7280', fontSize: compact ? 9 : 10 }}
+                interval={chartData.length > 12 ? Math.floor(chartData.length / 8) : 0}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                domain={[0, 100]}
-                tick={{ fill: '#6b7280', fontSize: 11 }}
+                domain={yDomain}
+                tick={{ fill: '#6b7280', fontSize: compact ? 10 : 11 }}
                 axisLine={false}
                 tickLine={false}
                 width={36}
@@ -96,7 +135,10 @@ export default function DailyYieldChart({
                   fontSize: 12,
                 }}
               />
-              <Legend formatter={(v) => <span style={{ color: '#4b5563', fontSize: '0.75rem' }}>{v}</span>} />
+              <Legend
+                wrapperStyle={compact ? { fontSize: 10, paddingTop: 0 } : undefined}
+                formatter={(v) => <span style={{ color: '#4b5563', fontSize: '0.75rem' }}>{v}</span>}
+              />
               <ReferenceLine
                 y={targetYieldPct}
                 stroke={TARGET_COLOR}
@@ -109,7 +151,7 @@ export default function DailyYieldChart({
                 name="수율"
                 stroke={YIELD_COLOR}
                 strokeWidth={2}
-                dot={{ r: 2, fill: YIELD_COLOR }}
+                dot={{ r: 3, fill: YIELD_COLOR }}
                 connectNulls={false}
               />
             </LineChart>
