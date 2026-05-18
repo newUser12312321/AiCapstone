@@ -131,6 +131,78 @@ public class InspectionQueryService {
         return out;
     }
 
+    @Transactional(readOnly = true)
+    public List<DailyVolumeDto> getDailyVolume(InspectionSearchCriteria criteria) {
+        LocalDateTime toDt = criteria.getTo() != null ? criteria.getTo() : LocalDateTime.now();
+        java.time.LocalDate end = toDt.toLocalDate();
+        java.time.LocalDate start;
+        if (criteria.getFrom() != null) {
+            start = criteria.getFrom().toLocalDate();
+        } else {
+            start = inspectionLogRepository.findFirstByOrderByInspectedAtAsc()
+                    .map(l -> l.getInspectedAt().toLocalDate())
+                    .orElse(end);
+        }
+        if (start.isAfter(end)) {
+            start = end;
+        }
+        final int maxDays = 366;
+        if (start.isBefore(end.minusDays(maxDays - 1L))) {
+            start = end.minusDays(maxDays - 1L);
+        }
+
+        LocalDateTime rangeFrom = start.atStartOfDay();
+        LocalDateTime rangeTo = end.atTime(23, 59, 59);
+        InspectionSearchCriteria windowed = InspectionSearchCriteria.builder()
+                .from(rangeFrom)
+                .to(rangeTo)
+                .deviceId(criteria.getDeviceId())
+                .board(criteria.getBoard())
+                .shift(criteria.getShift())
+                .build();
+
+        List<InspectionLog> logs = inspectionLogRepository.findAll(
+                InspectionSpecifications.fromCriteria(windowed),
+                Sort.by(Sort.Direction.ASC, "inspectedAt")
+        );
+
+        Map<java.time.LocalDate, int[]> buckets = new LinkedHashMap<>();
+        for (java.time.LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+            buckets.put(d, new int[]{0, 0});
+        }
+
+        for (InspectionLog log : logs) {
+            java.time.LocalDate day = log.getInspectedAt().toLocalDate();
+            int[] cell = buckets.get(day);
+            if (cell == null) {
+                continue;
+            }
+            if (log.getResult() == InspectionResult.PASS) {
+                cell[0]++;
+            } else {
+                cell[1]++;
+            }
+        }
+
+        DateTimeFormatter labelFmt = DateTimeFormatter.ofPattern("MM/dd");
+        List<DailyVolumeDto> out = new ArrayList<>();
+        for (Map.Entry<java.time.LocalDate, int[]> e : buckets.entrySet()) {
+            java.time.LocalDate d = e.getKey();
+            int pass = e.getValue()[0];
+            int fail = e.getValue()[1];
+            LocalDateTime dt = d.atStartOfDay();
+            out.add(new DailyVolumeDto(
+                    atZoneMs(dt),
+                    d.format(labelFmt),
+                    d.toString(),
+                    pass,
+                    fail,
+                    pass + fail
+            ));
+        }
+        return out;
+    }
+
     private static long atZoneMs(LocalDateTime dt) {
         return dt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
     }

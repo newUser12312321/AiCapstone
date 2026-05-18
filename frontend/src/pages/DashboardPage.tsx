@@ -36,7 +36,6 @@ export default function DashboardPage() {
   const feedLimit = settings.recentFeedLimit
 
   const { data: dayStats, isLoading: dayStatsLoading } = useStats(dayParams)
-  const { data: cumulativeStats } = useStats(deviceFilter ? undefined : {})
   const { data: facets } = useFacets()
   const { data: lineStatus, isLoading: lineLoading } = useLineStatus(deviceFilter || undefined)
   const { data: todayPage, isLoading: isTodayLoading } = useInspectionSearch({
@@ -80,15 +79,6 @@ export default function DashboardPage() {
     )
   }
 
-  const cumulative = cumulativeStats
-    ? {
-        total: cumulativeStats.totalCount,
-        pass: cumulativeStats.passCount,
-        fail: cumulativeStats.failCount,
-        failRate: cumulativeStats.failRate,
-      }
-    : undefined
-
   const showFailSidebar =
     dayFailCount > 0 || !!latestFail || defectPareto.length > 0
   const sparseFeed = todayLogs.length > 0 && todayLogs.length <= 5
@@ -130,8 +120,6 @@ export default function DashboardPage() {
         isLoading={dayStatsLoading}
         targetYieldPct={settings.targetYieldPct}
         formatRate={formatRatePercent}
-        cumulative={deviceFilter ? undefined : cumulative}
-        lowSampleThreshold={settings.alertMinSampleCount}
       />
 
       {!showFailSidebar && (

@@ -17,7 +17,7 @@ import type {
   InspectionStats,
   ReviewStatusType,
 } from '@/types/inspection'
-import type { HourlyVolumePoint } from '@/types/inspection'
+import type { DailyVolumePoint, HourlyVolumePoint } from '@/types/inspection'
 
 // ── Axios 인스턴스 생성 ───────────────────────────────────────────────────────
 const apiBaseUrlFromEnv = import.meta.env.VITE_API_BASE_URL?.trim()
@@ -162,6 +162,29 @@ export const fetchLineStatus = async (deviceId?: string): Promise<InspectionLine
     params: deviceId ? { deviceId } : undefined,
   })
   return data
+}
+
+export const fetchDailySummary = async (
+  params?: Omit<InspectionSearchParams, 'page' | 'size' | 'result'>
+): Promise<DailyVolumePoint[]> => {
+  const { data } = await apiClient.get<
+    {
+      bucketStartMs: number
+      label: string
+      anchorDate: string
+      pass: number
+      fail: number
+      count: number
+    }[]
+  >('/inspections/summary/daily', { params: searchParamsToQuery(params) })
+  return data.map((row) => ({
+    bucketStartMs: row.bucketStartMs,
+    label: row.label,
+    anchorDate: row.anchorDate,
+    pass: row.pass,
+    fail: row.fail,
+    count: row.count,
+  }))
 }
 
 export const fetchHourlySummary = async (

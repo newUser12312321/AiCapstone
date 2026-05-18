@@ -92,7 +92,7 @@ export default function SettingsPage() {
         </div>
 
         <section className="rounded-lg border border-[var(--dash-border)] bg-[var(--dash-surface)] p-5">
-          <SectionTitle icon={Percent} title="품질 기준" description="라인 모니터 목표 수율" />
+          <SectionTitle icon={Percent} title="품질 기준" description="PCB 자동광학 검사 시스템 목표 수율" />
           <label className="block max-w-xs">
             <span className="text-xs font-medium text-[var(--dash-text-secondary)]">목표 수율 (%)</span>
             <input
@@ -284,7 +284,7 @@ export default function SettingsPage() {
           <SectionTitle
             icon={Bell}
             title="운영 알림"
-            description="조건 초과 시 라인 모니터 상단 배너로 표시됩니다."
+            description="조건 초과 시 대시보드 상단 배너로 표시됩니다."
           />
           <label className="flex items-center gap-2 text-sm text-[var(--dash-text-secondary)] mb-4">
             <input

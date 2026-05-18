@@ -56,8 +56,6 @@ export interface DashboardKpiStripProps {
   targetYieldPct: number
   formatRate: (n: number) => string
   cumulative?: { total: number; pass: number; fail: number; failRate: number }
-  /** ? ?? ???? ?? KPI? ??(??) ??? ?? */
-  lowSampleThreshold?: number
 }
 
 export default function DashboardKpiStrip({
@@ -66,7 +64,6 @@ export default function DashboardKpiStrip({
   targetYieldPct,
   formatRate,
   cumulative,
-  lowSampleThreshold = 30,
 }: DashboardKpiStripProps) {
   if (isLoading) {
     return <div className="hmi-panel h-12 animate-pulse bg-[var(--dash-bg-secondary)]" />
@@ -80,20 +77,14 @@ export default function DashboardKpiStrip({
     weekday: 'short',
   })
 
-  const lowSample = day.total > 0 && day.total < lowSampleThreshold
-
   const yieldTone =
     day.yieldPct == null
       ? 'default'
-      : lowSample
-        ? day.fail > 0
+      : day.yieldPct >= targetYieldPct
+        ? 'ok'
+        : day.yieldPct >= targetYieldPct - 2
           ? 'warn'
-          : 'ok'
-        : day.yieldPct >= targetYieldPct
-          ? 'ok'
-          : day.yieldPct >= targetYieldPct - 2
-            ? 'warn'
-            : 'ng'
+          : 'ng'
 
   const emDash = '\u2014'
 
@@ -103,15 +94,7 @@ export default function DashboardKpiStrip({
         <span className="hmi-panel__title">{'\uB2F9\uC77C \uC9D1\uACC4'}</span>
         <span className="hmi-panel__meta">
           {dateLabel}
-          {lowSample && (
-            <span className="text-[var(--dash-warning)]">
-              {' \u00b7 '}
-              {'\uD45C\uBCF8'} {day.total}
-              {'\uAC74'} ({'\uBD88\uB7C9\uB960 \uC54C\uB9BC'} {lowSampleThreshold}
-              {'\uAC74 \uC774\uC0C1'})
-            </span>
-          )}
-          {!lowSample && cumulative != null && cumulative.total > 0 && (
+          {cumulative != null && cumulative.total > 0 && (
             <>
               {' \u00b7 '}
               {'\uB204\uC801'} {cumulative.total.toLocaleString()}

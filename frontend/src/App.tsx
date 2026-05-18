@@ -10,6 +10,7 @@ import Header from '@/components/common/Header'
 import Sidebar from '@/components/common/Sidebar'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { DashboardScopeProvider } from '@/context/DashboardScopeContext'
+import CumulativeStatsPage from '@/pages/CumulativeStatsPage'
 import DashboardPage from '@/pages/DashboardPage'
 import HistoryPage from '@/pages/HistoryPage'
 import BoardReferencePage from '@/pages/BoardReferencePage'
@@ -47,7 +48,8 @@ export default function App() {
 
           <main className="min-h-0 flex-1 overflow-hidden bg-[var(--dash-bg-deep)]">
             <Routes>
-              <Route path="/" element={<DashboardPage />} />
+              <Route path="/" element={<CumulativeStatsPage />} />
+              <Route path="/line" element={<DashboardPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/inspection/:inspectionId" element={<InspectionDetailPage />} />
               <Route path="/board-reference" element={<BoardReferencePage />} />

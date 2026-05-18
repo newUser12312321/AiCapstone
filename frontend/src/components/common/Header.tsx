@@ -1,17 +1,14 @@
 /**
- * 상단 HMI 헤더 — 시스템명, LIVE, 갱신 시각, 운영 알림
+ * 상단 HMI 헤더 — 시스템명, LIVE, 갱신 시각
  */
 
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useDashboardSettings } from '@/context/DashboardSettingsContext'
 import { useStats } from '@/hooks/useInspectionData'
-import { useDashboardAlerts } from '@/hooks/useDashboardAlerts'
 
 export default function Header() {
   const { formatSplitDateTime } = useDashboardSettings()
   const { isFetching, dataUpdatedAt } = useStats()
-  const location = useLocation()
-  const alerts = useDashboardAlerts()
 
   const lastUpdated =
     dataUpdatedAt != null
@@ -21,20 +18,15 @@ export default function Header() {
         })()
       : '--'
 
-  const onSettings = location.pathname === '/settings'
-  const visibleAlerts = onSettings
-    ? alerts.filter((a) => !a.startsWith('당일 불량률') && !a.startsWith('당일 FAIL'))
-    : alerts
-
   return (
     <header className="h-[var(--dash-header-h)] shrink-0 flex items-stretch border-b border-[var(--dash-border)] bg-[var(--dash-surface-strong)] text-[#e8eaed]">
       <Link
         to="/"
         className="flex items-center px-3 border-r border-[#3a424e] hover:bg-[#323840] focus:outline-none focus:bg-[#323840]"
-        title="라인 모니터"
+        title="PCB 자동광학 검사 시스템"
       >
         <span className="text-[13px] font-bold tracking-tight whitespace-nowrap">
-          AOI 라인 모니터
+          PCB 자동광학 검사 시스템
         </span>
       </Link>
 
@@ -50,14 +42,6 @@ export default function Header() {
         <span className="text-[#a8b0bb] tabular-nums shrink-0">
           갱신 <span className="dash-num text-[#e8eaed]">{lastUpdated}</span>
         </span>
-        {visibleAlerts.length > 0 && (
-          <span
-            className="truncate text-[var(--dash-warning)] font-semibold border-l border-[#3a424e] pl-3"
-            title={visibleAlerts.join('\n')}
-          >
-            ALM {visibleAlerts.length}: {visibleAlerts.join(' · ')}
-          </span>
-        )}
       </div>
 
       <div className="flex items-stretch border-l border-[#3a424e] text-[11px]">

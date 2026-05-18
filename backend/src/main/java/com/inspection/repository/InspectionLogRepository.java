@@ -34,6 +34,8 @@ public interface InspectionLogRepository extends JpaRepository<InspectionLog, Lo
 
     Optional<InspectionLog> findFirstByResultOrderByInspectedAtDesc(InspectionResult result);
 
+    Optional<InspectionLog> findFirstByOrderByInspectedAtAsc();
+
     @Query("SELECT DISTINCT l.deviceId FROM InspectionLog l ORDER BY l.deviceId")
     List<String> findDistinctDeviceIds();
 

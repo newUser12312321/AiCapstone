@@ -6,7 +6,8 @@ import { NavLink } from 'react-router-dom'
 import clsx from 'clsx'
 
 const NAV_ITEMS = [
-  { to: '/', label: '라인 모니터', end: true },
+  { to: '/', label: '누적 통계', end: true },
+  { to: '/line', label: '라인 모니터', end: true },
   { to: '/history', label: '검사 로그', end: false },
   { to: '/board-reference', label: '기판 프로그램', end: false },
   { to: '/settings', label: '시스템 설정', end: false },

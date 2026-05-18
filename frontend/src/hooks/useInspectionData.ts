@@ -11,6 +11,7 @@
 import { useQuery } from '@tanstack/react-query'
 import {
   fetchAllInspections,
+  fetchDailySummary,
   fetchDefectSummary,
   fetchFacets,
   fetchHourlySummary,
@@ -35,6 +36,7 @@ export const QUERY_KEYS = {
   facets:       ['inspections', 'facets']        as const,
   lineStatus:   (deviceId?: string) => ['inspections', 'line-status', deviceId ?? ''] as const,
   hourly:       (p?: object) => ['inspections', 'hourly', p] as const,
+  daily:        (p?: object) => ['inspections', 'daily', p] as const,
   defects:      (p?: object) => ['inspections', 'defects', p] as const,
   recent:       (limit: number) => ['inspections', 'recent', limit] as const,
   byId:         (id: number)    => ['inspections', id]              as const,
@@ -93,6 +95,16 @@ export function useLineStatus(deviceId?: string) {
   return useQuery({
     queryKey: QUERY_KEYS.lineStatus(deviceId),
     queryFn: () => fetchLineStatus(deviceId),
+    refetchInterval,
+    staleTime,
+  })
+}
+
+export function useDailySummary(params?: Omit<InspectionSearchParams, 'page' | 'size' | 'result'>) {
+  const { refetchInterval, staleTime } = useInspectionPollingOptions()
+  return useQuery({
+    queryKey: QUERY_KEYS.daily(params),
+    queryFn: () => fetchDailySummary(params),
     refetchInterval,
     staleTime,
   })

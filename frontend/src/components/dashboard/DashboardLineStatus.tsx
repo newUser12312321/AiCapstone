@@ -71,14 +71,6 @@ export default function DashboardLineStatus({
             {inspectionResultLabel(result)}
           </span>
         )}
-        {stale && (
-          <span className="text-[var(--dash-warning)] font-semibold">
-            {' \u00B7 '}
-            {result === 'FAIL'
-              ? '5\uBD84 \uC774\uC0C1 \uBBF8\uAC80\uC0AC (\uC7AC\uAC80\uC0AC \uD544\uC694 \uAC00\uB2A5)'
-              : '5\uBD84 \uC774\uC0C1 \uBBF8\uAC80\uC0AC (\uAC80\uC0AC \uB300\uAE30)'}
-          </span>
-        )}
       </span>
 
       {lastFail && (

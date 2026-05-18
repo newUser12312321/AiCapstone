@@ -125,6 +125,18 @@ public class InspectionController {
         return ResponseEntity.ok(inspectionQueryService.getLineStatus(deviceId));
     }
 
+    @GetMapping("/summary/daily")
+    public ResponseEntity<List<com.inspection.dto.DailyVolumeDto>> getDailySummary(
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String deviceId,
+            @RequestParam(required = false) String board,
+            @RequestParam(required = false) String shift) {
+        var criteria = InspectionQueryService.buildCriteria(
+                from, to, deviceId, null, board, shift, null, null);
+        return ResponseEntity.ok(inspectionQueryService.getDailyVolume(criteria));
+    }
+
     @GetMapping("/summary/hourly")
     public ResponseEntity<List<HourlyVolumeDto>> getHourlySummary(
             @RequestParam(required = false) String from,

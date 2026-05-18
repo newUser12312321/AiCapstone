@@ -186,6 +186,16 @@ export interface HourlyVolumePoint {
   hour: number
 }
 
+/** 일별 검사량 집계 (GET /api/inspections/summary/daily) */
+export interface DailyVolumePoint {
+  bucketStartMs: number
+  label: string
+  anchorDate: string
+  pass: number
+  fail: number
+  count: number
+}
+
 /** PassFailChart에서 사용하는 도넛 차트 데이터 */
 export interface PieDataPoint {
   name:  string
